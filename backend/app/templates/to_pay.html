@@ -1,0 +1,138 @@
+{% extends "account.html" %}
+{% block dashboard_content %}
+
+<div class="container">
+    {% if order_items|length == 0 %}
+    <p class="text-center text-muted fs-3">No products to pay for.</p>
+
+    {% else %}
+
+    {% for item in order_items %}
+    <div class="card mb-5 position-relative">
+        <!-- Order Status Badge -->
+        <span class="badge text-bg-warning position-absolute p-2" style="top: 8px; right: 10px;">
+            {{ item.status }}
+        </span>
+
+        <!-- Shop Info -->
+        <div class="card-header d-flex align-items-center gap-3">
+            <strong>
+                {% if item.seller.shop_name %}
+                    {{ item.seller.shop_name }}
+                {% else %}
+                    UNKNOWN SELLER
+                {% endif %}
+            </strong>
+            {% if item.product %}
+                <a href="{{ url_for('chat_with_seller', seller_id=item.product.seller.user.id) }}" class="btn btn-primary me-2">Chat</a>
+            {% else %}
+                <p>Product not available</p>
+            {% endif %}
+            <a class="btn btn-outline-secondary" href="{{  url_for('seller_page', seller_id=item.seller.id) }}">View Shop</a>
+        </div>
+        
+        <!-- Item Info -->
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    <img src="{{ url_for('static', filename='profile_pics/' + item.product.images[0].image_path) }}" alt="Product Image" width="100" height="100">
+                </div>
+                <div class="col-md-6">
+                    <!-- <p class="mb-1 product-name fs-4"><strong>{{ item.product.name }}</strong></p> -->
+                    <a class="mb-1 product-name fs-3 fw-bold" href="{{ url_for('order_detail', order_id=item.order.id) }}">{{ item.product.name }}</a>
+
+                    <p class="mb-1 text-muted fs-4"><small>Variation: {{ item.color }} / {{ item.size }} </small></p>
+                </div>
+                <div class="col-md-2 text-center ml-auto">
+                    <p class="current-price fs-2 fw-bold"><strong>₱{{ item.price | round(2)}} x {{ item.quantity }}</strong></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payment Info -->
+        <div class="card-footer d-flex justify-content-between align-items-center bg-white">
+            <span class="amount-payable">Total Amount for Order: <strong>₱{{ order_totals[item.order.id] | round(2) }}</strong></span>
+            <div class="action-buttons">
+                <button class="btn btn-outline-danger" 
+                data-bs-toggle="modal" 
+                data-bs-target="#cancelConfirmationModal" 
+                onclick="setOrderItemId('{{ item.id }}')">Cancel Item</button>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    {% endfor %}
+    {% endif %}
+
+<!-- Cancel Confirmation Modal -->
+<div class="modal fade" id="cancelConfirmationModal" tabindex="-1" aria-labelledby="cancelConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelConfirmationModalLabel">Cancel Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3">Are you sure you want to cancel this item?</p>
+                <p class="mb-2"><strong>Please select a cancellation reason:</strong></p>
+                <div class="mb-3">
+                    <div class="form-check form-check-inline-topay">
+                        <input class="form-check-input" type="radio" name="cancelReason" id="reason1" value="Changed my mind" checked>
+                        <label class="form-check-label" for="reason1">
+                            Changed my mind
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline-topay">
+                        <input class="form-check-input" type="radio" name="cancelReason" id="reason2" value="Item not as described">
+                        <label class="form-check-label" for="reason2">
+                            Item not as described
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline-topay">
+                        <input class="form-check-input" type="radio" name="cancelReason" id="reason3" value="Found a better price">
+                        <label class="form-check-label" for="reason3">
+                            Found a better price
+                        </label>
+                    </div>
+        
+
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Go Back</button>
+                <form id="cancelItemForm" method="POST" action="{{ url_for('cancel_item') }}">
+                    <input type="hidden" name="order_item_id" id="orderItemId">
+                    <input type="hidden" name="cancel_reason" id="cancelReason">
+                    <button type="submit" class="btn btn-danger" onclick="setCancelReason()">Yes, Cancel Item</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</div>
+
+
+<script>
+    function setOrderItemId(orderItemId) {
+        document.getElementById('orderItemId').value = orderItemId;
+    }
+    
+    function setCancelReason() {
+        const selectedReason = document.querySelector('input[name="cancelReason"]:checked');
+        if (selectedReason) {
+            document.getElementById('cancelReason').value = selectedReason.value;
+            return true; // Allow form submission
+        } else {
+            alert("Please select a cancellation reason."); // Alert if no reason is selected
+            return false; // Prevent form submission
+        }
+    }
+</script>
+{% endblock %}

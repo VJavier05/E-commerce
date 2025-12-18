@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Contact us</li>
+        </ol>
+    </div><!-- End .container -->
+</nav><!-- End .breadcrumb-nav -->
+<div class="container">
+    <div class="page-header page-header-big text-center" style="background-image: url('static/assets/images/contact-header-bg.jpg')">
+        <h1 class="page-title text-white">Contact us<span class="text-white">keep in touch with us</span></h1>
+    </div><!-- End .page-header -->
+</div><!-- End .container -->
+
+<div class="page-content pb-0">
+    <div class="container">
+        <div class="row">
+            <div class="container d-flex justify-content-center">
+                <div class="col-lg-8 text-center mb-2 mb-lg-0">
+                  <h2 class="title mb-1">Contact Information</h2>
+                  <p class="mb-5">We’d love to hear from you! Whether you have questions, need assistance with an order, or simply want to give us feedback, our team is here to provide the support you need. Please feel free to reach out through any of the following channels:</p>
+              
+                  <div class="row justify-content-center">
+                    <div class="col-sm-6">
+                      <div class="contact-info">
+                        <h3>The Office</h3>
+                        <ul class="contact-list">
+                          <li>
+                            <i class="bi bi-geo-alt"></i>
+                            70 Washington Square South New York, NY 10012, United States
+                          </li>
+                          <li>
+                            <i class="bi bi-telephone"></i>
+                            <a href="tel:#">+92 423 567</a>
+                          </li>
+                          <li>
+                            <i class="bi bi-envelope"></i>
+                            <a href="mailto:#">info@SheWear.com</a>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+              
+                    <div class="col-sm-6">
+                      <div class="contact-info">
+                        <h3>Office Hours</h3>
+                        <ul class="contact-list">
+                          <li>
+                            <i class="bi bi-clock"></i>
+                            <span class="text-dark">Monday-Saturday</span> <br>11am-7pm ET
+                          </li>
+                          <li>
+                            <i class="bi bi-calendar4-event"></i>
+                            <span class="text-dark">Sunday</span> <br>11am-6pm ET
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+     
+        </div><!-- End .row -->
+
+        <hr class="mt-4 mb-5">
+
+    </div><!-- End .container -->
+</div><!-- End .page-content -->
+
+{% endblock %}

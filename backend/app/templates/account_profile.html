@@ -1,0 +1,187 @@
+
+{% extends "account.html" %}
+{% block dashboard_content %}
+      <div class="card border-0">
+        <div class="card-body">
+          <div class="e-profile">
+            <div class="row">
+              <div class="col-12 col-sm-auto mb-3">
+                <div class="mx-auto">
+                    <img class="rounded-circle account-img" src="{{ image_file }}" alt="profile pic">
+                </div>
+              </div>
+              <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
+                <div class="text-start text-sm-left mb-2 mb-sm-0">
+                  <h4 class=" pb-1 mb-0 text-nowrap fw-bold">{{current_user.first_name}} {{current_user.last_name}}</h4>
+                  <p class="mb-0">{{current_user.email}}</p>
+                  <div class="mt-4">
+
+                    <form method="POST" action="" novalidate enctype="multipart/form-data">
+
+                      {{ form.hidden_tag() }}
+
+                      {{ form.picture.label(class="form-label fw-bolder") }}<br>
+                      {{ form.picture(class="form-control file-input border-primary") }}
+
+                      {% if form.picture.errors %}
+                          {% for error in form.picture.errors %}
+                          <span class="text-danger">{{ error }}</span>
+                          {% endfor %}
+                      {% endif%}
+
+
+                  </div>
+                </div>
+                <div class="text-center text-sm-right">
+                  <span class="badge text-bg-secondary">User</span>
+                  <div class="text-muted"><small>Joined {{current_user.created_at.strftime('%m-%d-%Y')}}</small></div>
+                </div>
+              </div>
+            </div>
+    
+            <div class="tab-content pt-3">
+              <div class="tab-pane active border-top pt-4">
+                
+      
+                  <h3>Profile Info</h3>
+      
+                  <div class="form-group pb-4">
+
+                      <div class="form-field">     
+                        <div class="form-floating mb-3 email-input-db">
+                        {% if form.first_name.errors %}
+                            {{ form.first_name(class="form-control form-control-lg is-invalid", id="fnameInput", placeholder="First Name") }}
+                            <label for="fnameInput">First Name</label>
+                            <div class="invalid-feedback">
+                                {% for error in form.first_name.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.first_name(class="form-control form-control-lg", id="fnameInput", placeholder="Last Name") }}
+                            <label for="fnameInput">First Name</label>
+                        {% endif %}
+                      </div>
+
+                          <!-- {% if form.first_name.errors %}
+                              {{ form.first_name(class="form-control form-control-lg is-invalid", placeholder="First Name") }}
+                              <div class="invalid-feedback">
+                                  {% for error in form.first_name.errors %}
+                                      <span>{{ error }}</span>
+                                  {% endfor %}
+                              </div>
+                          {% else %}
+                              {{ form.first_name(class="form-control form-control-lg", placeholder="First Name") }}
+                          {% endif %} -->
+                      </div>
+
+                      
+                  
+                      <div class="form-field">
+                          <!-- {% if form.last_name.errors %}
+                              {{ form.last_name(class="form-control form-control-lg is-invalid", placeholder="Last Name") }}
+                              <div class="invalid-feedback">
+                                  {% for error in form.last_name.errors %}
+                                      <span>{{ error }}</span>
+                                  {% endfor %}
+                              </div>
+                          {% else %}
+                              {{ form.last_name(class="form-control form-control-lg", placeholder="Last Name") }}
+                          {% endif %} -->
+
+
+                          <div class="form-floating mb-3 email-input-db">
+                            {% if form.last_name.errors %}
+                                {{ form.last_name(class="form-control form-control-lg is-invalid", id="lnameInput", placeholder="Last Name") }}
+                                <label for="lnameInput">Last Name</label>
+                                <div class="invalid-feedback">
+                                    {% for error in form.last_name.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.last_name(class="form-control form-control-lg", id="lnameInput", placeholder="Last Name") }}
+                                <label for="lnameInput">Last Name</label>
+                            {% endif %}
+                          </div>
+
+                      </div>
+                  </div>
+      
+                  <div class="form-wrapper pb-4">
+      
+                    <div class="form-floating mb-3 email-input-db">
+                      {% if form.email.errors %}
+                          {{ form.email(class="form-control form-control-lg is-invalid", id="EmailInput", placeholder="Email") }}
+                          <label for="EmailInput">Email address</label>
+                          <div class="invalid-feedback">
+                              {% for error in form.email.errors %}
+                                  <span>{{ error }}</span>
+                              {% endfor %}
+                          </div>
+                      {% else %}
+                          {{ form.email(class="form-control form-control-lg", id="EmailInput", placeholder="Email") }}
+                          <label for="EmailInput">Email address</label>
+                      {% endif %}
+                    </div>
+      
+                      <!-- {{ form.email(class="form-control form-control-lg",placeholder="Email") }} -->
+                      <!-- <i class="bi bi-envelope-fill"></i> -->
+
+                      
+
+
+
+                  </div>
+
+
+                    <div class="form-group pb-4">
+                      <div class="form-floating mb-3">
+                        <div>
+                          {{ form.gender.label(class="radio-label-1 pb-2 fw-medium") }}
+                          <div class="d-flex align-items-center">
+                              <div class="form-check form-check-inline">
+                                  <input class="form-check-input border-dark" type="radio" id="male" value="male" name="gender" {% if form.gender.data == 'male' %}checked{% endif %}>
+                                  <label class="form-check-label radio-label" for="male">Male</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                  <input class="form-check-input border-dark" type="radio" id="female" value="female" name="gender" {% if form.gender.data == 'female' %}checked{% endif %}>
+                                  <label class="form-check-label radio-label" for="female">Female</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                  <input class="form-check-input border-dark" type="radio" id="other" value="other" name="gender" {% if form.gender.data == 'other' %}checked{% endif %}>
+                                  <label class="form-check-label radio-label" for="other">Other</label>
+                              </div>
+                          </div>
+                          {% if form.gender.errors %}
+                              <div class="text-danger">{{ form.gender.errors[0] }}</div>
+                          {% endif %}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-wrapper pb-1">
+                    
+                    {{ form.date_of_birth.label(class="form-label fs-5 fw-medium") }} 
+
+                    {{ form.date_of_birth(class="form-control form-control-lg form-date", id="dateOfBirthInput", placeholder="YYYY-MM-DD") }}  <!-- Larger input field -->
+                    {% if form.date_of_birth.errors %}
+                        <div class="text-danger">{{ form.date_of_birth.errors[0] }}</div>
+                    {% endif %}
+                  </div>
+
+                  <div class="d-flex justify-content-end mt-3 update-btn">
+
+                      {{ form.submit(class="btn btn-primary") }}
+                  </div>
+              </form>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+  
+  
+  {% endblock %}

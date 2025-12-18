@@ -1,0 +1,285 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="wrapper">
+    <div class="inner mt-5">
+        <div class="image-holder">
+            <img src="{{ url_for('static', filename='img/sign.jpg') }}" alt="">
+        </div>
+        <form method="POST" action="" novalidate enctype="multipart/form-data">
+            
+            {{ form.hidden_tag() }}
+
+            <h3>Buyer Registration</h3>
+
+            <div class="form-group pb-5">
+                <div class="form-field">
+                    {% if form.first_name.errors %}
+                        {{ form.first_name(class="form-control form-control-lg is-invalid", placeholder="First Name") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.first_name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.first_name(class="form-control form-control-lg", placeholder="First Name") }}
+                    {% endif %}
+                </div>
+            
+                <div class="form-field">
+                    {% if form.last_name.errors %}
+                        {{ form.last_name(class="form-control form-control-lg is-invalid", placeholder="Last Name") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.last_name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.last_name(class="form-control form-control-lg", placeholder="Last Name") }}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-wrapper pb-5">
+
+                {% if form.email.errors %}
+                        {{ form.email(class="form-control form-control-lg is-invalid", placeholder="Email") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.email(class="form-control form-control-lg", placeholder="Email") }}
+                {% endif %}
+
+                <!-- {{ form.email(class="form-control form-control-lg",placeholder="Email") }} -->
+                <!-- <i class="bi bi-envelope-fill"></i> -->
+            </div>
+
+   
+
+            <div class="form-wrapper pb-4 password-login">
+
+                <div class="input-group input-group-merge mb-4">
+                    {% if form.password.errors %}
+                        {{ form.password(class="form-control form-control-lg is-invalid", placeholder="Password") }}
+                    {% else %}
+                        {{ form.password(class="form-control form-control-lg", placeholder="Password") }}
+                    {% endif %}
+                    <span class="input-group-text cursor-pointer"><i class="bi bi-eye-slash fs-4"></i></span>
+                    
+                    {% if form.password.errors %}
+                        <!-- Error feedback message positioned absolutely -->
+                        <div class="invalid-feedback" style="position: absolute; bottom: -20px;">
+                            {% for error in form.password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+
+
+
+                <!-- {{ form.password(class="form-control form-control-lg",placeholder="Password") }} -->
+
+            </div>
+
+            <div class="form-wrapper pb-4 password-login">
+
+
+                <div class="input-group input-group-merge mb-4">
+                    {% if form.confirm_password.errors %}
+                        {{ form.confirm_password(class="form-control form-control-lg is-invalid", placeholder="Confirm Password") }}
+                    {% else %}
+                        {{ form.confirm_password(class="form-control form-control-lg", placeholder="Confirm Password") }}
+                    {% endif %}
+                    <span class="input-group-text cursor-pointer"><i class="bi bi-eye-slash fs-4"></i></span>
+                    
+                    {% if form.confirm_password.errors %}
+                        <!-- Error feedback message positioned absolutely -->
+                        <div class="invalid-feedback" style="position: absolute; bottom: -20px;">
+                            {% for error in form.confirm_password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+
+
+            
+            <div class="form-wrapper pb-4 password-login">
+                <!-- Date of Birth Field -->
+                <label for="date_of_birth" class="form-label">Date of Birth</label>
+                <div class="form-field">
+                    {% if form.date_of_birth.errors %}
+                        {{ form.date_of_birth(class="form-control form-control-lg is-invalid", id="date_of_birth", placeholder="YYYY-MM-DD") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.date_of_birth.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.date_of_birth(class="form-control form-control-lg", id="date_of_birth", placeholder="YYYY-MM-DD") }}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group pb-4">
+                <div class="form-floating mb-3">
+                  <div>
+                    {{ form.gender.label(class="radio-label-1 pb-2 fw-medium") }}
+                    <div class="d-flex align-items-center">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input border-dark" type="radio" id="male" value="male" name="gender" checked>
+                            <label class="form-check-label radio-label" for="male">Male</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input border-dark" type="radio" id="female" value="female" name="gender">
+                            <label class="form-check-label radio-label" for="female">Female</label>
+                        </div>
+                     
+                    </div>
+                    {% if form.gender.errors %}
+                        <div class="text-danger">{{ form.gender.errors[0] }}</div>
+                    {% endif %}
+                </div>
+              </div>
+            </div>
+            
+            
+            <div class="form-wrapper pb-4 ">
+                {{ form.picture_id.label(class="form-label fw-bolder") }}<br>
+                {{ form.picture_id(class="form-control file-input") }}
+  
+                {% if form.picture_id.errors %}
+                    {% for error in form.picture_id.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                {% endif%}
+            </div>
+            
+
+   
+            <div class="form-wrapper">
+
+
+                {% if form.confirm_password.errors %}
+                    {{ form.policy(class="form-check-input is-invalid") }}
+                    {{ form.policy.label(class="form-check-label") }}
+                    <a href="#" class="text-primary" data-bs-toggle="modal" data-bs-target="#Policy">Policy*</a>
+
+                    <div class="invalid-feedback">
+                        Please Aggre to our Policy
+                    </div>
+                {% else %}
+                        {{ form.policy(class="form-check-input") }}
+                        {{ form.policy.label(class="form-check-label") }}
+                        <a href="#" class="text-primary" data-bs-toggle="modal" data-bs-target="#Policy">Policy*</a>
+
+                {% endif %}
+
+
+
+                
+                <div class="modal fade" id="Policy" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-scrollable">
+                      <div class="modal-content">
+                        <div class="modal-header  bg-primary">
+                          <h1 class="modal-title fs-5 text-white" id="staticBackdropLabel">Privacy Policy</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            SheWear is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and share your information.
+                            <ol class="mt-4">
+                                <li><b>1. Information We Collect</b>
+                                    <ul>
+                                        <li>Personal Information: We collect information you provide when you create an account, make a purchase, or contact us, including your name, email address, mailing address, phone number, and payment details.</li>
+                                    </ul>
+                                </li>
+
+                                <li class="mt-4"><b>2. How We Use Your Information</b>
+
+                                    <ul>
+                                        <li>Process and fulfill your orders</li>
+                                        <li>Communicate with you about your orders or inquiries</li>
+                                        <li>Improve our Website and services</li>
+                                        <li>Ensure security and prevent fraud</li>
+                                    </ul>
+
+                                </li>
+
+
+                                <li class="mt-4"><b>3. Sharing Your Information</b>
+                                    <li>We do not sell your personal information. We may share your information with:</li>
+
+                                    <ul>
+                                        <li>Service Providers: For processing payments, delivering products, and providing customer support.</li>
+                                        <li>Legal Requirements: To comply with legal obligations or respond to legal requests.</li>
+                                        <li>Business Transfers: If our business is acquired or merged with another company.</li>
+                                    </ul>
+
+                                </li>
+
+                                
+                                <li class="mt-4"><b>4. Security</b>
+                                    <li>We take reasonable measures to protect your information, but no method is completely secure. We cannot guarantee absolute security.</li>
+
+
+                                </li>
+
+                                <li class="mt-4"><b>5. Changes to This Policy</b>
+                                    <li>We may update this Privacy Policy. Changes will be posted on this page with the new effective date.
+
+                                    </li>
+
+
+                                </li>
+                                
+                            
+                            
+                            
+                            </ol>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                <!-- {{ form.policy(class="form-check-input") }} -->
+
+                <!-- {{ form.policy.label(class="form-check-label") }} -->
+                <!-- <a href="#" class="text-primary">Policy*</a> -->
+            </div>
+
+            
+    
+
+            <div class="text-center mt-5 register-btn">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+
+
+            <div class="border-top pt-3 text-center mt-3">
+                <small class="text-muted">
+                    Already Have an Account? <a href="{{url_for('login')}}" class="ml-2">Sign In</a>
+                </small>
+            </div>
+
+        </form>
+
+        
+
+    </div>
+
+    
+</div>
+
+{% endblock %}

@@ -1,0 +1,744 @@
+{% extends "dashboard_2.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center py-3 mb-2">
+    <h4 class="fw-bold mb-0">
+        <span class="text-muted fw-light">Products /</span> My Orders
+    </h4>
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="nav-align-top mb-4">
+            <ul class="nav nav-pills mb-3" role="tablist">
+                <li class="nav-item">
+                    <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-orders" id="orders-tab" aria-controls="navs-pills-orders">
+                        Orders
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-Shipment" id="shipment-tab" aria-controls="navs-pills-Shipment">
+                        Shipment
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-Ship" id="ship-tab" aria-controls="navs-pills-Ship">
+                        Ship Items
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-completed" id="completed-tab" aria-controls="navs-pills-completed">
+                        Completed
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-cancell" id="cancelled-tab" aria-controls="navs-pills-cancell">
+                        Cancelled
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="orderTabsContent">
+                <div class="tab-pane fade show active" id="navs-pills-orders" role="tabpanel" aria-labelledby="orders-tab">
+
+                    <div class="input-group input-group-merge mb-3 search-input">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input
+                          type="text"
+                          class="form-control"
+                          placeholder="Search Orders..."
+                          aria-label="Search..."
+                          id="searchProduct"
+                          onkeyup="searchTable('orderTable', 'searchProduct')"  
+                        />
+                    </div>
+                    
+                    <table class="table table-hover" id="orderTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Product</th>
+                                <th>Variations</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Orders</th>
+                                <th>Ordered By</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                                {% for item in order.order_items %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if item.product.images %}
+                                                    <img
+                                                        src="{{ url_for('static', filename='profile_pics/' + item.product.images[0].image_path) }}"
+                                                        alt="Product Image"
+                                                        style="width: 75px; height: 75px"
+                                                        class="img-fluid img-thumbnail"
+                                                    />
+                                                {% else %}
+                                                    <img
+                                                        src="https://via.placeholder.com/75"
+                                                        alt="Placeholder Image"
+                                                        style="width: 75px; height: 75px"
+                                                        class="img-fluid img-thumbnail"
+                                                    />
+                                                {% endif %}
+                                                <div class="ms-3">
+                                                    <p class="fw-bold mb-1">{{ item.product.name }}</p>
+                                                    <p class="text-muted mb-0">{{ item.product.category }}</p>
+                                                    <p>Item ID: {{ item.product.id }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p>Color: {{ item.color }}</p>
+                                            <p>Size: {{ item.size }}</p>
+                                        </td>
+                                        <td>
+                                            <p>{{ item.quantity }} x ₱{{ item.price }}</p>
+                                        </td>
+                                        <td>
+                                            {% set variation = item.product.variations | selectattr('size', 'equalto', item.size) | selectattr('color', 'equalto', item.color) | first %}
+                                            {% if variation %}
+                                                <p>{{ item.size }} - {{ variation.stock }}</p>
+                                            {% else %}
+                                                <p class="text-muted">Out of Stock</p>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <p>Order ID: {{ order.order.id }}</p>  <!-- Access the combined order -->
+                                        </td>
+                                        <td>
+                                            <p>{{ order.order.user.first_name }} {{ order.order.user.last_name }}</p> 
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <form action="{{ url_for('placed_order') }}" method="POST" class="me-2">
+                                                    <input type="hidden" name="order_item_id" value="{{ item.id }}">
+                                                    <button type="submit" class="btn btn-sm btn-primary">Placed</button>
+                                                </form>
+                                                    
+                                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal-{{ item.id }}">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- SHIPMENT -->
+                <div class="tab-pane fade" id="navs-pills-Shipment" role="tabpanel" aria-labelledby="shipment-tab">
+                    <div id="alertMessage" class="alert alert-dismissible fade show d-none" role="alert">
+                        <span id="alertText"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <div class="input-group input-group-merge mb-3 search-input">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input
+                              type="text"
+                              class="form-control"
+                              placeholder="Search Preparing to Ship..."
+                              aria-label="Search..."
+                              id="searchShipment"
+                              onkeyup="searchTable('ShipmentTable', 'searchShipment')"  
+                            />
+                        </div>
+                    
+                        <button type="button" class="btn btn btn-primary mb-3 ms-auto" onclick="openScheduleModal()">Shipped</button>
+
+                    </div>
+
+
+                    <table class="table table-hover" id="orderTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th></th>
+                                <th>Product</th>
+                                <th>Variations</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Orders</th>
+                                <th>Ordered By</th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in order_placed_orders  %}
+                                {% for item in order.order_items %}
+                                    <tr>
+
+                                        <td>
+                                            <div class="form-check">
+                                                <input class="form-check-input order-checkbox" type="checkbox" name="selected_order_items" value="{{ item.id }}" id="checkbox-{{ item.id }}">
+                                                <label class="form-check-label" for="checkbox-{{ item.id }}"></label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if item.product.images %}
+                                                    <img
+                                                        src="{{ url_for('static', filename='profile_pics/' + item.product.images[0].image_path) }}"
+                                                        alt="Product Image"
+                                                        style="width: 75px; height: 75px"
+                                                        class="img-fluid img-thumbnail"
+                                                    />
+                                                {% else %}
+                                                    <img
+                                                        src="https://via.placeholder.com/75"
+                                                        alt="Placeholder Image"
+                                                        style="width: 75px; height: 75px"
+                                                        class="img-fluid img-thumbnail"
+                                                    />
+                                                {% endif %}
+                                                <div class="ms-3">
+                                                    <p class="fw-bold mb-1">{{ item.product.name }}</p>
+                                                    <p class="text-muted mb-0">{{ item.product.category }}</p>
+                                                    <p>Item ID: {{ item.product.id }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p>Color: {{ item.color }}</p>
+                                            <p>Size: {{ item.size }}</p>
+                                        </td>
+                                        <td>
+                                            <p>{{ item.quantity }} x ₱{{ item.price }}</p>
+                                        </td>
+                                        <td>
+                                         
+                                            <span class="badge bg-success">{{ item.status }}</span>
+                                          
+                                        </td>
+                                        <td>
+                                            <p>Order ID: {{ order.order.id }}</p>  <!-- Access the combined order -->
+                                        </td>
+                                        <td>
+                                            <p>{{ order.order.user.first_name }} {{ order.order.user.last_name }}</p> 
+                                        </td>
+                                 
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- SHIPPED -->
+                <div class="tab-pane fade" id="navs-pills-Ship" role="tabpanel" aria-labelledby="ship-tab">
+                    <div class="d-flex align-items-center">
+                        <div class="input-group input-group-merge mb-3 search-input">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input
+                              type="text"
+                              class="form-control"
+                              placeholder="Search Shipped..."
+                              aria-label="Search..."
+                              id="searchShip"
+                              onkeyup="searchTable('ShipTable', 'searchShip')"  
+                            />
+                        </div>
+                    
+
+                    </div>
+
+
+                    <table class="table table-hover" id="ShipTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Product</th>
+                                <th>Variations</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Orders</th>
+                                <th>Ordered By</th> 
+                                <th>Courier</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in preparing_to_ship_orders  %}
+                                {% for item in order.order_items %}
+                                    <tr>
+
+                                
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if item.product.images %}
+                                                    <img
+                                                        src="{{ url_for('static', filename='profile_pics/' + item.product.images[0].image_path) }}"
+                                                        alt="Product Image"
+                                                        style="width: 75px; height: 75px"
+                                                        class="img-fluid img-thumbnail"
+                                                    />
+                                                {% else %}
+                                                    <img
+                                                        src="https://via.placeholder.com/75"
+                                                        alt="Placeholder Image"
+                                                        style="width: 75px; height: 75px"
+                                                        class="img-fluid img-thumbnail"
+                                                    />
+                                                {% endif %}
+                                                <div class="ms-3">
+                                                    <p class="fw-bold mb-1">{{ item.product.name }}</p>
+                                                    <p class="text-muted mb-0">{{ item.product.category }}</p>
+                                                    <p>Item ID: {{ item.product.id }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p>Color: {{ item.color }}</p>
+                                            <p>Size: {{ item.size }}</p>
+                                        </td>
+                                        <td>
+                                            <p>{{ item.quantity }} x ₱{{ item.price }}</p>
+                                        </td>
+                                        <td>
+                                         
+                                            <span class="badge  {% if item.status == 'In Transit' %}bg-info {% elif item.status == 'Received' %}bg-primary{% elif item.status == 'Preparing to Shipped' %}bg-warning{% elif item.status == 'Delivered' %}bg-success{% endif %}">{{ item.status }}</span>
+                                          
+                                        </td>
+                                        <td>
+                                            <p>Order ID: {{ order.order.id }}</p>  <!-- Access the combined order -->
+                                        </td>
+                                        <td>
+                                            <p>{{ order.order.user.first_name }} {{ order.order.user.last_name }}</p> 
+                                        </td>
+
+                                        <td>
+                                            {% if item.order.courier %}
+                                            <p>{{ item.order.courier.user.first_name }} {{ item.order.courier.user.last_name }}</p>
+                                            <p>Contact: {{ item.order.courier.contact_number }}</p>
+                                            <p>Vehicle: {{ item.order.courier.vehicle_type }}</p>
+                                        {% else %}
+                                            <p>No courier assigned yet</p>
+                                        {% endif %}
+                                        </td>
+                                 
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="tab-pane fade" id="navs-pills-completed" role="tabpanel" aria-labelledby="completed-tab">
+
+                    <div class="input-group input-group-merge mb-3 search-input">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input
+                          type="text"
+                          class="form-control"
+                          placeholder="Search Completed..."
+                          aria-label="Search..."
+                          id="searchComp"
+                          onkeyup="searchTable('CompTable', 'searchComp')"  
+                        />
+                    </div>
+                    
+                    
+                    <table class="table table-hover" id="CompTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Product</th>
+                                <th>Variations</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Orders</th>
+                                <th>Ordered By</th> 
+                                <th>Courier</th>
+                                <th>Delivery Proof</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in delivered_orders  %}
+                                {% for item in order.order_items %}
+                                    <tr>
+
+                                
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if item.product.images %}
+                                                    <img
+                                                        src="{{ url_for('static', filename='profile_pics/' + item.product.images[0].image_path) }}"
+                                                        alt="Product Image"
+                                                        style="width: 75px; height: 75px"
+                                                        class="img-fluid img-thumbnail"
+                                                    />
+                                                {% else %}
+                                                    <img
+                                                        src="https://via.placeholder.com/75"
+                                                        alt="Placeholder Image"
+                                                        style="width: 75px; height: 75px"
+                                                        class="img-fluid img-thumbnail"
+                                                    />
+                                                {% endif %}
+                                                <div class="ms-3">
+                                                    <p class="fw-bold mb-1">{{ item.product.name }}</p>
+                                                    <p class="text-muted mb-0">{{ item.product.category }}</p>
+                                                    <p>Item ID: {{ item.product.id }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p>Color: {{ item.color }}</p>
+                                            <p>Size: {{ item.size }}</p>
+                                        </td>
+                                        <td>
+                                            <p>{{ item.quantity }} x ₱{{ item.price }}</p>
+                                        </td>
+                                        <td>
+                                         
+                                            <span class="badge  {% if item.status == 'In Transit' %}bg-info {% elif item.status == 'Received' %}bg-success{% endif %}">{{ item.status }}</span>
+                                          
+                                        </td>
+                                        <td>
+                                            <p>Order ID: {{ order.order.id }}</p>  <!-- Access the combined order -->
+                                        </td>
+                                        <td>
+                                            <p>{{ order.order.user.first_name }} {{ order.order.user.last_name }}</p> 
+                                        </td>
+
+                                        <td>
+                                            {% if item.order.courier %}
+                                            <p>{{ item.order.courier.user.first_name }} {{ item.order.courier.user.last_name }}</p>
+                                            <p>Contact: {{ item.order.courier.contact_number }}</p>
+                                            <p>Vehicle: {{ item.order.courier.vehicle_type }}</p>
+                                        {% else %}
+                                            <p>No courier assigned yet</p>
+                                        {% endif %}
+                                        </td>
+
+                                        <td>
+                                            {% if item.delivery_image %}
+                                            <!-- Make the image clickable to open the modal -->
+                                            <img 
+                                                src="data:image/jpeg;base64,{{ item.delivery_image }}" 
+                                                alt="Delivery Image" 
+                                                class="img-fluid img-thumbnail" 
+                                                style="max-width: 75px; height: auto;" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#imageModal" 
+                                                data-image="data:image/jpeg;base64,{{ item.delivery_image }}" />
+                                            {% else %}
+                                            <p>No delivery image available.</p>
+                                            {% endif %}
+                                        </td>
+                                 
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                
+                <div class="tab-pane fade" id="navs-pills-cancell" role="tabpanel" aria-labelledby="cancelled-tab">
+                    
+                    <div class="input-group input-group-merge mb-3 search-input">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input
+                          type="text"
+                          class="form-control"
+                          placeholder="Search Cancelled Item..."
+                          aria-label="Search..."
+                          id="searchcancell"
+                          onkeyup="searchTable('cancellTable', 'searchcancell')"  
+                        />
+                    </div>
+
+                    <table class="table table-hover" id="cancellTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Product</th>
+                                <th>Variations</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Orders</th>
+                                <th>Ordered By</th>
+                                <th>Cancellation Reason</th>  
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in canceled_orders %}
+                                {% for item in order.order_items %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if item.product.images %}
+                                                    <img
+                                                        src="{{ url_for('static', filename='profile_pics/' + item.product.images[0].image_path) }}"
+                                                        alt="Product Image"
+                                                        style="width: 75px; height: 75px"
+                                                        class="img-fluid img-thumbnail"
+                                                    />
+                                                {% else %}
+                                                    <img
+                                                        src="https://via.placeholder.com/75"
+                                                        alt="Placeholder Image"
+                                                        style="width: 75px; height: 75px"
+                                                        class="img-fluid img-thumbnail"
+                                                    />
+                                                {% endif %}
+                                                <div class="ms-3">
+                                                    <p class="fw-bold mb-1">{{ item.product.name }}</p>
+                                                    <p class="text-muted mb-0">{{ item.product.category }}</p>
+                                                    <p>Item ID: {{ item.product.id }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p>Color: {{ item.color }}</p>
+                                            <p>Size: {{ item.size }}</p>
+                                        </td>
+                                        <td>
+                                            <p>{{ item.quantity }} x ₱{{ item.price }}</p>
+                                        </td>
+                                        <td>
+                                            {% set variation = item.product.variations | selectattr('size', 'equalto', item.size) | first %}
+                                            {% if variation %}
+                                                <p>{{ item.size }} - {{ variation.stock }}</p>
+                                            {% else %}
+                                                <p class="text-muted">Out of Stock</p>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <p>Order ID: {{ order.order.id }}</p>  <!-- Access the combined order -->
+                                        </td>
+                                        <td>
+                                            <p>{{ order.order.user.first_name }} {{ order.order.user.last_name }}</p> 
+                                        </td>
+                                        <td> 
+                                            <span class="badge bg-{{ 'danger' if item.cancel_reason else 'secondary' }}">
+                                                {{ item.cancel_reason or 'No reason provided' }}
+                                            </span>
+                                        </td>
+                       
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Pickup Schedule Modal -->
+<div class="modal fade" id="SchedulePickupModal" tabindex="-1" aria-labelledby="SchedulePickupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="SchedulePickupModalLabel">Schedule Pickup</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Select a pickup date:</p>
+                <input type="date" class="form-control" id="pickupDateTime">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="schedulePickup()">Schedule</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% for order in orders %}
+    {% for item in order.order_items %}
+        <div class="modal fade" id="cancelModal-{{ item.id }}" tabindex="-1" aria-labelledby="cancelModalLabel-{{ item.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cancelModalLabel-{{ item.id }}">Cancel Order</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ url_for('cancel_order') }}" method="POST">
+                        <div class="modal-body">
+                            <input type="hidden" name="order_item_id" value="{{ item.id }}">
+                            <div class="mb-3">
+                                <label for="cancelReason-{{ item.id }}" class="form-label">Cancellation Reason</label>
+                                <select name="cancel_reason" id="cancelReason-{{ item.id }}" class="form-select" required>
+                                    <option value="" disabled selected>Select a reason</option>
+                                    <option value="Out of stock">Out of stock</option>
+                                    <option value="Customer request">Customer request</option>
+                                    <option value="Pricing error">Pricing error</option>
+                                    <option value="Shipping delay">Shipping delay</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endfor %}
+
+
+
+<!-- Modal for viewing the full image -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Delivery Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- This will display the clicked image in larger size -->
+                <div class="modal-body d-flex justify-content-center align-items-center">
+                    <!-- This will display the clicked image in larger size, centered -->
+                    <img id="expandedImage" src="" class="img-fluid" alt="Expanded Delivery Image" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Save the active tab in localStorage when it's shown
+        document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function (e) {
+                const activeTab = e.target.getAttribute('data-bs-target'); // Get target tab ID (e.g., #navs-pills-orders)
+                localStorage.setItem('activeTab', activeTab); // Store it in localStorage
+            });
+        });
+    
+        // Get the active tab from localStorage and show it
+        const activeTab = localStorage.getItem('activeTab');
+        if (activeTab) {
+            const tabToActivate = document.querySelector(`[data-bs-target="${activeTab}"]`);
+            if (tabToActivate) {
+                const bootstrapTab = new bootstrap.Tab(tabToActivate); // Create Bootstrap Tab instance
+                bootstrapTab.show(); // Activate the stored tab
+            }
+        } else {
+            // Default to the first tab if no activeTab is stored
+            const firstTab = document.querySelector('[data-bs-toggle="tab"]');
+            if (firstTab) {
+                const bootstrapTab = new bootstrap.Tab(firstTab);
+                bootstrapTab.show();
+            }
+        }
+    });
+    
+</script>
+
+
+
+
+
+
+
+<script>
+    // JavaScript to handle the dynamic image update in the modal
+    const imageElements = document.querySelectorAll('[data-bs-toggle="modal"]');
+
+    imageElements.forEach((image) => {
+        image.addEventListener('click', (event) => {
+            const imageSrc = event.target.getAttribute('data-image');
+            const modalImage = document.getElementById('expandedImage');
+            modalImage.src = imageSrc;
+        });
+    });
+</script>
+
+
+<script>
+    function showAlert(message, type = 'success') {
+        const alertMessageDiv = document.getElementById('alertMessage');
+        const alertText = document.getElementById('alertText');
+        
+        // Set the message
+        alertText.textContent = message;
+        
+        // Remove all existing alert classes
+        alertMessageDiv.classList.remove('alert-success', 'alert-danger', 'alert-warning', 'alert-info');
+        
+        // Add the appropriate alert class
+        alertMessageDiv.classList.add(`alert-${type}`);
+        
+        // Show the alert
+        alertMessageDiv.classList.remove('d-none');
+        alertMessageDiv.classList.add('show');
+
+        // Automatically hide the alert after 5 seconds
+        setTimeout(() => {
+            alertMessageDiv.classList.add('d-none');
+            alertMessageDiv.classList.remove('show');
+        }, 5000);
+    }
+  
+    function openScheduleModal() {
+        const selectedItems = [];
+        // Get all checked checkboxes
+        const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+        
+        // Collect the IDs of selected items
+        checkboxes.forEach(checkbox => {
+            selectedItems.push(checkbox.value);
+        });
+    
+        if (selectedItems.length === 0) {
+            showAlert('Please select at least one order item.', "warning"); // Changed to "warning"
+            return;
+        }
+    
+        // Open the modal
+        $('#SchedulePickupModal').modal('show');
+    }
+  
+    function schedulePickup() {
+        const pickupDate = document.getElementById('pickupDateTime').value;
+        const selectedItems = [...document.querySelectorAll('.order-checkbox:checked')].map(cb => cb.value);
+
+        if (!pickupDate) {
+            showAlert('Please select a pickup date.', "warning"); 
+            return;
+        }
+
+        fetch('/schedule_pickup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ selected_items: selectedItems, pickup_date: pickupDate })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.success, "success"); // Added "success" type
+                $('#SchedulePickupModal').modal('hide');
+                // Add a slight delay before reloading to show the success message
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else if (data.error) {
+                showAlert(data.error, "danger"); // Added "danger" type
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('An error occurred while scheduling pickup', "danger"); // Added "danger" type
+        });
+    }
+</script>
+
+
+{% endblock %}

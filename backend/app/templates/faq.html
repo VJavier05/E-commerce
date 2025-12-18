@@ -1,0 +1,138 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-header text-center" style="background-image: url('https://images.pexels.com/photos/4466492/pexels-photo-4466492.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')">
+    <div class="container">
+        <h1 class="page-title">F.A.Q<span>Pages</span></h1>
+    </div><!-- End .container -->
+</div><!-- End .page-header -->
+<nav aria-label="breadcrumb" class="breadcrumb-nav">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">FAQ</li>
+        </ol>
+    </div><!-- End .container -->
+</nav><!-- End .breadcrumb-nav -->
+
+<div class="page-content">
+    <div class="container">
+        <h2 class="title text-center mb-3">Shipping Information</h2><!-- End .title -->
+        <div class="accordion accordion-rounded" id="accordion-1">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-1">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-1" aria-expanded="true" aria-controls="collapse-1">
+                        How will my parcel be delivered?
+                    </button>
+                </h2>
+                <div id="collapse-1" class="accordion-collapse collapse show" aria-labelledby="heading-1" data-bs-parent="#accordion-1">
+                    <div class="accordion-body">
+                        Your parcel will be delivered by our in-house courier service. Once your order is confirmed, we carefully pack and prepare it for dispatch. You will receive a tracking link as soon as your parcel is out for delivery, allowing you to track its progress from our warehouse to your doorstep. We take pride in ensuring your order reaches you safely and on time. Delivery times may vary based on your location, and we’ll keep you updated throughout the process.                    </div>
+                </div>
+            </div>
+        
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-2">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-2" aria-expanded="false" aria-controls="collapse-2">
+                        Do I pay for delivery?
+                    </button>
+                </h2>
+                <div id="collapse-2" class="accordion-collapse collapse" aria-labelledby="heading-2" data-bs-parent="#accordion-1">
+                    <div class="accordion-body">
+                        Delivery charges right know is set to ₱45. You’ll see all applicable delivery charges before finalizing your order at checkout.                    </div>
+                </div>
+            </div>
+        
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-3">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-3" aria-expanded="false" aria-controls="collapse-3">
+                        Will I be charged customs fees?
+                    </button>
+                </h2>
+                <div id="collapse-3" class="accordion-collapse collapse" aria-labelledby="heading-3" data-bs-parent="#accordion-1">
+                    <div class="accordion-body">
+                        Since we use our in-house courier service, all domestic orders will not incur any customs fees.                    </div>
+                </div>
+            </div>
+        
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-4">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-4" aria-expanded="false" aria-controls="collapse-4">
+                        My item has become faulty
+                    </button>
+                </h2>
+                <div id="collapse-4" class="accordion-collapse collapse" aria-labelledby="heading-4" data-bs-parent="#accordion-1">
+                    <div class="accordion-body">
+                        We’re committed to providing high-quality products, but if your item develops a fault, we’re here to help. If the fault occurs within the warranty period, please contact our customer support team at SheWearcommerce@gmail.com or call us at +63 921517181. Our team will assist you in arranging a replacement or repair. Please provide your order number and a description of the issue so we can process your request quickly and efficiently.                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+        <h2 class="title text-center mb-3">Orders and Returns</h2><!-- End .title -->
+        <div class="accordion accordion-rounded" id="accordion-2">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading2-1">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2-1" aria-expanded="false" aria-controls="collapse2-1">
+                        Tracking my order
+                    </button>
+                </h2>
+                <div id="collapse2-1" class="accordion-collapse collapse" aria-labelledby="heading2-1" data-bs-parent="#accordion-2">
+                    <div class="accordion-body">
+                        Once your order has been dispatched, you will be able to track your order at account section. This will allow you to track your parcel through our in-house courier service and stay updated on its delivery status. You can check your order's progress anytime by simply clicking on the tracking link. If you have any issues tracking your order, feel free to contact our customer support team at SheWearCommerce@gmail.com for assistance                    </div>
+                </div>
+            </div>
+        
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading2-2">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2-2" aria-expanded="false" aria-controls="collapse2-2">
+                        I haven’t received my order
+                    </button>
+                </h2>
+                <div id="collapse2-2" class="accordion-collapse collapse" aria-labelledby="heading2-2" data-bs-parent="#accordion-2">
+                    <div class="accordion-body">
+                        We understand how important it is to receive your order on time, and we are here to help. If you haven't received your order within the expected delivery window, please first check the tracking link for any updates. Sometimes, delivery times may vary due to unforeseen circumstances, such as weather delays or courier issues. If your parcel is still not delivered or if there are any discrepancies, please contact our customer support team.                    </div>
+                </div>
+            </div>
+        
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading2-3">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2-3" aria-expanded="false" aria-controls="collapse2-3">
+                        How can I return an item?
+                    </button>
+                </h2>
+                <div id="collapse2-3" class="accordion-collapse collapse" aria-labelledby="heading2-3" data-bs-parent="#accordion-2">
+                    <div class="accordion-body">
+                        We want you to be fully satisfied with your purchase, but if you need to return an item, we’ve made the process easy. To return an item, please contact our customer support team within 7 days of receiving your order.                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+        <h2 class="title text-center mb-3">Payments</h2><!-- End .title -->
+        <div class="accordion accordion-rounded" id="accordion-3">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading3-1">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3-1" aria-expanded="false" aria-controls="collapse3-1">
+                        What payment types can I use?
+                    </button>
+                </h2>
+                <div id="collapse3-1" class="accordion-collapse collapse" aria-labelledby="heading3-1" data-bs-parent="#accordion-3">
+                    <div class="accordion-body">
+                        Currently, we only offer Cash on Delivery (COD) as a payment option for all orders. This means that you can pay for your purchase in cash when your order arrives at your doorstep. Our in-house courier will collect the payment upon delivery, ensuring a smooth and secure transaction. Please note that COD payments must be made in full at the time of delivery. We do not accept partial payments or digital payments at this time.                    </div>
+                </div>
+            </div>
+        
+  
+        
+      
+        
+         
+        </div>
+        
+    </div><!-- End .container -->
+</div><!-- End .page-content -->
+
+
+
+{% endblock %}

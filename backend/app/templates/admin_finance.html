@@ -1,0 +1,463 @@
+{% extends "dashboard_1.html" %}
+{% block content %}
+
+<div class="row">
+    <div class="col-12 col-lg-12 order-1 order-md-3 order-lg-2 mb-4">
+        <div class="card">
+            <div class="row row-bordered g-0">
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between align-items-center p-3">
+                        <h5 class="m-0">Total Cut Income</h5>
+                        <p class="display-6 fw-bold mb-0 text-primary">₱</p>
+                    </div>
+
+                    <!-- Filters Section -->
+                    <div class="p-3">
+                        <form id="filters-form">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="start-date" class="form-label">Start Date</label>
+                                    <input type="date" id="start-date" class="form-control">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="end-date" class="form-label">End Date</label>
+                                    <input type="date" id="end-date" class="form-control">
+                                </div>
+                             
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Chart Container -->
+                    <div id="totalRevenueCharts" class="px-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-12 col-lg-12 order-1 order-md-3 order-lg-2 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <div class="card-title mb-0">
+                    <h5 class="m-0 me-2">Income Overview</h5>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Pending Section -->
+                    <div class="col-md-6 border-end">
+                        <div class="">
+                            <h6 class="fw-bolder fs-5">Pending</h6>
+                            <h6 class="fw-semibold">Total</h6>
+
+                            <h3 class="fw-bold text-warning">₱{{ total_deduction or 0}} <span class="text-secondary">| ₱{{ total_shipping_pending }}</span></h3>
+
+                            <p class="text-muted">Earnings that are yet to be released.</p>
+                        </div>
+                    </div>
+                    <!-- Released Section -->
+                    <div class="col-md-6">
+                        <h6 class="fw-bolder fs-5">Released</h6>
+
+
+                        <div class="d-flex align-items-start justify-content-between gap-2">
+
+                        <div class="me-4">
+                            <h6 class="fw-semibold">This Week</h6>
+
+                            <h3 class="fw-bold text-primary">₱{{ (release_total_week or 0) | round(2)}} <span class="text-secondary">| ₱{{ (total_shipping_pending_week or 0) | round(2) }}</span></h3>
+                        </div>
+
+                            <div class="me-4">
+                                <h6 class="fw-semibold">This Month</h6>
+                                <h3 class="fw-bold text-primary fs-4">{% if release_total_month is none %}
+                                    ₱0{% else %}
+                                    ₱{{ (release_total_month or 0) | round(2) }}
+                                {% endif %} <span class="text-secondary">| ₱{{ (total_shipping_pending_month or 0) | round(2) }}</span></h3>
+                                
+                            </div>
+                            <div>
+                                <h6 class="fw-semibold">Total</h6>
+                                <h3 class="fw-bold text-success fs-4">₱{{ (release_total or 0) | round(2) }} <span class="text-secondary">| ₱{{ (total_shipping_total or 0) | round(2) }}</span></h3>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-12 col-lg-12 order-1 order-md-3 order-lg-2 mb-4">
+        <div class="card h-100">
+            <div class="card-header pb-0">
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div class="card-title">
+                        <h5 class="m-0 me-2">Income Details</h5>
+                    </div>
+
+                  
+                </div>
+            </div>
+            <div class="card-body">
+                <ul class="nav nav-pills" id="orderTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="delivered-tab" data-bs-toggle="pill" href="#delivered" role="tab" aria-controls="delivered" aria-selected="true">Delivered Orders</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="received-tab" data-bs-toggle="pill" href="#received" role="tab" aria-controls="received" aria-selected="false">Received Orders</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content mt-3" id="orderTabsContent">
+                    <div class="tab-pane fade show active" id="delivered" role="tabpanel" aria-labelledby="delivered-tab">
+
+                        <div class="input-group input-group-merge mb-3 search-input">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Search Order..."
+                            aria-label="Search..."
+                            id="searchShipment"
+                            onkeyup="searchTable('orderTable', 'searchShipment')"  
+                            />
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+
+                        <form method="GET" action="{{ url_for('admin_finance') }}">
+                            <div class="input-group mb-3">
+                                <!-- Start date input -->
+                                <input type="date" class="form-control" name="start_date" value="{{ request.args.get('start_date', '') }}">
+                                <!-- End date input -->
+                                <input type="date" class="form-control" name="end_date" value="{{ request.args.get('end_date', '') }}">
+                                <button class="btn btn-primary" type="submit">Filter</button>
+                            </div>
+                        </form>
+
+                        <form method="GET" action="{{ url_for('export_orders_admin') }}">
+                            <input type="hidden" name="start_date" value="{{ request.args.get('start_date', '') }}">
+                            <input type="hidden" name="end_date" value="{{ request.args.get('end_date', '') }}">
+                            <button class="btn btn-primary mb-3" type="submit">Export to Excel</button>
+                        </form>
+                    </div>
+
+                            
+                            
+                            <table class="table table-hover" id="orderTable">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Total Amount</th>
+                                        <th>Commission</th>
+                                        <th>Ordered By</th>
+                                        <th>Seller</th>
+                                        <th>Delivered At</th>  <!-- New column for delivered_at -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order_item, order, pickup, seller in orders_delivered %}
+                                    <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    {% if order_item.product.images %}
+                                                        <img src="{{ url_for('static', filename='profile_pics/' + order_item.product.images[0].image_path) }}"
+                                                             alt="Product Image" style="width: 75px; height: 75px" class="img-fluid img-thumbnail"/>
+                                                    {% else %}
+                                                        <img src="https://via.placeholder.com/75"
+                                                             alt="Placeholder Image" style="width: 75px; height: 75px" class="img-fluid img-thumbnail"/>
+                                                    {% endif %}
+                                                    <div class="ms-3">
+                                                        <p class="fw-bold mb-1">{{ order_item.product.name }}</p>
+                                                        <p class="text-muted mb-0">{{ order_item.product.category }} / {{ order_item.color }} / {{ order_item.size }}</p>
+                                                        <p>Order ID: {{ order.id }}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <p>{{ order_item.quantity }}</p> <!-- Display quantity -->
+                                            </td>
+                                            <td>
+                                                <p>₱{{ order_item.price * order_item.quantity }}</p> <!-- Total amount without 5% commission -->
+                                            </td>
+                                            <td>
+                                                <p>₱{{ '%.2f' % (order_item.price * 0.05) }}</p>
+                                            </td>
+                                            <td>
+                                                <p>{{ order.user.first_name }} {{ order.user.last_name }}</p>
+                                            </td>
+
+                                            <td>
+                                                <p>{{ seller.shop_name }}</p> 
+
+                                            </td>
+                                            <td>
+                                                {% if pickup.delivered_at %}
+                                                    <p>{{ pickup.delivered_at.strftime('%B %d, %Y, %H:%M:%S') }}</p>
+                                                {% else %}
+                                                    <p class="text-muted">Not Delivered</p>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                
+                            </table>
+                            
+                            
+                        </div>
+
+                        <div class="tab-pane fade" id="received" role="tabpanel" aria-labelledby="received-tab">
+
+                            <div class="input-group input-group-merge mb-3 search-input">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Search Order..."
+                                aria-label="Search..."
+                                id="searchrec"
+                                onkeyup="searchTable('receivedOrdersTable', 'searchrec')"  
+                                />
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                                <form method="GET" action="{{ url_for('admin_finance') }}">
+                                    <div class="input-group mb-3">
+                                        <!-- Start date input -->
+                                        <input type="date" class="form-control" name="start_date" value="{{ request.args.get('start_date', '') }}">
+                                        <!-- End date input -->
+                                        <input type="date" class="form-control" name="end_date" value="{{ request.args.get('end_date', '') }}">
+                                        <button class="btn btn-primary" type="submit">Filter</button>
+                                    </div>
+                                </form>
+
+                                <form method="GET" action="{{ url_for('export_orders_received_admin') }}">
+                                    <input type="hidden" name="start_date" value="{{ request.args.get('start_date', '') }}">
+                                    <input type="hidden" name="end_date" value="{{ request.args.get('end_date', '') }}">
+                                    <button class="btn btn-primary mb-3" type="submit">Export to Excel</button>
+                                </form>
+                            </div>
+                            
+                            
+                            
+                            <!-- Delivered Orders Table -->
+                            <table class="table table-hover" id="receivedOrdersTable">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Total Amount</th>
+                                        <th>Commission</th>
+                                        <th>Ordered By</th>
+                                        <th>Seller</th>
+                                        <th>Received At</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order_item, order, pickup, seller in orders_received %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    {% if order_item.product.images %}
+                                                        <img src="{{ url_for('static', filename='profile_pics/' + order_item.product.images[0].image_path) }}"
+                                                             alt="Product Image" style="width: 75px; height: 75px" class="img-fluid img-thumbnail"/>
+                                                    {% else %}
+                                                        <img src="https://via.placeholder.com/75"
+                                                             alt="Placeholder Image" style="width: 75px; height: 75px" class="img-fluid img-thumbnail"/>
+                                                    {% endif %}
+                                                    <div class="ms-3">
+                                                        <p class="fw-bold mb-1">{{ order_item.product.name }}</p>
+                                                        <p class="text-muted mb-0">{{ order_item.product.category }} / {{ order_item.color }} / {{ order_item.size }}</p>
+                                                        <p>Order ID: {{ order.id }}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <p>{{ order_item.quantity }}</p> <!-- Display quantity -->
+                                            </td>
+                                            <td>
+                                                <p>₱{{ order_item.price * order_item.quantity }}</p> <!-- Total amount without 5% commission -->
+                                            </td>
+                                            <td>
+                                                <p>₱{{ '%.2f' % (order_item.price * 0.05) }}</p>
+                                            </td>
+                                            <td>
+                                                <p>{{ order.user.first_name }} {{ order.user.last_name }}</p>
+                                            </td>
+
+                                            <td>
+                                                <p>{{ seller.shop_name }}</p> 
+
+                                            </td>
+                                            <td>
+                                                {% if pickup.delivered_at %}
+                                                    <p>{{ pickup.delivered_at.strftime('%B %d, %Y, %H:%M:%S') }}</p>
+                                                {% else %}
+                                                    <p class="text-muted">Not Delivered</p>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        
+                           
+                        </div>
+                        
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Save the active tab in localStorage when it's shown
+        document.querySelectorAll('[data-bs-toggle="pill"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function (e) {
+                const activeTab = e.target.getAttribute('href'); // Get the target tab ID (e.g., #delivered)
+                localStorage.setItem('activeTab', activeTab); // Store it in localStorage
+            });
+        });
+    
+        // Get the active tab from localStorage and show it
+        const activeTab = localStorage.getItem('activeTab');
+        if (activeTab) {
+            const tabToActivate = document.querySelector(`[href="${activeTab}"]`);
+            if (tabToActivate) {
+                const bootstrapTab = new bootstrap.Tab(tabToActivate); // Create Bootstrap Tab instance
+                bootstrapTab.show(); // Activate the stored tab
+            }
+        } else {
+            // Default to the first tab if no activeTab is stored
+            const firstTab = document.querySelector('[data-bs-toggle="pill"]');
+            if (firstTab) {
+                const bootstrapTab = new bootstrap.Tab(firstTab);
+                bootstrapTab.show();
+            }
+        }
+    });
+    
+</script>
+
+<script>
+    let chartInstance = null;  // Declare chartInstance globally
+
+    // Function to fetch and update chart based on selected filters
+    function fetchAndUpdateChart() {
+        // Get the filter values
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+ 
+
+        // Build the query string with selected filters
+        let queryParams = '';
+        if (startDate) queryParams += `&start_date=${startDate}`;
+        if (endDate) queryParams += `&end_date=${endDate}`;
+   
+
+        // Fetch data from the server with the selected filters
+        fetch(`/admin-profit-data?${queryParams}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.series && data.categories) {
+                    // Destroy the previous chart instance if it exists
+                    if (chartInstance) {
+                        chartInstance.destroy();
+                    }
+
+                    let totalRevenue = 0;
+                    data.series.forEach(series => {
+                        series.data.forEach(revenue => {
+                            totalRevenue += revenue;
+                        });
+                    });
+    
+                    // Update the total revenue display
+                    const totalRevenueElement = document.querySelector('.display-6.fw-bold.mb-0.text-primary');
+                    if (totalRevenueElement) {
+                        totalRevenueElement.textContent = `₱${totalRevenue.toFixed(2)}`;
+                    }
+
+                    // Create the new chart instance with the fetched data
+                    const totalRevenueChartsOptions = {
+                        series: data.series,
+                        chart: {
+                            height: 300,
+                            stacked: true,
+                            type: 'bar',
+                            toolbar: { show: false }
+                        },
+                        plotOptions: {
+                            bar: {
+                                horizontal: false,
+                                columnWidth: '33%',
+                                borderRadius: 10
+                            }
+                        },
+                        colors: ['#696cff', '#00E396'],
+                        dataLabels: { enabled: false },
+                        stroke: {
+                            curve: 'smooth',
+                            width: 6,
+                            lineCap: 'round',
+                            colors: ['#FFFFFF']
+                        },
+                        legend: {
+                            show: true,
+                            horizontalAlign: 'left',
+                            position: 'top',
+                            markers: {
+                                height: 8,
+                                width: 8,
+                                radius: 12
+                            },
+                            itemMargin: { horizontal: 10 }
+                        },
+                        grid: {
+                            borderColor: '#e7e7e7',
+                            padding: { top: 0, bottom: -8, left: 20, right: 20 }
+                        },
+                        xaxis: {
+                            categories: data.categories,
+                            labels: { style: { fontSize: '13px', colors: ['#9c9c9c'] } }
+                        },
+                        yaxis: {
+                            labels: { style: { fontSize: '13px', colors: ['#9c9c9c'] } }
+                        }
+                    };
+
+                    // Render the new chart
+                    const totalRevenueChartsEl = document.querySelector('#totalRevenueCharts');
+                    if (totalRevenueChartsEl) {
+                        chartInstance = new ApexCharts(totalRevenueChartsEl, totalRevenueChartsOptions);
+                        chartInstance.render();
+                    }
+                } else {
+                    console.error('No data received for the chart');
+                }
+            })
+            .catch(error => console.error('Error loading sales data:', error));
+    }
+
+    // Add event listeners to update chart when filters change
+    document.getElementById('filters-form').addEventListener('input', fetchAndUpdateChart);
+
+    // Call the function initially to render the chart with default data
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchAndUpdateChart();
+    });
+</script>
+{% endblock %}

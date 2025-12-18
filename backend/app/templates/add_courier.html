@@ -1,0 +1,277 @@
+{% extends "dashboard_1.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center py-3 mb-2">
+    <h4 class="fw-bold mb-0">
+        <span class="text-muted fw-light">Courier /</span> Add Couriers
+    </h4>
+</div>
+
+<div class="card mb-4">
+    <h5 class="card-header">Personal Information</h5>
+    <form method="POST" action="{{ url_for('admin__add_courier') }}" enctype="multipart/form-data" novalidate>
+        {{ form.hidden_tag() }}  
+        <div class="card-body">
+            <div class="row">
+                <div class="mb-3 col-md-6">
+                    {% if form.first_name.errors %}
+                        <label for="courierFirstName" class="form-label">First Name</label>
+                        {{ form.first_name(class="form-control is-invalid", id="courierFirstName", placeholder="Enter First Name") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.first_name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <label for="courierFirstName" class="form-label">First Name</label>
+                        {{ form.first_name(class="form-control", id="courierFirstName", placeholder="Enter First Name") }}
+                    {% endif %}
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    {% if form.last_name.errors %}
+                        <label for="courierLastName" class="form-label">Last Name</label>
+                        {{ form.last_name(class="form-control is-invalid", id="courierLastName", placeholder="Enter Last Name") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.last_name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <label for="courierLastName" class="form-label">Last Name</label>
+                        {{ form.last_name(class="form-control", id="courierLastName", placeholder="Enter Last Name") }}
+                    {% endif %}
+                </div>
+
+
+                                <!-- Password Field -->
+                <div class="mb-3 col-md-6">
+                    {% if form.password.errors %}
+                        <label for="courierPassword" class="form-label">Password</label>
+                        {{ form.password(class="form-control is-invalid", id="courierPassword", placeholder="Enter Password") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <label for="courierPassword" class="form-label">Password</label>
+                        {{ form.password(class="form-control", id="courierPassword", placeholder="Enter Password") }}
+                    {% endif %}
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div class="mb-3 col-md-6">
+                    {% if form.confirm_password.errors %}
+                        <label for="courierConfirmPassword" class="form-label">Confirm Password</label>
+                        {{ form.confirm_password(class="form-control is-invalid", id="courierConfirmPassword", placeholder="Confirm Password") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.confirm_password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <label for="courierConfirmPassword" class="form-label">Confirm Password</label>
+                        {{ form.confirm_password(class="form-control", id="courierConfirmPassword", placeholder="Confirm Password") }}
+                    {% endif %}
+                </div>
+
+
+                
+                <div class="mb-3 col-md-6">
+                    {% if form.email.errors %}
+                        <label for="courierEmail" class="form-label">Email</label>
+                        {{ form.email(class="form-control is-invalid", id="courierEmail", placeholder="Enter Email") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <label for="courierEmail" class="form-label">Email</label>
+                        {{ form.email(class="form-control", id="courierEmail", placeholder="Enter Email") }}
+                    {% endif %}
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    {% if form.contact_number.errors %}
+                        <label for="courierContact" class="form-label">Contact Number</label>
+                        {{ form.contact_number(class="form-control is-invalid", id="courierContact", placeholder="Enter Contact Number") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.contact_number.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <label for="courierContact" class="form-label">Contact Number</label>
+                        {{ form.contact_number(class="form-control", id="courierContact", placeholder="Enter Contact Number") }}
+                    {% endif %}
+                </div>
+
+
+
+
+               
+
+          
+
+
+                <!-- Region -->
+                <div class="mb-3 col-md-6">
+                    <label for="courierRegion" class="form-label">Region</label>
+                    {% if form.region.errors %}
+                        {{ form.region(class="form-select is-invalid", id="courierRegion", onchange="loadProvinces(this.value)") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.region.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.region(class="form-select", id="courierRegion", onchange="loadProvinces(this.value)") }}
+                    {% endif %}
+                </div>
+
+                <!-- Province -->
+                <div class="mb-3 col-md-6">
+                    <label for="courierProvince" class="form-label">Province</label>
+                    {% if form.province.errors %}
+                        {{ form.province(class="form-select is-invalid", id="courierProvince") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.province.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.province(class="form-select", id="courierProvince") }}
+                    {% endif %}
+                </div>
+
+
+
+                     <!-- City -->
+                     <div class="mb-3 col-md-6">
+                        {% if form.city.errors %}
+                            <label for="courierCity" class="form-label">City</label>
+                            {{ form.city(class="form-select is-invalid", id="courierCity") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.city.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <label for="courierCity" class="form-label">City</label>
+                            {{ form.city(class="form-select", id="courierCity") }}
+                        {% endif %}
+                    </div>
+
+                <!-- Barangay -->
+                <div class="mb-3 col-md-6">
+                    {% if form.barangay.errors %}
+                        <label for="courierBarangay" class="form-label">Barangay</label>
+                        {{ form.barangay(class="form-select is-invalid", id="courierBarangay") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.barangay.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <label for="courierBarangay" class="form-label">Barangay</label>
+                        {{ form.barangay(class="form-select", id="courierBarangay") }}
+                    {% endif %}
+                </div>
+
+                  <!-- Street -->
+                  <div class="mb-3 col-md-12">
+                    {% if form.street.errors %}
+                        <label for="courierStreet" class="form-label">Street</label>
+                        {{ form.street(class="form-control is-invalid", id="courierStreet", placeholder="Enter Street") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.street.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <label for="courierStreet" class="form-label">Street</label>
+                        {{ form.street(class="form-control", id="courierStreet", placeholder="Enter Street") }}
+                    {% endif %}
+                </div>
+
+             
+
+              
+
+                <div class="mb-3 col-md-12">
+                    <label for="courierIdPicture" class="form-label">ID Picture</label>
+                    {% if form.id_picture.errors %}
+                        {{ form.id_picture(class="form-control is-invalid", id="courierIdPicture") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.id_picture.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.id_picture(class="form-control", id="courierIdPicture") }}
+                    {% endif %}
+                    <small class="form-text text-muted">Upload ID picture (jpg, png).</small>
+                </div>
+                <hr class="my-0" />
+
+                <h5 class="card-header">Delivery Information</h5>
+                
+
+                <div class="mb-3 col-md-6">
+                    {% if form.service_area.errors %}
+                        <label for="courierServiceArea" class="form-label">Service Area</label>
+                        {{ form.service_area(class="form-control is-invalid", id="courierServiceArea", placeholder="Enter Service Area") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.service_area.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <label for="courierServiceArea" class="form-label">Service Area</label>
+                        {{ form.service_area(class="form-control", id="courierServiceArea", placeholder="Enter Service Area") }}
+                    {% endif %}
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    {% if form.vehicle_type.errors %}
+                        <label for="vehicleType" class="form-label">Vehicle Type</label>
+                        {{ form.vehicle_type(class="form-select is-invalid", id="vehicleType") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.vehicle_type.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <label for="vehicleType" class="form-label">Vehicle Type</label>
+                        {{ form.vehicle_type(class="form-select", id="vehicleType") }}
+                    {% endif %}
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    {% if form.vehicle_registration_no.errors %}
+                        <label for="vehicleRegistration" class="form-label">Vehicle Registration No</label>
+                        {{ form.vehicle_registration_no(class="form-control is-invalid", id="vehicleRegistration", placeholder="Enter Registration No") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.vehicle_registration_no.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <label for="vehicleRegistration" class="form-label">Vehicle Registration No</label>
+                        {{ form.vehicle_registration_no(class="form-control", id="vehicleRegistration", placeholder="Enter Registration No") }}
+                    {% endif %}
+                </div>
+
+            
+
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </div>
+    </form> 
+</div>
+
+
+
+{% endblock %}

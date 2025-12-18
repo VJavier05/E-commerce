@@ -1,0 +1,2 @@
+C:/Users/MY PC/Documents/ERP_MOBILE/mobile_app/erp_mobile/android/app/.cxx/Debug/2360o1f6/x86/CMakeFiles/edit_cache.dir
+C:/Users/MY PC/Documents/ERP_MOBILE/mobile_app/erp_mobile/android/app/.cxx/Debug/2360o1f6/x86/CMakeFiles/rebuild_cache.dir

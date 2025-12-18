@@ -1,0 +1,166 @@
+{% extends "dashboard_1.html" %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/chat.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<!-- Flash message block -->
+
+<h4 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">Messages/</span> Seller & Users</h4>
+
+    <div class="row vh-auto ">
+        <div class="card chat-app">
+            <div class="input-group position-absolute" style="top: 9px; left: 10px; width: 23%;">
+                <input id="searchInput" name="text" type="search" class="form-control  border-primary border-end-0" placeholder="Search..." aria-label="Search">
+                <button class="btn btn-outline-primary rounded-end border-start-0" type="button">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+            <div id="peopleList" class="people-list over" style="overflow-y: scroll; -ms-overflow-style: none; scrollbar-width: none;width: 25%;"><br><br>
+                <ul id="userList" class="list-unstyled chat-list mt-2 mb-0">
+                    {% for user in users %}
+                        {% if (current_user.role == 'admin' and user.id != current_user.id and user.role != 'admin') or (current_user.role != 'admin' and user.role != 'user') %}
+                            <li class="clearfix user-tab {{ 'new-message' if user_has_unread_message(user.id) }}border-bottom">
+                                <img src="{{ get_user_image(user) }}" alt="User Image" class="user-image">
+                                <a href="{{ url_for('chat', receiver_id=user.id) }}">
+                                    <div class="about">
+                                        <div class="name">
+                                            <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+                                        </div>
+                                        <div class="status">
+                                            <i class="fa fa-circle {{ 'online' if user.is_online else 'offline' }}"></i> 
+                                            {{ 'online' if user.is_online else 'offline' }}
+                                        </div>                                    
+                                    </div>
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+
+            {% if receiver and receiver.id != current_user.id %}
+            <div class="chat d-flex flex-column flex-grow-1">
+                <div class="chat-header bg-light p-3 border-bottom d-flex align-items-center">
+                    <img src="{{ get_user_image(receiver) }}" alt="User Image" class="user-image">
+                     <div class="chat-about">
+                              <h6 class="mb-0 text-primary fw-bold"><strong>{{ receiver.first_name }} {{ receiver.last_name }}</strong></h6>
+                          <small class="text-muted">Last seen: {{ messages[-1].timestamp.strftime('%Y-%m-%d %I:%M %p') if messages else 'N/A' }}</small>
+                     </div>
+                </div>
+
+                <div class="chat-history p-3 flex-grow-1 overflow-auto">
+                    <ul class="list-unstyled">
+                        {% for message in messages %}
+                            {% if not message.is_archived %}
+                            <li class="clearfix mb-3">
+                                <div class="{{ 'text-end' if message.sender_id == current_user.id else 'text-start' }}">
+                                    <div class="d-inline-block p-2 rounded 
+                                        {{ 'bg-primary text-white' if message.sender_id == current_user.id else 'bg-light text-dark' }}">
+                                        {% if message.content %}
+                                            <p class="mb-0"></p>>{{ message.content }}</p>
+                                        {% endif %}
+                                        {% if message.file_path %}
+                                            {% if message.file_path.endswith(('.png', '.jpg', '.jpeg', '.gif')) %}
+                                                <img src="{{ url_for('static', filename='uploads/' + message.file_path.split('/')[-1]) }}" alt="Image" style="max-width: 200px; max-height: 200px; border-radius: 10px;">
+                                            {% elif message.file_path.endswith(('.mp4', '.webm', '.ogg')) %}
+                                                <video controls style="max-width: 200px; max-height: 200px;">
+                                                    <source src="{{ url_for('static', filename='uploads/' + message.file_path.split('/')[-1]) }}" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    <small class="d-block text-muted mt-1">
+                                        {{ message.timestamp.strftime('%Y-%m-%d %I:%M %p') }}
+                                    </small>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div><br>
+
+                <div class="chat-message p-3 border-top">
+                    <form action="{{ url_for('send_message') }}" method="POST" enctype="multipart/form-data" onsubmit="return validateReceiver()">
+                        <div class="messageBox border-primary">
+                            <div class="fileUploadWrapper">
+                                <input type="file" id="file" name="file">
+                                <label for="file">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4 4V20H20V4H4ZM6 18V6H18V18H6ZM12 8H14V12H16L12 16L8 12H10V8H12Z" fill="black"/>
+                                    </svg>
+                                </label>
+                            </div>
+                            <input type="text" id="messageInput" name="message" placeholder="Enter your message here...">
+                            <input type="hidden" name="receiver" value="{{ receiver.id }}">
+                            <button id="sendButton" type="submit">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="d-flex justify-content-center align-items-center flex-grow-1"></div>
+                <h6 class="m-b-0">Select to chat</h6>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Function to validate receiver
+        function validateReceiver() {
+            if (receiverId === currentUserId) {
+                alert("You cannot message yourself.");
+                return false;
+            }
+            return true;
+        }
+
+        // Function to scroll to the bottom of the chat history
+        function scrollToBottom() {
+            const chatHistory = document.querySelector('.chat-history');
+            if (chatHistory) {
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+        }
+
+        // Fetch updated chat messages and people list from the server
+        function refreshContent() {
+            fetch(window.location.href, { method: 'GET' })
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newMessages = doc.querySelector('.chat-history ul').innerHTML;
+                    const newPeopleList = doc.querySelector('#peopleList').innerHTML;
+                    
+                    // Update chat history and people list
+                    document.querySelector('.chat-history ul').innerHTML = newMessages;
+                    document.querySelector('#peopleList').innerHTML = newPeopleList;
+
+                    scrollToBottom();
+                })
+                .catch(error => console.error('Error refreshing content:', error));
+        }
+
+        // Initial scroll to bottom when the page loads
+        scrollToBottom();
+        setInterval(refreshContent, 5000); // Auto-refresh every 5 seconds
+
+        // Search input event listener
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchQuery = this.value.toLowerCase();
+            const users = document.querySelectorAll('#userList .user-tab');
+
+            users.forEach(user => {
+                const fullName = user.querySelector('.name').textContent.toLowerCase();
+                user.style.display = fullName.includes(searchQuery) ? '' : 'none';
+            });
+        });
+    });
+</script>
+{% endblock %}

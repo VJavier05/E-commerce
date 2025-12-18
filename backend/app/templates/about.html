@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">About us</li>
+        </ol>
+    </div><!-- End .container -->
+</nav><!-- End .breadcrumb-nav -->
+<div class="container">
+    <div class="page-header page-header-big text-center" style="background-image: url('static/assets/images/about-header-bg.jpg')">
+        <h1 class="page-title text-white">About us<span class="text-white">Who we are</span></h1>
+    </div><!-- End .page-header -->
+</div><!-- End .container -->
+
+<div class="page-content pb-0">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mb-3 mb-lg-0">
+                <h2 class="title">Our Vision</h2><!-- End .title -->
+                <p>Our mission is to empower our customers with a seamless, reliable shopping experience, offering high-quality products, exceptional service, and fast delivery. We aim to connect people with products they love, enhancing their daily lives through convenience and choice.</p>
+            </div><!-- End .col-lg-6 -->
+            
+            <div class="col-lg-6">
+                <h2 class="title">Our Mission</h2><!-- End .title -->
+                <p>We envision a world where online shopping is effortless, trusted, and accessible for all. As a leading platform, we strive to inspire and uplift every customer, fostering a dynamic, customer-centered marketplace that delivers innovation and value.</p>
+            </div><!-- End .col-lg-6 -->
+        </div><!-- End .row -->
+
+        <div class="mb-5"></div><!-- End .mb-4 -->
+    </div><!-- End .container -->
+
+    <div class="bg-light-2 pt-6 pb-5 mb-6 mb-lg-8">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-5 mb-3 mb-lg-0">
+                    <h2 class="title">Who We Are</h2><!-- End .title -->
+                    <p class="mb-2">We are a passionate team committed to transforming online shopping into an extraordinary experience. With a dedication to quality and customer satisfaction, we bring together a wide range of products from trusted sellers and brands. Every day, we work hard to earn your trust, providing a platform where you can discover, shop, and enjoy with confidence. Welcome to our community—where convenience meets quality!</p>
+
+              
+                </div><!-- End .col-lg-5 -->
+
+                <div class="col-lg-6 offset-lg-1">
+                    <div class="about-images">
+                        <img src="static/assets/images/about/img-1.jpg" alt="" class="about-img-front">
+                    </div><!-- End .about-images -->
+                </div><!-- End .col-lg-6 -->
+            </div><!-- End .row -->
+        </div><!-- End .container -->
+    </div><!-- End .bg-light-2 pt-6 pb-6 -->
+
+
+
+    <div class="mb-2"></div><!-- End .mb-2 -->
+
+   
+</div><!-- End .page-content -->
+
+{% endblock %}

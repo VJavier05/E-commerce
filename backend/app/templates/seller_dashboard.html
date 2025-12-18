@@ -1,0 +1,458 @@
+{% extends "dashboard_2.html" %}
+{% block content %}
+
+<!-- <div class="row g-4">
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm border-0">
+            <div class="card-body">
+                <div class="mb-3 text-primary">
+                    <i class="bi bi-box-seam display-4"></i>
+                </div>
+                <h5 class="card-title">Total Products</h5>
+                <p class="display-6 fw-bold">{{ seller_stats.total_products }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm border-0">
+            <div class="card-body">
+                <div class="mb-3 text-success">
+                    <i class="bi bi-hourglass-split display-4"></i>
+                </div>
+                <h5 class="card-title">Pending Orders</h5>
+                <p class="display-6 fw-bold">{{ seller_stats.pending_orders }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm border-0">
+            <div class="card-body">
+                <div class="mb-3 text-warning">
+                    <i class="bi bi-truck display-4"></i>
+                </div>
+                <h5 class="card-title">Ordere Placed</h5>
+                <p class="display-6 fw-bold">{{ seller_stats.shipments }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm border-0">
+            <div class="card-body">
+                <div class="mb-3 text-info">
+                    <i class="bi bi-arrow-right-circle display-4"></i>
+                </div>
+                <h5 class="card-title">In Transit</h5>
+                <p class="display-6 fw-bold">{{ seller_stats.in_transit }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mt-4">
+        <div class="card text-center shadow-sm border-0">
+            <div class="card-body">
+                <div class="mb-3 text-secondary">
+                    <i class="bi bi-check-circle display-4"></i>
+                </div>
+                <h5 class="card-title">Completed Orders</h5>
+                <p class="display-6 fw-bold">{{ seller_stats.completed_orders }}</p>
+            </div>
+        </div>
+    </div>
+
+
+
+ 
+
+</div> -->
+
+
+
+
+  
+
+
+
+ <div class="row">
+    <div class="col-12 col-lg-12 order-1 order-md-3 order-lg-2 mb-4">
+        <div class="card">
+            <div class="row row-bordered g-0">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-between align-items-center p-3">
+                    <h5 class="m-0">Total Income</h5>
+                    <p class="display-6 fw-bold mb-0 text-primary">₱{{ seller_stats.total_income | round(2) }}</p>
+                </div>
+
+                <div id="totalRevenueCharts" class="px-2"></div>
+            </div>
+           
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 col-lg-4 col-xl-4 order-0 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center justify-content-between pb-0">
+                <div class="card-title mb-0">
+                    <h5 class="m-0 me-2">Order Statistics</h5>
+                    <small class="text-muted">{{ seller_stats.completed_orders }} Total Sales</small>
+                </div>
+
+            
+            </div>
+
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex flex-column align-items-center gap-1">
+                        <h2 class="mb-2">{{ seller_stats.total_orders }}</h2>
+                        <span>Total Orders</span>
+                    </div>
+                    <div id="orderStatisticsCharts"></div>
+                </div>
+                <ul class="p-0 m-0">
+                    {% for category in categories %}
+                    <li class="d-flex mb-4 pb-1">
+                      <div class="avatar flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded bg-label-primary">
+                            <i class="bx bx-closet"></i> <!-- Use the icon dynamically -->
+                        </span>
+                      </div>
+                      <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                        <div class="me-2">
+                          <h6 class="mb-0">{{ category.category }}</h6>
+                          <small class="text-muted">Category Sales</small>
+                        </div>
+                        <div class="user-progress">
+                          <small class="fw-semibold">{{ category.sales_count }}</small>
+                        </div>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                  
+            </div>
+        </div>
+    </div>
+
+    
+
+    <div class="col-md-6 col-lg-4 order-2 mb-4">
+    <div class="card h-100">
+        <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="card-title m-0 me-2">Transactions</h5>
+     
+        </div>
+        <div class="card-body">
+            <ul class="p-0 m-0">
+                {% for transaction in transactions |reverse %}
+                    <li class="d-flex mb-4 pb-1">
+                        <div class="avatar flex-shrink-0 me-3">
+                            <img src="../static/img/wallet.png" alt="User" class="rounded" />
+                        </div>
+                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                            <div class="me-2">
+                                <small class="text-muted d-block mb-1">Cash on Delivery</small>  <!-- Adjust this if necessary -->
+                                <h6 class="mb-0">Order ID: {{ transaction[0].id }}</h6>  <!-- You can customize this -->
+                            </div>
+                            <div class="user-progress d-flex align-items-center gap-1">
+                                <h6 class="mb-0">{{ transaction.total_amount }}</h6>
+                                <span class="text-muted">PHP</span>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            
+        </div>
+    </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-4 order-3">
+        <div class="row">
+          <div class="col-lg-6 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between">
+                    <div class="avatar flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded bg-label-warning">
+                            <i class='bx bxs-hourglass fs-4'></i> 
+                        </span>
+                    </div>
+            
+                </div>
+                <span class="fw-semibold d-block mb-1">Pending Orders</span>
+                <h3 class="card-title mb-2">{{ seller_stats.pending_orders }}</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between">
+                    <div class="avatar flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded bg-label-primary">
+                            <i class='bx bx-package fs-4'></i> 
+                        </span>
+                    </div>
+            
+                </div>
+                <span class="fw-semibold d-block mb-1">Total Products</span>
+                <h3 class="card-title text-nowrap mb-1">{{ seller_stats.total_products }}</h3>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between">
+                    <div class="avatar flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded bg-label-success">
+                            <i class='bx bx-check-circle fs-4'></i> 
+                        </span>
+                    </div>
+            
+                </div>
+                <span class="fw-semibold d-block mb-1">Completed Orders</span>
+                <h3 class="card-title text-nowrap mb-1">{{ seller_stats.completed_orders }}</h3>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between">
+                    <div class="avatar flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded bg-label-info">
+                            <i class='bx bx-wallet fs-4'></i> 
+                        </span>
+                    </div>
+            
+                </div>
+                <span class="fw-semibold d-block mb-1">Pending Payment</span>
+                <h3 class="card-title text-nowrap mb-1">{{ seller_stats.delivered_orders }}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    
+    
+    </div>
+
+
+
+    <script>
+        const totalRevenueChartsEl = document.querySelector('#totalRevenueCharts');
+    
+        fetch('/sales-data')
+            .then(response => response.json())
+            .then(data => {
+                const totalRevenueChartsOptions = {
+                    series: data.series,
+                    chart: {
+                        height: 300,
+                        stacked: true,
+                        type: 'bar',
+                        toolbar: { show: false }
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: false,
+                            columnWidth: '33%',
+                            borderRadius: 10
+                        }
+                    },
+                    colors: ['#696cff', '#00E396'], // Customize colors
+                    dataLabels: { enabled: false },
+                    stroke: {
+                        curve: 'smooth',
+                        width: 6,
+                        lineCap: 'round',
+                        colors: ['#FFFFFF']
+                    },
+                    legend: {
+                        show: true,
+                        horizontalAlign: 'left',
+                        position: 'top',
+                        markers: {
+                            height: 8,
+                            width: 8,
+                            radius: 12
+                        },
+                        itemMargin: { horizontal: 10 }
+                    },
+                    grid: {
+                        borderColor: '#e7e7e7',
+                        padding: { top: 0, bottom: -8, left: 20, right: 20 }
+                    },
+                    xaxis: {
+                        categories: data.categories,
+                        labels: { style: { fontSize: '13px', colors: ['#9c9c9c'] } }
+                    },
+                    yaxis: {
+                        labels: { style: { fontSize: '13px', colors: ['#9c9c9c'] } }
+                    },
+                    responsive: [
+                        {
+                            breakpoint: 768,
+                            options: {
+                                plotOptions: { bar: { columnWidth: '48%' } }
+                            }
+                        }
+                    ]
+                };
+    
+                if (totalRevenueChartsEl !== null) {
+                    const totalRevenueCharts = new ApexCharts(totalRevenueChartsEl, totalRevenueChartsOptions);
+                    totalRevenueCharts.render();
+                }
+            })
+            .catch(error => console.error('Error loading sales data:', error));
+
+
+
+            
+    </script>
+
+
+    <script>
+        fetch('/order-statistics')
+            .then(response => response.json())
+            .then(data => {
+                // Log the categories and sales to verify their structure
+                console.log('Categories:', data.categories);
+                console.log('Sales:', data.sales);
+    
+                // Validate and process the data
+                const categories = Array.isArray(data.categories) ? data.categories : [];
+                const sales = Array.isArray(data.sales) ? data.sales : [];
+    
+                if (categories.length === 0 || sales.length === 0 || categories.length !== sales.length) {
+                    console.error('Invalid data structure: categories and sales arrays must have the same length and should not be empty.');
+                    return;
+                }
+    
+                // Handle more than 8 categories by grouping excess into "Other"
+                if (categories.length > 8) {
+                    const topCategories = categories.slice(0, 7); // Keep the top 7 categories
+                    const topSales = sales.slice(0, 7);
+    
+                    const otherCategory = 'Other'; // Label for grouped categories
+                    const otherSales = sales.slice(7).reduce((acc, curr) => acc + curr, 0); // Sum of remaining sales
+    
+                    // Add the "Other" category and sales
+                    topCategories.push(otherCategory);
+                    topSales.push(otherSales);
+    
+                    // Update categories and sales arrays
+                    categories.length = 0;
+                    sales.length = 0;
+    
+                    categories.push(...topCategories);
+                    sales.push(...topSales);
+                }
+    
+                // Function to dynamically generate colors for up to 8 categories
+                const generateColors = (num) => {
+                    const colors = [];
+                    const baseColors = ['#696cff', '#33FF57', '#03c3ec', '#FF3E1D', '#ff5733', '#2f9e44', '#ffbb33', '#ec72a7']; // Predefined colors
+                    for (let i = 0; i < num; i++) {
+                        colors.push(baseColors[i % baseColors.length]); // Cycle through colors if more than 8
+                    }
+                    return colors;
+                };
+    
+                // Chart configuration
+                const orderChartConfig = {
+                    chart: {
+                        height: 175,
+                        width: '90%',
+                        type: 'donut'
+                    },
+                    labels: categories, // Categories as chart labels
+                    series: sales, // Sales as chart data
+                    colors: generateColors(categories.length), // Dynamically generated colors
+                    stroke: {
+                        width: 5,
+                        colors: ['#FFF']
+                    },
+                    dataLabels: {
+                        enabled: false,
+                        formatter: function (val) {
+                            return parseInt(val) + '%';
+                        }
+                    },
+                    legend: {
+                        show: false
+                    },
+                    grid: {
+                        padding: {
+                            top: 0,
+                            bottom: 0,
+                            right: 15
+                        }
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '75%',
+                                labels: {
+                                    show: true,
+                                    value: {
+                                        fontSize: '1.5rem',
+                                        fontFamily: 'Public Sans',
+                                        color: '#333',
+                                        offsetY: -15,
+                                        formatter: function (val) {
+                                            return parseInt(val) ;
+                                        }
+                                    },
+                                    name: {
+                                        offsetY: 20,
+                                        fontFamily: 'Public Sans'
+                                    },
+                                    total: {
+                                        show: true,
+                                        fontSize: '0.8125rem',
+                                        color: '#666',
+                                        label: 'Total Sales',
+                                        formatter: function () {
+                                            // Display the sum of the series
+                                            const totalSales = sales.reduce((sum, value) => sum + value, 0) * 0.95; // Deducts 5%
+;
+                                            return totalSales.toLocaleString(); // Format as a number
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+    
+                // Render the chart if the container exists
+                const chartOrderStatistics = document.querySelector('#orderStatisticsCharts');
+                if (chartOrderStatistics) {
+                    const statisticsChart = new ApexCharts(chartOrderStatistics, orderChartConfig);
+                    statisticsChart.render();
+                } else {
+                    console.error('Chart container not found.');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    </script>
+    
+    
+    
+    
+    <script>localStorage.clear();</script>
+
+{% endblock %}

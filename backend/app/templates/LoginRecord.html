@@ -1,0 +1,77 @@
+{% extends "dashboard_1.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center py-3 mb-2">
+    <h4 class="fw-bold mb-0">
+        <span class="text-muted fw-light">Security /</span> Login Attempts
+    </h4>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="input-group input-group-merge mb-3 search-input">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search by Email or IP..."
+              aria-label="Search..."
+              id="searchLogin"
+              onkeyup="searchTable('loginAttemptsTable', 'searchLogin')"  
+            />
+        </div>
+
+        <table class="table table-hover" id="loginAttemptsTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Email</th>
+                    <th>IP Address</th>
+                    <th>Timestamp</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attempt in login_attempts %}
+                    <tr>
+                        <td >{{ attempt.email }}</td>
+                        <td >{{ attempt.ip_address }}</td>
+                        <td >{{ attempt.timestamp.strftime('%B %d, %Y %I:%M %p') }}</td>
+                        <td >
+                            {% if attempt.success %}
+                                <span class="badge bg-success">Success</span>
+                            {% else %}
+                                <span class="badge bg-danger">Failed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function searchTable(tableId, inputId) {
+    var input, filter, table, tr, td, i, j, txtValue;
+    input = document.getElementById(inputId);
+    filter = input.value.toLowerCase();
+    table = document.getElementById(tableId);
+    tr = table.getElementsByTagName("tr");
+
+    for (i = 1; i < tr.length; i++) { // Skip header row
+        tr[i].style.display = "none";
+        td = tr[i].getElementsByTagName("td");
+        for (j = 0; j < td.length; j++) {
+            if (td[j]) {
+                txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                    break;
+                }
+            }
+        }
+    }
+}
+</script>
+
+{% endblock %}

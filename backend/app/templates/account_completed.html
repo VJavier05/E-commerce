@@ -1,0 +1,71 @@
+{% extends "account.html" %}
+{% block dashboard_content %}
+
+<div class="container">
+
+    {% if grouped_orders|length == 0 %}
+    <p class="text-center text-muted fs-3">No Delivered Orders.</p>
+
+    {% else %}
+
+    {% for order_id, items in grouped_orders.items() %}
+    <div class="card mb-5 position-relative">
+        <!-- Order Status Badge (status of the first item) -->
+        <span class="badge {% if items[0].status == 'Delivered' %} text-bg-success {% elif items[0].status == 'In Transit' %} text-bg-primary {% else %} text-bg-warning {% endif %} position-absolute p-2" style="top: 8px; right: 10px;">
+            {{ items[0].status }}
+        </span>
+
+        <!-- Shop Info -->
+        <div class="card-header d-flex align-items-center gap-3">
+            <strong>
+                {% if items[0].seller.shop_name %}
+                    {{ items[0].seller.shop_name }}
+                {% else %}
+                    UNKNOWN SELLER
+                {% endif %}
+            </strong>
+            {% for seller_id, seller_user in grouped_sellers.items()%}
+                <div class="seller-conatact">                
+                        <a href="{{ url_for('chat_with_seller', seller_id=seller_id) }}" class="btn btn-primary me-2">Chat</a>                   
+                </div>
+            {% endfor %}
+            <a class="btn btn-outline-secondary" href="{{  url_for('seller_page', seller_id=items[0].seller.id) }}">View Shop</a>
+        </div>
+        
+        <!-- Items in the Order -->
+        <div class="card-body">
+            {% for item in items %}
+            <div class="row align-items-center mb-3">
+                <div class="col-md-2">
+                    <img src="{{ url_for('static', filename='profile_pics/' + item.product.images[0].image_path) }}" alt="Product Image" width="100" height="100" class="img-thumbnail">
+                </div>
+                <div class="col-md-6">
+                    <a class="mb-1 product-name fs-3 fw-bold" href="{{ url_for('order_detail', order_id=order_id) }}">{{ item.product.name }}</a>
+                    <p class="mb-1 text-muted fs-4"><small>Variation: {{ item.color }} / {{ item.size }}</small></p>
+                </div>
+                <div class="col-md-2 text-center ml-auto">
+                    <p class="current-price fs-2 fw-bold"><strong>₱{{ item.price }} x {{ item.quantity }}</strong></p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Payment Info -->
+        <div class="card-footer d-flex justify-content-between align-items-center bg-white">
+            <span class="amount-payable">Total Amount for Order: <strong>₱{{ order_totals[order_id] }}</strong></span>
+            {% if items[0].status == 'Delivered' %}
+                <form action="{{ url_for('confirm_order_received') }}" method="POST" class="d-inline">
+                    <input type="hidden" name="order_id" value="{{ order_id }}">
+                    <button type="submit" class="btn btn-lg btn-outline-success">Confirm Delivery</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    {% endif %}
+
+</div>
+
+
+{% endblock %}

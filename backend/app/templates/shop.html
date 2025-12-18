@@ -1,0 +1,389 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-header text-center" style="background-image: url('https://images.pexels.com/photos/4466492/pexels-photo-4466492.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')">
+    <div class="container">
+      <h1 class="page-title">Shop</h1>
+    </div><!-- End .container -->
+</div><!-- End .page-header -->
+
+<nav aria-label="breadcrumb" class="breadcrumb-nav mb-2">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Shop</a></li>
+        </ol>
+    </div><!-- End .container -->
+</nav><!-- End .breadcrumb-nav -->
+
+<div class="page-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="toolbox">
+                    <div class="toolbox-left">
+                        <div class="toolbox-info">
+                            Showing <span>{{ products | length }} of {{ total_products }}</span> Products
+                        </div><!-- End .toolbox-info -->
+                        
+                    </div><!-- End .toolbox-left -->
+
+
+                </div><!-- End .toolbox -->
+
+
+                <div class="products mb-3">
+                    <div class="row justify-content-center">
+                        {% for product in products %}
+                        <div class="col-6 col-md-4 col-lg-4 col-xl-3">
+                            <div class="product product-7 text-center">
+                                <figure class="product-media shop-section">
+                                    <a href="{{ url_for('product', product_id=product.id) }}">  <!-- Link to the product details page -->
+                                        {% if product.images|length > 0 %}
+                                        <img src="{{ url_for('static', filename='profile_pics/' + product.images[0].image_path) }}" alt="{{ product.name }} image" class="product-image uniform-image">
+                                    {% else %}
+                                        <img src="{{ url_for('static', filename='profile_pics/default_product.jpg') }}" alt="Default image" class="product-image uniform-image">
+                                    {% endif %}
+                                    </a>
+                                    <!-- <div class="product-action">
+                                        <a href="#" class="btn-product btn-cart"><span>Add to Cart</span></a>
+                                    </div> -->
+                                </figure><!-- End .product-media -->
+                
+                                <div class="product-body">
+                                    <div class="product-cat">
+                                        <a href="#">{{ product.category }}</a>
+                                    </div><!-- End .product-cat -->
+                                    <h3 class="product-title"><a href="{{ url_for('product', product_id=product.id) }}">{{ product.name }}</a></h3><!-- End .product-title -->
+                                    <div class="product-price">
+                                        {% if product.variations|length > 0 %}
+                                            ₱ {{ product.variations[0].price }}  <!-- Display price from the first variation -->
+                                        {% else %}
+                                            <span>No price available</span>  <!-- Fallback if no variations exist -->
+                                        {% endif %}
+                                    </div><!-- End .product-price -->
+                                    <div class="ratings-container">
+                                        <div class="">
+                                            {% set average_rating = product_avg_ratings[product.id] %}
+            
+                                            {% if average_rating > 0 %}
+                                                <!-- Compute the average rating stars -->
+                                                <div class="stars">
+                                                    {% for i in range(1, 6) %}
+                                                        {% if average_rating >= i %}
+                                                            <!-- Fully filled star -->
+                                                            <i class="bi bi-star-fill text-warning"></i>
+                                                        {% elif average_rating >= i - 0.5 %}
+                                                            <!-- Half-filled star -->
+                                                            <i class="bi bi-star-half text-warning"></i>
+                                                        {% else %}
+                                                            <!-- Empty star -->
+                                                            <i class="bi bi-star text-muted"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                <!-- No reviews found: display empty stars -->
+                                                <div class="stars">
+                                                    {% for i in range(1, 6) %}
+                                                        <i class="bi bi-star text-muted"></i>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}                                        </div><!-- End .ratings -->
+                                        <span class="ratings-text">({{ product_reviews[product.id]|length }} Reviews)</span>
+                                    </div><!-- End .rating-container -->
+                                </div><!-- End .product-body -->
+                            </div><!-- End .product -->
+                        </div><!-- End .col-sm-6 col-lg-4 col-xl-3 -->
+                        {% endfor %}
+                    </div><!-- End .row -->
+                </div><!-- End .products -->
+                
+
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-lg justify-content-center">
+                        {% if pagination.has_prev %}
+                            <li class="page-item prev">
+                                <a class="page-link" href="{{ url_for('shop', page=pagination.prev_num, **query_params) }}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item prev disabled">
+                                <a class="page-link" href="javascript:void(0);">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                
+                        {% for page_num in pagination.iter_pages() %}
+                            {% if page_num %}
+                                <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                                    <a class="page-link" href="{{ url_for('shop', page=page_num, **query_params) }}">
+                                        {{ page_num }}
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                            {% endif %}
+                        {% endfor %}
+                
+                        {% if pagination.has_next %}
+                            <li class="page-item next">
+                                <a class="page-link" href="{{ url_for('shop', page=pagination.next_num, **query_params) }}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item next disabled">
+                                <a class="page-link" href="javascript:void(0);">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                
+
+
+            </div><!-- End .col-lg-9 -->
+            <aside class="col-lg-3 order-lg-first">
+                <div class="sidebar sidebar-shop">
+                    <div class="widget widget-clean">
+                        <label>Filters:</label>
+                        <a href="{{ url_for('shop', category=None, q=search_query) }}" class="sidebar-filter-clear">Clear All</a>
+                    </div><!-- End .widget widget-clean -->
+
+                    <div class="widget widget-collapsible">
+                        <h3 class="widget-title">
+                            <a data-bs-toggle="collapse" href="#widget-1" role="button" aria-expanded="true" aria-controls="widget-1">
+                                Category
+                            </a>
+                        </h3><!-- End .widget-title -->
+
+                        <div class="collapse show" id="widget-1">
+                            <div class="widget-body">
+                                <div class="filter-items filter-items-count">
+
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox form-check">
+                                            <input type="checkbox" class="custom-control-input form-check-input" id="cat-dresses" value="Dress"
+                                            {% if 'Dress & Skirt' in request.args.getlist('category')  or 'Dress' in request.args.getlist('category') %}checked{% endif %}>
+                                     <label class="custom-control-label form-check-label" for="cat-dresses">Dresses</label>
+                                        </div><!-- End .custom-checkbox -->
+                                        <span class="item-count">{{ category_counts.get('dress', 0) }}</span>
+                                    </div><!-- End .filter-item -->
+
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox form-check">
+                                            <input type="checkbox" class="custom-control-input form-check-input" id="cat-Skirt" value="Skirt"
+                                            {% if 'Dress & Skirt' in request.args.getlist('category') or 'Skirt' in request.args.getlist('category') %}checked{% endif %}>                                    
+                                             <label class="custom-control-label form-check-label" for="cat-dresses">Skirts</label>
+                                        </div><!-- End .custom-checkbox -->
+                                        <span class="item-count">{{ category_counts.get('skirt', 0) }}</span>
+                                    </div><!-- End .filter-item -->
+
+
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox form-check">
+                                            <input type="checkbox" class="custom-control-input form-check-input" id="cat-top" value="Top"
+                                                   {% if 'Top & Blouse' in selected_categories or 'Top' in request.args.getlist('category') %}checked{% endif %}>
+                                            <label class="custom-control-label form-check-label" for="cat-top">Top</label>
+                                        </div>
+                                        <span class="item-count">{{ category_counts.get('top', 0) }}</span>
+                                    </div>
+
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox form-check">
+                                            <input type="checkbox" class="custom-control-input form-check-input" id="cat-top" value="Blouse"
+                                                   {% if 'Top & Blouse' in selected_categories or 'Blouse' in request.args.getlist('category') %}checked{% endif %}>
+                                            <label class="custom-control-label form-check-label" for="cat-top">Blouse</label>
+                                        </div>
+                                        <span class="item-count">{{ category_counts.get('blouse', 0) }}</span>
+                                    </div>
+                                    
+                               
+
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox form-check">
+                                            <input type="checkbox" class="custom-control-input form-check-input" id="cat-activewear" value="Activewear" {% if 'Activewear' in request.args.getlist('category')  %}checked{% endif %}>
+                                            <label class="custom-control-label form-check-label" for="cat-activewear">Activewear</label>
+                                        </div><!-- End .custom-checkbox -->
+                                        <span class="item-count">{{ category_counts.get('activewear', 0) }}</span>
+                                    </div><!-- End .filter-item -->
+
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox form-check">
+                                            <input type="checkbox" class="custom-control-input form-check-input" id="cat-lingerie" value="Lingerie" {% if 'Lingerie' in selected_categories or 'Lingerie & Sleepwear' in request.args.getlist('category') %}checked{% endif %}>
+                                            <label class="custom-control-label form-check-label" for="cat-4">Lingerie</label>
+                                        </div><!-- End .custom-checkbox -->
+                                        <span class="item-count">{{ category_counts.get('lingerie', 0) }}</span>
+                                    </div><!-- End .filter-item -->
+
+
+                         
+
+                
+
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox form-check">
+                                            <input type="checkbox" class="custom-control-input form-check-input" id="cat-jacket" value="Jackets" {% if 'Jackets' in selected_categories or 'Jackets & Coats' in request.args.getlist('category') %}checked{% endif %}>
+                                            <label class="custom-control-label form-check-label" for="cat-6">Jacket</label>
+                                        </div><!-- End .custom-checkbox -->
+                                        <span class="item-count">{{ category_counts.get('jackets', 0) }}</span>
+                                    </div><!-- End .filter-item -->
+
+
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox form-check">
+                                            <input type="checkbox" class="custom-control-input form-check-input" id="cat-coats" value="Coats" {% if 'Coats' in selected_categories or 'Jackets & Coats' in request.args.getlist('category') %}checked{% endif %}>
+                                            <label class="custom-control-label form-check-label" for="cat-6">Coats</label>
+                                        </div><!-- End .custom-checkbox -->
+                                        <span class="item-count">{{ category_counts.get('coats', 0) }}</span>
+                                    </div><!-- End .filter-item -->
+
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox form-check">
+                                            <input type="checkbox" class="custom-control-input form-check-input" id="cat-shoes" value="Shoes" {% if 'Shoes' in selected_categories or 'Shoes & Accessories' in request.args.getlist('category') %}checked{% endif %}>
+                                            <label class="custom-control-label form-check-label" for="cat-shoes">Shoes</label>
+                                        </div><!-- End .custom-checkbox -->
+                                        <span class="item-count">{{ category_counts.get('shoes', 0) }}</span>
+                                    </div><!-- End .filter-item -->
+
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox form-check">
+                                            <input type="checkbox" class="custom-control-input form-check-input" id="cat-accessories" value="Accessories" {% if 'Accessories' in selected_categories or 'Shoes & Accessories' in request.args.getlist('category') %}checked{% endif %}>
+                                            <label class="custom-control-label form-check-label" for="cat-accessories">Accessories</label>
+                                        </div><!-- End .custom-checkbox -->
+                                        <span class="item-count">{{ category_counts.get('accessories', 0) }}</span>
+                                    </div><!-- End .filter-item -->
+                                </div><!-- End .filter-items -->
+                            </div><!-- End .widget-body -->
+                        </div><!-- End .collapse -->
+                    </div><!-- End .widget -->
+
+                    <div class="widget widget-collapsible">
+                        <h3 class="widget-title">
+                            <a data-bs-toggle="collapse" href="#widget-2" role="button" aria-expanded="true" aria-controls="widget-2">
+                                Size
+                            </a>
+                        </h3><!-- End .widget-title -->
+                    
+                        <div class="collapse show" id="widget-2">
+                            <div class="widget-body">
+                                <div class="filter-items">
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox form-check">
+                                            <input type="checkbox" class="custom-control-input form-check-input" id="size-1" value="XS" data-type="size">
+                                            <label class="custom-control-label form-check-label" for="size-1">XS</label>
+                                        </div><!-- End .custom-checkbox -->
+                                    </div><!-- End .filter-item -->
+                    
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox form-check">
+                                            <input type="checkbox" class="custom-control-input form-check-input" id="size-2" value="S" data-type="size">
+                                            <label class="custom-control-label form-check-label" for="size-2">S</label>
+                                        </div><!-- End .custom-checkbox -->
+                                    </div><!-- End .filter-item -->
+                    
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox form-check">
+                                            <input type="checkbox" class="custom-control-input form-check-input" id="size-3" value="M" data-type="size">
+                                            <label class="custom-control-label form-check-label" for="size-3">M</label>
+                                        </div><!-- End .custom-checkbox -->
+                                    </div><!-- End .filter-item -->
+                    
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox form-check">
+                                            <input type="checkbox" class="custom-control-input form-check-input" id="size-4" value="L" data-type="size">
+                                            <label class="custom-control-label form-check-label" for="size-4">L</label>
+                                        </div><!-- End .custom-checkbox -->
+                                    </div><!-- End .filter-item -->
+                    
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox form-check">
+                                            <input type="checkbox" class="custom-control-input form-check-input" id="size-5" value="XL" data-type="size">
+                                            <label class="custom-control-label form-check-label" for="size-5">XL</label>
+                                        </div><!-- End .custom-checkbox -->
+                                    </div><!-- End .filter-item -->
+                    
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox form-check">
+                                            <input type="checkbox" class="custom-control-input form-check-input" id="size-6" value="XXL" data-type="size">
+                                            <label class="custom-control-label form-check-label" for="size-6">XXL</label>
+                                        </div><!-- End .custom-checkbox -->
+                                    </div><!-- End .filter-item -->
+                                </div><!-- End .filter-items -->
+                            </div><!-- End .widget-body -->
+                        </div><!-- End .collapse -->
+                    </div><!-- End .widget -->
+                    
+
+              
+                </div><!-- End .sidebar sidebar-shop -->
+            </aside><!-- End .col-lg-3 -->
+        </div><!-- End .row -->
+       
+            
+
+
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const checkboxes = document.querySelectorAll(".filter-item input[type='checkbox']");
+    
+        // Get the selected sizes from the URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedSizes = urlParams.getAll('size');  // Get all selected sizes from the URL
+    
+        checkboxes.forEach(checkbox => {
+            // Check if the checkbox value is in the selectedSizes array
+            if (selectedSizes.includes(checkbox.value)) {
+                checkbox.checked = true;
+            }
+    
+            // Add event listener to update URL when checkbox state changes
+            checkbox.addEventListener("change", () => {
+                let selectedCategories = [];
+                let selectedSizes = [];
+    
+                // Collect all selected checkboxes
+                checkboxes.forEach(cb => {
+                    if (cb.checked) {
+                        if (cb.dataset.type === "size") {
+                            selectedSizes.push(cb.value);
+                        } else {
+                            selectedCategories.push(cb.value);
+                        }
+                    }
+                });
+    
+                // Construct new URL with selected categories and sizes as parameters
+                const url = new URL(window.location.href);
+    
+                // Clear existing filters
+                url.searchParams.delete("category");
+                url.searchParams.delete("size");
+    
+                // Append selected categories and sizes to the URL
+                selectedCategories.forEach(category => {
+                    url.searchParams.append("category", category);
+                });
+                selectedSizes.forEach(size => {
+                    url.searchParams.append("size", size);
+                });
+    
+                // Reload the page with the updated URL
+                window.location.href = url.toString();
+            });
+        });
+    });
+    
+    
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,225 @@
+{% extends "layout.html" %}
+{% block content %}
+    
+
+<div class="page-header text-center" style="background-image: url('https://images.pexels.com/photos/4466492/pexels-photo-4466492.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')">
+    <div class="container">
+        <h1 class="page-title">Checkout<span>Shop</span></h1>
+    </div>
+</div>
+<nav aria-label="breadcrumb" class="breadcrumb-nav">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('shop') }}">Shop</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+        </ol>
+    </div>
+</nav>
+
+
+<div class="page-content">
+    <div class="container my-4">
+        <div class="card shadow border-0">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-white">Delivery Address</h5>
+                {% if default_address %}
+                    <span class="badge bg-light text-primary">Default</span>
+                {% else %}
+                    <span class="badge bg-light text-danger">No Default Address</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if default_address %}
+                    <p class="mb-2">
+                        <strong>{{ default_address.address_name }}</strong><br>
+                        <small class="text-muted">{{ default_address.telephone_no }}</small><br>
+                        {{ default_address.street }}, {{ default_address.barangay }}, {{ default_address.city }}, {{ default_address.province }}, {{ default_address.region }}, {{ default_address.postal_code }}
+                        <button class="btn btn-outline-danger btn ms-3" data-bs-toggle="modal" data-bs-target="#changeAddressModal">Change</button>
+                    </p>
+                {% else %}
+                    <p class="mb-2">No default address set. Please add an address in your account settings.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+<div class="container mt-5">
+    <div class="card shadow border-0">
+        <div class="card-header text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-primary">Products Ordered</h5>
+        </div>
+
+        <div class="card-body">
+            <table class="table table-cart table-mobile">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Color</th>
+                        <th>Size</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="product-col">
+                            <div class="product">
+                                <figure class="product-media">
+                                    <a href="#">
+                                        {% if product and product.images %}
+                                            <img src="{{ url_for('static', filename='profile_pics/' + product.images[0].image_path) }}" alt="{{ product.name }}" style="width: 50px; height: auto;">
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='default_image.jpg') }}" alt="Default Image" style="width: 50px; height: auto;"> <!-- Fallback image -->
+                                        {% endif %}
+                                    </a>
+                                </figure>
+                                <h3 class="product-title">
+                                    <a href="#">{{ product.name }}</a>
+                                </h3>
+                            </div>
+                        </td>
+                        <td class="color-col">{{ color }}</td>
+                        <td class="size-col">{{ size }}</td>
+                        <td class="price-col">₱{{ "%.2f"|format(price) }}</td>
+                        <!-- <td class="price-col">₱<span id="price-{{ product_id }}">{{ price if price is not none else 0 | round(2) }}</span></td> -->
+                        <!-- <td class="price-col">₱<span id="price-{{ product_id }}">{{ price if price is not none else 0 }}</span></td> -->
+                        <td class="quantity-col">{{ quantity }}</td>
+                        <!-- <td class="total-col">₱<span id="total-{{ product_id }}-{{ color }}-{{size }}">{{ (discounted_total) | round(2) if price is not none else 0 | round(2) }}</span></td> -->
+                        <td class="total-col">₱{{ "%.2f"|format(discounted_total) }}</td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+
+    <div class="card shadow border-0 mt-5">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-white">Apply Voucher</h5>
+        </div>
+        <div class="card-body">
+            <!-- Voucher Selection -->
+            <form action="{{ url_for('checkout_single') }}" method="POST" class="mb-3">
+                <select name="voucher_code" id="voucher-select" class="form-select" style="height: 30px; font-size: small;" {% if voucher_locked %}disabled{% endif %}>
+                    <option value="" disabled {% if not voucher_code %}selected{% endif %}>Select a voucher</option>
+                    {% for voucher in available_vouchers %}
+                        <option value="{{ voucher.code }}" {% if voucher_code == voucher.code %}selected{% endif %}>
+                            {{ voucher.voucher_name }} - {{ voucher.discount_amount }} {{ voucher.discount_type }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="position-relative bottom-0" style="float: right;">
+                    <button type="submit" name="voucher_code" value="" class="btn btn-outline-danger mt-3 btn-lg">Clear Voucher</button>
+                    <button type="submit" class="btn btn-primary mt-3 btn-lg" {% if voucher_locked %}disabled{% endif %}>Apply Voucher</button>
+                </div>
+            </form>
+            <a class="btn btn-outline-primary" href="{{url_for('shop_voucher')}}">Claim a Voucher</a>
+
+        </div>
+    </div>
+
+
+
+    <!-- Card for displaying the pricing summary -->
+    <div class="card card shadow border-0 mt-5"> <!-- New card for pricing summary -->
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-white">Payment Method</h5>
+            <h5 class="mb-0  text-white">Cash on Delivery</h5>
+
+        
+        </div>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <!-- Subtotal -->
+                <div class="d-flex justify-content-between border-bottom py-2">
+                    <h5>Subtotal:</h5>
+                    <h5>₱{{ subtotal }}</h5>
+                </div>
+                
+                <!-- Discount -->
+                <div class="d-flex justify-content-between border-bottom py-2">
+                    <h5>Discount (Voucher):</h5>
+                    <h5>-₱{{ applied_discount or 0 }}</h5>
+                </div>
+                
+                <!-- Shipping Fee -->
+                <div class="d-flex justify-content-between border-bottom py-2">
+                    <h5>Shipping Fee:</h5>
+                    <h5>₱{{ shipping_fee }}</h5>
+                </div>
+        
+                <!-- Final Total -->
+                <div class="d-flex justify-content-between py-3">
+                    <h4>Total:</h4>
+                    <h3 class="text-primary">₱{{ total_price }}</h3>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+    <form action="{{ url_for('place_order') }}" method="POST" style="float: right;" class="my-4">
+        <input type="hidden" name="product_id" value="{{ product.id }}">
+        <input type="hidden" name="quantity" value="{{ quantity }}">
+        <input type="hidden" name="selected_color" value="{{ color }}">
+        <input type="hidden" name="selected_size" value="{{ size }}">
+        <input type="hidden" name="price" value="{{ price }}">
+        <input type="hidden" name="total_price" value="{{ total_price }}">
+        <button type="submit" class="btn btn-lg btn-primary px-5 py-3 fs-3">Confirm Order</button>
+    </form>
+</div>
+
+
+      
+
+    
+ 
+
+    
+
+</div>
+
+<!-- Modal for Changing Address -->
+<div class="modal fade" id="changeAddressModal" tabindex="-1" aria-labelledby="changeAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeAddressModalLabel">Select a New Delivery Address</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('change_address_single') }}">
+                    <div class="list-group">
+                        {% for address in user_addresses %}
+                            <div class="list-group-item">
+                                <input type="radio" id="address_{{ address.id }}" name="address_id" value="{{ address.id }}" required>
+                                <label for="address_{{ address.id }}">
+                                    <strong>{{ address.address_name }}</strong><br>
+                                    <small class="text-muted">{{ address.telephone_no }}</small><br>
+                                    {{ address.street }}, {{ address.barangay }}, {{ address.city }}, {{ address.province }}, {{ address.region }}, {{ address.postal_code }}
+                                </label>
+                            </div>
+                        {% else %}
+                            <p>No addresses available. Please add an address.</p>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <input type="hidden" name="quantity" value="{{ quantity }}">
+                    <input type="hidden" name="color" value="{{ color }}">
+                    <input type="hidden" name="size" value="{{ size }}">
+                    <input type="hidden" name="price" value="{{ price }}">
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Confirm Address Change</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

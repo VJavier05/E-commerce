@@ -1,0 +1,411 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.input {
+    width: auto;
+    padding: 10px;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    background: rgb(231, 229, 229);
+}
+
+.input:focus {
+    border: none; /* Removes any border */
+    outline: none; /* Removes default outline */
+}
+
+.input:hover {
+    border-bottom: 2px solid #A3A6FF; /* Removes any border */
+}
+
+.input:focus + .outline {
+    transform: scaleX(1);
+}
+
+body{
+    border: black;
+    /* FOR Day and Night Mode Style */
+    /* transition: background-color 0.5s ease, color 0.5s ease; */
+}
+.status {
+    display: flex;
+    align-items: center;
+}
+
+.fa-circle {
+    font-size: 12px; /* Adjust the size as needed */
+    margin-right: 5px; /* Space between the icon and the text */
+}
+
+.online {
+    color: green; /* Green color for online users */
+}
+
+.offline {
+    color: gray; /* Gray color for offline users */
+}
+
+
+.container{
+    margin: 0;
+    padding: 0;
+}
+
+.input-group .input {
+    width: 278px;
+    /* max-width: 190px; */
+    position: fixed;
+    background-color: #f5f5f5;
+    color: #242424;
+    padding: .15rem .5rem;
+    min-height: 50px;
+    border-radius: 4px;
+    outline: none;
+    border: none;
+    line-height: 1.15;
+    box-shadow: 0px 10px 20px -18px;
+}
+  
+.input-group .input:focus {
+    border-bottom: 2px solid #5b5fc7;
+    border-radius: 4px 4px 2px 2px;
+}
+  
+.input-group .input:hover {
+    outline: 1px solid lightgrey;
+}
+
+.chat-app {
+    display: flex;
+    height: 70vh;
+    margin: 0;
+    padding: 0;
+}
+
+.chat-app .chat{
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 74.3%;
+    height: 100%;
+}
+
+.people-list {
+    margin: 0;
+    width: 26%; /* Adjust width as needed */
+    border-right: 1px solid #ccc;
+    padding: 0;
+    overflow-y: auto;
+}
+
+.chat {
+    flex: 1; /* Takes up the remaining space */
+    display: flex;
+    flex-direction: column;
+}
+
+.user-tab {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.user-tab:hover {
+    background: #f1f1f1;
+}
+
+.user-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 2px solid #007bff; /* Border color for online users */
+
+}
+
+.chat-header {
+    padding: 15px;
+    background-color: #A3A6FF;
+    border-bottom: 1px solid #eaeaea;
+ 
+}
+
+.chat-about h6 {
+    font-weight: 600;
+    font-size: medium;
+    background: none;
+    margin: 10px;
+}
+
+/* Automatically scroll the chat history */
+.chat-history { padding: 10px; scroll-behavior: smooth; overflow-y: auto; max-height: 400px; flex-grow: 1; height: 100%; }
+
+
+.chat-history ul { padding: 0; list-style-type: none; }
+
+
+.chat-history .message {
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 10px;
+    display: inline-block;
+    max-width: 80%;
+    word-wrap: break-word;
+    background-color: whitesmoke;
+    position: relative;
+}
+/* dcf8c6 */
+/* Styling for user's message (current_user) */
+.chat-history .my-message {
+    background-color: #b3ecec;
+    text-align: right;
+    float: right;
+}
+
+.message {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    max-width: 45%;
+    position: relative;
+    display: inline-block;
+}
+
+.my-message {
+    background-color: #007bff;
+    color: rgb(0, 0, 0);
+    text-align: right;
+    float: right;
+    clear: both;
+}
+
+.message-data {
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.message-data-time {
+    font-size: 12px;
+    color: #999;
+    margin-top: 5px; /* Added margin for spacing */
+}
+
+.message-data.float-right {
+    justify-content: flex-end;
+}
+
+.message-data.float-left {
+    justify-content: flex-start;
+}
+
+.float-right {
+    float: right;
+}
+
+.float-left {
+    float: left;
+}
+
+/* Styling for the other user's message */
+.chat-history .other-message {
+    background-color: #f1f0f0;
+    text-align: left;
+    float: left;
+}
+
+/* Prevent the image from breaking layout */
+.chat-history .message img,
+.chat-history .message video {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 10px;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+/* Clear floats after messages */
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.archive-button {
+    display: block;
+    margin-top: 5px;
+    padding: 0;
+    border: none;
+    background: none;
+    font-size: 0.85rem;
+    color: #858585;
+    cursor: pointer;
+}
+.archive-button:hover {
+    text-decoration: underline;
+}
+
+.messageBox {
+    display: flex;
+    align-items: center;
+    /* background-color: #2d2d2d; */
+    background-color: whitesmoke;
+    padding: 0 20px;
+    border-radius: 10px;
+    border: 1px solid #3f3f3f;
+}
+
+#messageInput {
+    padding: 10px;
+    flex-grow: 1; /* Allow input to take available space */
+    background-color: transparent;
+    outline: none;
+    /* color: white; */
+    color: black;
+    border: none;
+    padding-left: 15px;
+    font-size: 1rem;
+}
+
+#sendButton {
+    border: none;
+    background: none;
+    cursor: pointer;
+    outline: none;
+    /* color: white; */
+    color: black;
+}
+
+.fileUploadWrapper {
+    position: relative;
+    display: inline-block;
+}
+
+
+.fileUploadWrapper input[type="file"] {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+} 
+
+/* SCROLL BAR DESIGN */
+.people-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+.people-list::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+
+/* Handle */
+.people-list .chat::-webkit-scrollbar-thumb {
+    background: #888; 
+}
+
+/* Handle on hover */
+.people-list::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
+.about {
+    flex-grow: 1; /* Allow this to take remaining space */
+}
+
+.name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333; /* Dark text color */
+}
+
+.status {
+    font-size: 0.9rem;
+    color: #999; /* Lighter status color */
+    display: flex;
+    align-items: center; /* Aligns icon with text */
+}
+
+.status i {
+    margin-right: 5px; /* Space between icon and text */
+    color: #28a745; /* Green for online */
+}
+
+.status i.offline {
+    color: #dc3545; /* Red for offline */
+}
+
+.chat-history ul {
+    list-style-type: none; /* Remove the black dots */
+    padding: 0;            /* Remove default padding */
+    margin: 0;             /* Remove default margin */
+}
+
+.new-message {
+    font-weight: bold;
+    border: solid #5b5fc7; /* Light blue background for new messages */
+}
+
+
+/* Day and Night Mode Styles */
+/* 
+.day-mode {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.day-mode .chat-header {
+    background-color: #696CFF;
+    color: #ffffff;
+}
+
+.day-mode .message {
+    background-color: #f1f1f1;
+    color: #000000;
+}
+
+.night-mode {
+    background-color: #2d2d2d;
+    color: #ffffff;
+}
+
+.night-mode .chat-header {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+.night-mode .message {
+    background-color: #444444;
+    color: #ffffff;
+}
+
+#theme-toggle {
+    padding: 10px 20px;
+    margin: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#theme-toggle:hover {
+    background-color: #0056b3;
+} */

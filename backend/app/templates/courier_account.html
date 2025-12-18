@@ -1,0 +1,157 @@
+{% extends "dashboard_3.html" %}
+
+{% block content %}
+
+<h4 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">My Profiles /</span> Account</h4>
+
+<form id="formAccountSettings" action="" method="POST" enctype="multipart/form-data">
+  {{ form.hidden_tag() }}
+  
+  <div class="card mb-4">
+    <h5 class="card-header">Profile Details</h5>
+
+    <div class="card-body">
+      <div class="d-flex align-items-start align-items-sm-center gap-4">
+        <img src="{{ image_file_url }}" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar" />
+        
+        <div class="button-wrapper">
+          <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
+            <span class="d-none d-sm-block">Upload new photo</span>
+            <i class="bx bx-upload d-block d-sm-none"></i>
+            {{ form.image_file(class="account-file-input", id="upload", style="display:none;", accept="image/png, image/jpeg") }}
+          </label>
+          <p class="text-muted mb-0">Allowed JPG or PNG</p>
+        </div>
+      </div>
+
+    </div>
+    <hr class="my-0" />
+    
+    <div class="card-body">
+      <div class="row">
+        <div class="mb-3 col-md-6">
+          <label for="firstName" class="form-label">First Name</label>
+          {{ form.first_name(class="form-control") }}
+        </div>
+
+        <div class="mb-3 col-md-6">
+          <label for="lastName" class="form-label">Last Name</label>
+          {{ form.last_name(class="form-control") }}
+        </div>
+
+        <div class="mb-3 col-md-6">
+          <label for="email" class="form-label">E-mail</label>
+          {{ form.email(class="form-control", id="email") }}
+          {% if form.email.errors %}
+              <div class="text-danger">
+                  {% for error in form.email.errors %}
+                      <small>{{ error }}</small><br>
+                  {% endfor %}
+              </div>
+          {% endif %}
+      </div>
+
+        <div class="mb-3 col-md-6">
+          {{ form.date_of_birth.label(class="form-label") }}
+          {{ form.date_of_birth(class="form-control form-date", id="dateOfBirthInput", placeholder="YYYY-MM-DD") }}
+          {% if form.date_of_birth.errors %}
+            <div class="text-danger">{{ form.date_of_birth.errors[0] }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3 col-md-6">
+          <div class="form-floating mb-3">
+            <div>
+              {{ form.gender.label(class="radio-label-1 pb-2 fw-medium") }}
+              <div class="d-flex align-items-center">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input border-dark" type="radio" id="male" value="male" name="gender" {% if form.gender.data == 'male' %}checked{% endif %}>
+                  <label class="form-check-label radio-label" for="male">Male</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input border-dark" type="radio" id="female" value="female" name="gender" {% if form.gender.data == 'female' %}checked{% endif %}>
+                  <label class="form-check-label radio-label" for="female">Female</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input border-dark" type="radio" id="other" value="other" name="gender" {% if form.gender.data == 'other' %}checked{% endif %}>
+                  <label class="form-check-label radio-label" for="other">Other</label>
+                </div>
+              </div>
+              {% if form.gender.errors %}
+                <div class="text-danger">{{ form.gender.errors[0] }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+    
+
+        <!-- Address Fields -->
+        <div class="mb-3 col-md-6">
+          <label for="street" class="form-label">Street</label>
+          {{ form.street(class="form-control") }}
+          {% if form.street.errors %}
+            <div class="text-danger">{{ form.street.errors[0] }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3 col-md-6">
+          <label for="barangay" class="form-label">Barangay</label>
+          {{ form.barangay(class="form-control") }}
+          {% if form.barangay.errors %}
+            <div class="text-danger">{{ form.barangay.errors[0] }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3 col-md-6">
+          <label for="city" class="form-label">City</label>
+          {{ form.city(class="form-control") }}
+          {% if form.city.errors %}
+            <div class="text-danger">{{ form.city.errors[0] }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3 col-md-6">
+          <label for="province" class="form-label">Province</label>
+          {{ form.province(class="form-control") }}
+          {% if form.province.errors %}
+            <div class="text-danger">{{ form.province.errors[0] }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3 col-md-6">
+          <label for="region" class="form-label">Region</label>
+          {{ form.region(class="form-control") }}
+          {% if form.region.errors %}
+            <div class="text-danger">{{ form.region.errors[0] }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3 col-md-6">
+          <label for="serviceArea" class="form-label">Service Area</label>
+          {{ form.service_area(class="form-control") }}
+          {% if form.service_area.errors %}
+            <div class="text-danger">{{ form.service_area.errors[0] }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3 col-md-6">
+            <label for="region" class="form-label">Vehicle</label>
+            {{ form.vehicle_type(class="form-control") }}
+            {% if form.vehicle_type.errors %}
+              <div class="text-danger">{{ form.vehicle_type.errors[0] }}</div>
+            {% endif %}
+          </div>
+
+      </div>
+
+      <!-- Submit Button -->
+      <div class="d-flex justify-content-end mt-2">
+        {{ form.submit(class="btn btn-primary me-2") }}
+      </div>
+
+    </div>
+  </div>
+</form>
+
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "layout.html" %}
+{% block content %}
+
+  <main class="main">
+    <div class="page-header text-center" style="background-image: url('https://images.pexels.com/photos/4466492/pexels-photo-4466492.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')">
+      <div class="container">
+        <h1 class="page-title">My Account<span class="text-capitalize">{{ current_user.role }}</span></h1>
+      </div><!-- End .container -->
+    </div><!-- End .page-header -->
+      <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+          <div class="container">
+              <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{{url_for('home')}}">Home</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">My Account</li>
+              </ol>
+          </div><!-- End .container -->
+      </nav><!-- End .breadcrumb-nav -->
+
+      <div class="page-content">
+        <div class="dashboard">
+            <div class="container">
+              <div class="row">
+                <aside class="col-md-3 col-lg-2">
+                  <ul class="nav nav-dashboard flex-column mb-3 mb-md-0">
+
+                    <a class="nav-link dropdown-toggle" href="#dashboardMenu" data-bs-toggle="collapse" aria-expanded="false">
+                      <i class="bi bi-person"></i> My Account
+                    </a>
+
+                    
+                    <!-- Collapsible Dashboard Menu -->
+                    <div class="collapse {% if request.endpoint in ['account_profile', 'account_address'] %}show{% endif %}" id="dashboardMenu">
+                      <ul class="nav flex-column mb-3 mb-md-0" role="tablist">
+                        <li class="nav-item">
+                          <a class="nav-link {% if request.endpoint == 'account_profile' %}active{% endif %}" href="{{url_for('account_profile')}}">Profile</a>
+                        </li>
+                       
+                        <li class="nav-item">
+                          <a class="nav-link {% if request.endpoint == 'account_address' %}active{% endif %}" href="{{url_for('account_address')}}">Addresses</a>
+                        </li>
+
+                 
+                      </ul>
+                    </div><!-- End .collapse -->
+
+
+                    <a class="nav-link dropdown-toggle" href="#purhasemenu" data-bs-toggle="collapse" aria-expanded="false">
+                      <i class="bi bi-bag"></i>My Purchase
+                    </a>
+                    <!-- Collapsible Dashboard Menu -->
+                    <div class="collapse {% if request.endpoint in ['user_ToPay', 'order_detail','user_ToShip','user_Cancelled','user_ToReceive','user_Completed','user_received'] %}show{% endif %}" id="purhasemenu">
+                      <ul class="nav flex-column mb-3 mb-md-0" role="tablist">
+                        <li class="nav-item">
+                          <a class="nav-link {% if request.endpoint in ['user_ToPay'] %}active{% endif %}"  href="{{url_for('user_ToPay')}}" >To Pay</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link {% if request.endpoint in ['user_ToShip'] %}active{% endif %}" href="{{url_for('user_ToShip')}}" >To Ship</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link {% if request.endpoint in ['user_ToReceive'] %}active{% endif %}" href="{{url_for('user_ToReceive')}}">To Receive</a>
+                        </li>
+
+                        <li class="nav-item">
+                          <a class="nav-link {% if request.endpoint in ['user_Completed'] %}active{% endif %}" href="{{url_for('user_Completed')}}">Delivered</a>
+                        </li>
+
+                        <li class="nav-item">
+                          <a class="nav-link {% if request.endpoint in ['user_received'] %}active{% endif %}" href="{{url_for('user_received')}}">Completed</a>
+                        </li>
+
+                        <li class="nav-item">
+                          <a class="nav-link {% if request.endpoint in ['user_Cancelled'] %}active{% endif %}" href="{{url_for('user_Cancelled')}}">Cancelled</a>
+                        </li>
+                      </ul>
+                    </div><!-- End .collapse -->
+
+                    <li class="nav-item  no-icon {% if request.path == url_for('user_chat', receiver_id=current_user.id) %}active{% endif %}">
+                      <a href="{{ url_for('user_chat', receiver_id=current_user.id) }}" class="nav-link"><i class="bi bi-chat-left-dots"></i>Message Box
+                      </a>
+                    </li>
+
+                    <li class="nav-item no-icon">
+                      <a class="nav-link" href="{{url_for('shop_voucher')}}"><i class="bi bi-ticket"></i>My Voucher</a>
+                    </li>               
+                    <li class="nav-item no-icon">
+                        <a class="nav-link" href="{{url_for('logout')}}"><i class="bi bi-box-arrow-left"></i>Sign Out</a>
+                    </li>
+                  </ul>
+                  
+                </aside><!-- End .col-lg-3 -->
+
+                <div class="col-md-9 col-lg-10">
+                  {% block dashboard_content %}
+                            <!-- Default dashboard content -->
+                  {% endblock %}
+
+
+
+                
+                </div><!-- .End .col -->
+
+
+
+          </div>
+                </div><!-- End .col-lg-9 -->
+              </div><!-- End .row -->
+            </div><!-- End .container -->
+          </div><!-- End .dashboard -->
+      </div><!-- End .page-content -->
+  </main><!-- End .main -->
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  <script src="{{ url_for('static', filename='js/load_address.js') }}"></script>
+
+{% endblock %}

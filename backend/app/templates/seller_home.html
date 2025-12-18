@@ -1,0 +1,148 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container my-5">
+    <!-- Seller Info Section -->
+    <div class="seller-header bg-light p-4 rounded mb-4 shadow-sm" >
+        <div class="row">
+            <!-- Left Column (Profile Image, Shop Name, and Button) -->
+            <div class="col-md-6 d-flex align-items-center">
+                <img src="{{ url_for('static', filename='profile_pics/' + (seller.image_file if seller.image_file else 'default.jpg')) }}" 
+                     alt="{{ seller.shop_name }}'s profile image" 
+                     class="rounded-circle me-3 border border-secondary" 
+                     style="width: 80px; height: 80px; object-fit: cover;">
+    
+                <div>
+                    <h2 class="h5 mb-1 fw-bold">{{ seller.shop_name }}</h2>
+                    <a href="#" class="btn btn-outline-primary btn-lg px-4 d-flex align-items-center mt-3">
+                        <i class="bi bi-chat-dots me-2"></i> Chat with Seller
+                    </a>
+                </div>
+            </div>
+    
+            <!-- Right Column (Shop Info) -->
+            <div class="col-md-6">
+                <ul class="list-unstyled text-muted small mb-0">
+
+
+                    <li class="mb-2">
+                        <i class="bi bi-star me-2 fs-4"></i><strong>Store Rating:</strong> 
+                        {{ seller_avg_rating|round(2) }}
+                    </li>
+                    
+                    <!-- Category -->
+                    <li class="mb-2">
+                        <i class="bi bi-tags me-2 fs-4"></i><strong>Category:</strong> 
+                        {{ seller.category.replace('_', ' & ') if seller.category else 'Not Specified' }}
+                    </li>
+
+                   
+                    
+                    <!-- Address -->
+                    <li class="mb-2">
+                        <i class="bi bi-house-door me-2 fs-4"></i><strong>Address:</strong> 
+                        {{ seller.street if seller.street else 'Not Specified' }},
+                        {{ seller.barangay if seller.barangay else 'Not Specified' }},
+                        {{ seller.city if seller.city else 'Not Specified' }},
+                        {{ seller.province if seller.province else 'Not Specified' }},
+                        {{ seller.region if seller.region else 'Not Specified' }},
+                        {{ seller.postal_code if seller.postal_code else 'Not Specified' }}
+                    </li>
+                    
+                    <!-- Member Since -->
+                    <li class="mb-2">
+                        <i class="bi bi-calendar me-2 fs-4"></i><strong>Member Since:</strong> {{ seller.date_created.strftime('%B %d, %Y') if seller.date_created else 'Unknown' }}
+                    </li>
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+    
+    
+<!-- Products Section -->
+<div class="seller-products mb-3">
+    <h3 class="mb-4">Products by {{ seller.shop_name }}</h3>
+
+    {% if products %}
+        <div class="row justify-content-center">
+            {% for product in products %}
+            <div class="col-6 col-md-4 col-lg-4 col-xl-3">
+                <div class="product product-7 text-center">
+                    <figure class="product-media shop-section">
+                        <a href="{{ url_for('product', product_id=product.id) }}">  <!-- Link to the product details page -->
+                            {% if product.images|length > 0 %}
+                                <img src="{{ url_for('static', filename='profile_pics/' + product.images[0].image_path) }}" 
+                                     alt="{{ product.name }} image" 
+                                     class="product-image uniform-image">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='profile_pics/default_product.jpg') }}" 
+                                     alt="Default image" 
+                                     class="product-image uniform-image">
+                            {% endif %}
+                        </a>
+                    </figure><!-- End .product-media -->
+
+                    <div class="product-body">
+                        <div class="product-cat">
+                            <a href="#">{{ product.category }}</a>
+                        </div><!-- End .product-cat -->
+                        
+                        <h3 class="product-title">
+                            <a href="{{ url_for('product', product_id=product.id) }}">{{ product.name }}</a>
+                        </h3><!-- End .product-title -->
+                        
+                        <div class="product-price">
+                            {% if product.variations|length > 0 %}
+                                ₱ {{ product.variations[0].price }}  <!-- Display price from the first variation -->
+                            {% else %}
+                                <span>No price available</span>  <!-- Fallback if no variations exist -->
+                            {% endif %}
+                        </div><!-- End .product-price -->
+
+                        <div class="ratings-container">
+                            <div class="">
+                                {% set average_rating = product_avg_ratings[product.id] %}
+        
+                                {% if average_rating > 0 %}
+                                    <!-- Compute the average rating stars -->
+                                    <div class="stars">
+                                        {% for i in range(1, 6) %}
+                                            {% if average_rating >= i %}
+                                                <!-- Fully filled star -->
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                            {% elif average_rating >= i - 0.5 %}
+                                                <!-- Half-filled star -->
+                                                <i class="bi bi-star-half text-warning"></i>
+                                            {% else %}
+                                                <!-- Empty star -->
+                                                <i class="bi bi-star text-muted"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <!-- No reviews found: display empty stars -->
+                                    <div class="stars">
+                                        {% for i in range(1, 6) %}
+                                            <i class="bi bi-star text-muted"></i>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div><!-- End .ratings -->
+                            <span class="ratings-text">({{ product_reviews[product.id]|length }} Reviews)</span>
+                        </div><!-- End .rating-container -->
+                    </div><!-- End .product-body -->
+                </div><!-- End .product -->
+            </div><!-- End .col-sm-6 col-lg-4 col-xl-3 -->
+            {% endfor %}
+        </div><!-- End .row -->
+    {% else %}
+        <p class="text-muted">This seller has no products listed currently.</p>
+    {% endif %}
+</div><!-- End .seller-products -->
+
+</div>
+
+
+
+{% endblock %}

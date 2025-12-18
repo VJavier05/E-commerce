@@ -1,0 +1,77 @@
+{% extends "dashboard_2.html" %}
+{% block content %}
+
+<h4 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">My Profiles /</span> Account</h4>
+<form id="formAccountSettings" action="" method="POST" enctype="multipart/form-data">
+  {{ form.hidden_tag() }}
+<div class="card mb-4">
+    <h5 class="card-header">Profile Details</h5>
+    
+ 
+    <hr class="my-0" />
+    <div class="card-body">
+    
+
+        <div class="row">
+          <div class="mb-3 col-md-6">
+            <label for="firstName" class="form-label">First Name</label>
+            {{ form.first_name(class="form-control") }}
+          </div>
+          <div class="mb-3 col-md-6">
+            <label for="lastName" class="form-label">Last Name</label>
+            {{ form.last_name(class="form-control") }}
+          </div>
+          <div class="mb-3 col-md-6">
+            <label for="email" class="form-label">E-mail</label>
+            {{ form.email(class="form-control") }}
+          </div>
+
+
+          <div class="mb-3 col-md-6">
+            {{ form.date_of_birth.label(class="form-label") }} 
+
+            {{ form.date_of_birth(class="form-control form-date", id="dateOfBirthInput", placeholder="YYYY-MM-DD") }}  <!-- Larger input field -->
+            {% if form.date_of_birth.errors %}
+                <div class="text-danger">{{ form.date_of_birth.errors[0] }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3 col-md-6">
+            <div class="form-floating mb-3">
+                <div>
+                  {{ form.gender.label(class="radio-label-1 pb-2 fw-medium") }}
+                  <div class="d-flex align-items-center">
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input border-dark" type="radio" id="male" value="male" name="gender" {% if form.gender.data == 'male' %}checked{% endif %}>
+                          <label class="form-check-label radio-label" for="male">Male</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input border-dark" type="radio" id="female" value="female" name="gender" {% if form.gender.data == 'female' %}checked{% endif %}>
+                          <label class="form-check-label radio-label" for="female">Female</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input border-dark" type="radio" id="other" value="other" name="gender" {% if form.gender.data == 'other' %}checked{% endif %}>
+                          <label class="form-check-label radio-label" for="other">Other</label>
+                      </div>
+                  </div>
+                  {% if form.gender.errors %}
+                      <div class="text-danger">{{ form.gender.errors[0] }}</div>
+                  {% endif %}
+              </div>
+            </div>
+          </div>
+
+      
+        </div>
+        <div class="d-flex justify-content-end mt-2">
+          {{ form.submit(class="btn btn-primary me-2") }}
+
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+
+
+{% endblock %}

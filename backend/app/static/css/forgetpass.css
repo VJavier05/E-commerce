@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+    font-family: "Public Sans", sans-serif;
+
+    color: #566a7f;
+    background-color: #f5f5f9;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+/* .form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+} */
+
+.form-control, .input-group-text {
+
+  transition: border-color 0.3s ease;/* Add smooth transition */
+}
+
+
+
+.authentication-wrapper {
+    display: flex;
+    flex-basis: 100%;
+    min-height: 100vh;
+    width: 100%;
+  }
+  .authentication-wrapper .authentication-inner {
+    width: 100%;
+  }
+  .authentication-wrapper.authentication-basic {
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .authentication-wrapper.authentication-cover {
+    align-items: flex-start;
+  }
+  .authentication-wrapper.authentication-cover .authentication-inner {
+    height: 100vh;
+  }
+  .authentication-wrapper.authentication-basic .authentication-inner {
+    max-width: 400px;
+    position: relative;
+  }
+
+  .authentication-wrapper.authentication-basic .authentication-inner:before {
+    width: 148px;
+    height: 148px;
+    content: " ";
+    position: absolute;
+    top: -40px;
+    right: -40px;
+}
+
+.form-group .btn{
+    width: 100%;
+    
+}
+
+a{
+    text-decoration: none;
+}
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 0 solid #d9dee3;
+    border-radius: 0.5rem;
+
+    background-clip: padding-box;
+    box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);
+  }
+
+
+  
+.form-label{
+  margin-bottom: 0.3rem;
+}
+
+.eye{
+  background-color: white;
+}
+
+.reset-pass .form-control{
+  border-right: none;
+}
+
+.form-control.is-invalid {
+  background-image: none; /* Ensures no background image */
+  border-color: red; /* Ensure the input field border is red when invalid */
+}
+
+
+.form-control.is-invalid ~ .input-group-text {
+  color: red; 
+  border-color: red; 
+}
+
+
+
+.input-group:focus-within .form-control,
+.input-group:focus-within .input-group-text {
+    border-color: #007bff;  
+}

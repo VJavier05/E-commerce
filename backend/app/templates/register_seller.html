@@ -1,0 +1,280 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<!-- <div class="container-xxl d-flex justify-content-center align-items-center vh-100">
+  <div class="authentication-wrapper authentication-basic container-p-y">
+    <div class="authentication-inner">
+
+
+  <div class="card mb-4" > 
+
+    <div class="card-body">
+      <h4 class="mb-2">Register as Seller</h4>
+              <p class="mb-4">Please Fill up with Personal Information</p>
+
+      <form id="formAccountSettings" method="POST" onsubmit="return false">
+        <div class="row">
+          <div class="mb-3 col-md-6">
+            <label for="firstName" class="form-label">First Name</label>
+            <input class="form-control form-control-lg" type="text" id="firstName" name="firstName" autofocus placeholder="Enter First Name"/>
+          </div>
+          <div class="mb-3 col-md-6">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input class="form-control form-control-lg" type="text" name="lastName" id="lastName" placeholder="Enter Last Name"/>
+          </div>
+          <div class="mb-3 col-md-6">
+            <label for="email" class="form-label">E-mail</label>
+            <input class="form-control form-control-lg" type="text" id="email" name="email" placeholder="john.doe@example.com" />
+          </div>
+    
+          <div class="mb-3 col-md-6">
+            <label class="form-label" for="phoneNumber">Phone Number</label>
+            <div class="input-group input-group-merge">
+              <span class="input-group-text">PH (+63)</span>
+              <input type="text" id="phoneNumber" name="phoneNumber" class="form-control form-control-lg" placeholder="202 555 0111" />
+            </div>
+          </div>
+
+
+          <div class="mb-3 col-md-6">
+            <label class="form-label" for="password">Password</label>
+                  <div class="input-group input-group-merge">
+                    <input
+                      type="password"
+                      id="password"
+                      class="form-control form-control-lg"
+                      name="password"
+                      placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                      aria-describedby="password"
+                    />
+                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                  </div>
+          </div>
+
+          <div class="mb-3 col-md-6">
+            <label class="form-label" for="password">Confirm Password</label>
+                  <div class="input-group input-group-merge">
+                    <input
+                      type="password"
+                      id="password"
+                      class="form-control form-control-lg"
+                      name="password"
+                      placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                      aria-describedby="password"
+                    />
+                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                  </div>
+          </div>
+
+
+          <div class="mb-3 col-md-6">
+            <label for="formFileLg" class="form-label">Valid ID</label>
+              <input class="form-control form-control-lg" id="formFileLg" type="file">
+          </div>
+
+
+        </div>
+        <div class="d-grid d-md-flex justify-content-md-end mt-2">
+          <button type="submit" class="btn btn-primary btn-lg me-2">Next Page</button>
+        </div>
+        <div class=" pt-3 text-center mt-3">
+          <small class="text-muted">
+              Already Have an Account? <a href="{{url_for('login')}}" class="ml-2">Sign In</a>
+          </small>
+      </div>
+      </form>
+      
+    </div>
+  </div>
+  </div>
+  </div>
+</div> -->
+
+<div class="wrapper">
+  <div class="inner mt-5">
+      <div class="image-holder">
+          <img src="https://images.pexels.com/photos/12058606/pexels-photo-12058606.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="">
+      </div>
+      <form method="POST" action="" novalidate enctype="multipart/form-data">
+          
+          {{ form.hidden_tag() }}
+
+          <h3>Seller Registration</h3>
+
+          <div class="form-group pb-5">
+              <div class="form-field">
+                  {% if form.first_name.errors %}
+                      {{ form.first_name(class="form-control form-control-lg is-invalid", placeholder="First Name") }}
+                      <div class="invalid-feedback">
+                          {% for error in form.first_name.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                  {% else %}
+                      {{ form.first_name(class="form-control form-control-lg", placeholder="First Name") }}
+                  {% endif %}
+              </div>
+          
+              <div class="form-field">
+                  {% if form.last_name.errors %}
+                      {{ form.last_name(class="form-control form-control-lg is-invalid", placeholder="Last Name") }}
+                      <div class="invalid-feedback">
+                          {% for error in form.last_name.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                  {% else %}
+                      {{ form.last_name(class="form-control form-control-lg", placeholder="Last Name") }}
+                  {% endif %}
+              </div>
+          </div>
+
+          <div class="form-wrapper pb-5">
+
+              {% if form.email.errors %}
+                      {{ form.email(class="form-control form-control-lg is-invalid", placeholder="Email") }}
+                      <div class="invalid-feedback">
+                          {% for error in form.email.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                  {% else %}
+                      {{ form.email(class="form-control form-control-lg", placeholder="Email") }}
+              {% endif %}
+
+              <!-- {{ form.email(class="form-control form-control-lg",placeholder="Email") }} -->
+              <!-- <i class="bi bi-envelope-fill"></i> -->
+          </div>
+
+ 
+
+          <div class="form-wrapper pb-4 password-login">
+
+              <div class="input-group input-group-merge mb-4">
+                  {% if form.password.errors %}
+                      {{ form.password(class="form-control form-control-lg is-invalid", placeholder="Password") }}
+                  {% else %}
+                      {{ form.password(class="form-control form-control-lg", placeholder="Password") }}
+                  {% endif %}
+                  <span class="input-group-text cursor-pointer"><i class="bi bi-eye-slash fs-4"></i></span>
+                  
+                  {% if form.password.errors %}
+                      <!-- Error feedback message positioned absolutely -->
+                      <div class="invalid-feedback" style="position: absolute; bottom: -20px;">
+                          {% for error in form.password.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                  {% endif %}
+              </div>
+
+
+
+
+              <!-- {{ form.password(class="form-control form-control-lg",placeholder="Password") }} -->
+
+          </div>
+
+          <div class="form-wrapper pb-4 password-login">
+
+
+              <div class="input-group input-group-merge mb-4">
+                  {% if form.confirm_password.errors %}
+                      {{ form.confirm_password(class="form-control form-control-lg is-invalid", placeholder="Confirm Password") }}
+                  {% else %}
+                      {{ form.confirm_password(class="form-control form-control-lg", placeholder="Confirm Password") }}
+                  {% endif %}
+                  <span class="input-group-text cursor-pointer"><i class="bi bi-eye-slash fs-4"></i></span>
+                  
+                  {% if form.confirm_password.errors %}
+                      <!-- Error feedback message positioned absolutely -->
+                      <div class="invalid-feedback" style="position: absolute; bottom: -20px;">
+                          {% for error in form.confirm_password.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                  {% endif %}
+              </div>
+
+          </div>
+
+
+
+          
+          <div class="form-wrapper pb-4 password-login">
+              <!-- Date of Birth Field -->
+              <label for="date_of_birth" class="form-label">Date of Birth</label>
+              <div class="form-field">
+                  {% if form.date_of_birth.errors %}
+                      {{ form.date_of_birth(class="form-control form-control-lg is-invalid", id="date_of_birth", placeholder="YYYY-MM-DD") }}
+                      <div class="invalid-feedback">
+                          {% for error in form.date_of_birth.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                  {% else %}
+                      {{ form.date_of_birth(class="form-control form-control-lg", id="date_of_birth", placeholder="YYYY-MM-DD") }}
+                  {% endif %}
+              </div>
+          </div>
+
+          <div class="form-group pb-4">
+              <div class="form-floating mb-3">
+                <div>
+                  {{ form.gender.label(class="radio-label-1 pb-2 fw-medium") }}
+                  <div class="d-flex align-items-center">
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input border-dark" type="radio" id="male" value="male" name="gender" checked>
+                          <label class="form-check-label radio-label" for="male">Male</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input border-dark" type="radio" id="female" value="female" name="gender">
+                          <label class="form-check-label radio-label" for="female">Female</label>
+                      </div>
+                
+                  </div>
+                  {% if form.gender.errors %}
+                      <div class="text-danger">{{ form.gender.errors[0] }}</div>
+                  {% endif %}
+              </div>
+            </div>
+          </div>
+          
+          
+
+          
+
+          <div class="form-wrapper pb-4 ">
+              {{ form.picture_id.label(class="form-label fw-bolder") }}<br>
+              {{ form.picture_id(class="form-control file-input") }}
+
+              {% if form.picture_id.errors %}
+                  {% for error in form.picture_id.errors %}
+                  <span class="text-danger">{{ error }}</span>
+                  {% endfor %}
+              {% endif%}
+          </div>
+
+     
+  
+
+          <div class="text-center mt-3 register-btn">
+              {{ form.submit(class="btn btn-primary") }}
+          </div>
+
+
+          <div class="border-top pt-3 text-center mt-3">
+              <small class="text-muted">
+                  Already Have an Account? <a href="{{url_for('login')}}" class="ml-2">Sign In</a>
+              </small>
+          </div>
+
+      </form>
+
+      
+
+  </div>
+
+  
+</div>
+{% endblock %}

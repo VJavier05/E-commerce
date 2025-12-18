@@ -1,0 +1,107 @@
+{% extends "account.html" %}
+{% block dashboard_content %}
+
+<div class="container">
+    <!-- Main Order Details Card -->
+    <div class="card">
+        <!-- Order Header Section -->
+        <div class="card-header  d-flex justify-content-between align-items-center">
+            <h4 class="mb-0 text-primary fw-bold">Order Details</h4>
+            <span class="badge bg-secondary fs-4">Order ID: {{ order.id }}</span>
+        </div>
+
+        <!-- Order Info Section -->
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p><strong>Date:</strong> {{ order.date_created.strftime('%B %d, %Y') }}</p>
+                </div>
+             
+                <div class="col-md-6 text-end">
+                    <p><strong>Total Amount:</strong> <span class="fs-2 fw-bold">₱{{ order.total_amount }}</span></p>
+                </div>
+            </div>
+
+            <!-- Order Items Table -->
+            <div class="card-body">
+                {% for item in order_items %}
+                <div class="card mb-4 p-3">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <!-- Product Image -->
+                            <div class="col-md-2">
+                                <img src="{{ url_for('static', filename='profile_pics/' + item.product.images[0].image_path) }}" 
+                                     alt="{{ item.product.name }}" width="120" height="120" class="img-thumbnail">
+                            </div>
+                            
+                            <!-- Product Details -->
+                            <div class="col-md-5">
+                                <p class="fs-3 fw-bold mb-1">{{ item.product.name }}</p>
+                                <p class="text-muted fs-4 mb-1">Color: {{ item.color }}</p>
+                                <p class="text-muted fs-4 mb-1">Size: {{ item.size }}</p>
+                            </div>
+                            
+                            <!-- Quantity and Price -->
+                            <div class="col-md-3 text-center">
+                                <p class="fs-4 mb-1"><strong>Quantity:</strong> {{ item.quantity }}</p>
+                                <p class="fs-4 mb-1"><strong>Price:</strong> ₱{{ item.price }}</p>
+                            </div>
+                            
+                            <!-- Subtotal -->
+                            <div class="col-md-2 text-end">
+                                <p class="fs-3 mb-1 fw-bold">Subtotal:</p>
+                                <p class="fs-3 mb-1 fw-bold">₱{{ item.price * item.quantity}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+            </div>
+            </div>
+
+            <!-- Order Tracking Wizard -->
+
+            <div class="container">
+                <h5 class="text-center mb-4 mt-4">Order Tracking</h5>
+                <div class="track">
+                    {% set stages = ["Order Placed", "Preparing to Shipped", "In Transit", "Delivered"] %}
+                    {% set icons = ["bi bi-cart-check", "bi bi-hourglass-split", "bi bi-truck", "bi bi-box-seam"] %}
+                    
+                    {% set ns = namespace(found_index=-1) %}
+                    
+                    <!-- Loop to find the active stage index -->
+                    {% for stage in stages %}
+                        {% if order_items | selectattr('status', 'in', ['Delivered', 'Received']) | list | length > 0 %}
+                            {% set ns.found_index = loop.index0 %}
+                        {% elif order_items | selectattr('status', 'equalto', stage | trim) | list | length > 0 %}
+                            {% set ns.found_index = loop.index0 %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <!-- Render the steps -->
+                    {% for stage in stages %}
+                        <div class="step {% if loop.index0 <= ns.found_index %}active{% endif %}">
+                            <span class="icon"><i class="{{ icons[loop.index0] }}"></i></span>
+                            <span class="text">
+                                {% if stage == "Delivered" %}
+                                    {% if order_items | selectattr('status', 'in', ['Delivered', 'Received']) | list | length > 0 %}
+                                        Delivered
+                                    {% else %}
+                                        Delivered
+                                    {% endif %}
+                                {% else %}
+                                    {{ stage }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

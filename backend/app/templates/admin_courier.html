@@ -1,0 +1,351 @@
+{% extends "dashboard_1.html" %}
+{% block content %}
+
+<div id="alertContainer"></div>
+<div class="d-flex justify-content-between align-items-center py-3 mb-2">
+    <h4 class="fw-bold mb-0">
+        <span class="text-muted fw-light">Courier /</span> Manage Couriers
+    </h4>
+    <a href="{{ url_for('admin__add_courier') }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg pe-md-2 pe-1"></i>Add Couriers
+    </a>
+    
+</div>
+
+<div class="card mb-4">
+    
+    <div class="card-body">
+        <div class="input-group input-group-merge mb-3 search-input">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search Couriers..."
+              aria-label="Search..."
+              id="searchProduct"
+              onkeyup="searchTable('productTable', 'searchProduct')"  
+            />
+          </div>
+
+          <table class="table table-hover" id="courierTable">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Service Area</th>
+                    <th scope="col">Vehicle</th>
+                    <th scope="col">Regs No.</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for courier in couriers %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{ courier.user.first_name }} {{ courier.user.last_name }}</td>
+              
+                    <td>{{ courier.user.email }}</td>
+                    <td>{{ courier.service_area }}</td>
+                    <td>{{ courier.vehicle_type }}</td>
+                    <td>{{ courier.vehicle_registration_no }}</td>
+                    <td>
+                        {% if courier.is_active %}
+                            <span class="badge rounded-pill text-bg-success">Active</span>
+                        {% else %}
+                            <span class="badge rounded-pill text-bg-danger">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-primary view-courier-btn" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#ViewCourierModal"
+                            data-id="{{ courier.id }}"
+                            data-firstname="{{ courier.user.first_name }}"
+                            data-lastname="{{ courier.user.last_name }}"
+                            data-email="{{ courier.user.email }}"
+                            data-service-area="{{ courier.service_area }}"
+                            data-vehicle-type="{{ courier.vehicle_type }}"
+                            data-vehicle-registration="{{ courier.vehicle_registration_no }}"
+                            {% if courier.user.image_data %}
+                                data-id-picture="data:image/jpeg;base64,{{ courier.user.image_data }}"
+                            {% else %}
+                                data-id-picture="/static/images/default-id.jpg"  
+                            {% endif %}>
+                            View
+                        </button>
+                        <button type="button" class="btn btn-sm btn-warning edit-courier-btn" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#EditCourierModal"
+                        data-id="{{ courier.id }}"
+                        data-firstname="{{ courier.user.first_name }}"
+                        data-lastname="{{ courier.user.last_name }}"
+                        data-email="{{ courier.user.email }}"
+                        data-service-area="{{ courier.service_area }}"
+                        data-vehicle-type="{{ courier.vehicle_type }}"
+                        data-vehicle-registration="{{ courier.vehicle_registration_no }}"
+                        {% if courier.user.image_data %}
+                            data-id-picture="data:image/jpeg;base64,{{ courier.user.image_data }}"
+                        {% else %}
+                            data-id-picture="/static/images/default-id.jpg"  
+                        {% endif %}>
+                        Edit
+                    </button>
+                        <!-- Add more actions if needed -->
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+      
+    
+    </div>
+  
+    <div class="modal fade" id="ViewCourierModal" tabindex="-1" aria-labelledby="ViewCourierModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="ViewCourierModalLabel">Courier Information</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- ID Picture -->
+                        <div class="col-12 text-center mb-3">
+                            <img src="" id="modalIdPicture" class="img-fluid rounded border" alt="ID Picture" style="max-height: 200px;">
+                        </div>
+    
+                        <!-- First Name -->
+                        <div class="mb-3 col-md-6">
+                            <label for="modalFirstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="modalFirstName" readonly>
+                        </div>
+    
+                        <!-- Last Name -->
+                        <div class="mb-3 col-md-6">
+                            <label for="modalLastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="modalLastName" readonly>
+                        </div>
+    
+                        <!-- Email -->
+                        <div class="mb-3 col-md-12">
+                            <label for="modalEmail" class="form-label">Email</label>
+                            <input type="text" class="form-control" id="modalEmail" readonly>
+                        </div>
+    
+                        <!-- Service Area -->
+                        <div class="mb-3 col-md-6">
+                            <label for="modalServiceArea" class="form-label">Service Area</label>
+                            <input type="text" class="form-control" id="modalServiceArea" readonly>
+                        </div>
+    
+                        <!-- Vehicle Type -->
+                        <div class="mb-3 col-md-6">
+                            <label for="modalVehicleType" class="form-label">Vehicle Type</label>
+                            <input type="text" class="form-control" id="modalVehicleType" readonly>
+                        </div>
+    
+                        <!-- Vehicle Registration -->
+                        <div class="mb-3 col-md-6">
+                            <label for="modalVehicleRegistration" class="form-label">Vehicle Registration</label>
+                            <input type="text" class="form-control" id="modalVehicleRegistration" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="EditCourierModal" tabindex="-1" aria-labelledby="EditCourierModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="editCourierForm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="EditCourierModalLabel">Edit Courier Information</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <!-- ID Picture -->
+                            <div class="col-12 text-center mb-3">
+                                <img src="" id="editModalIdPicture" class="img-fluid rounded border" alt="ID Picture" style="max-height: 200px;">
+                            </div>
+    
+    
+                            <!-- First Name -->
+                            <div class="mb-3 col-md-6">
+                                <label for="editModalFirstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="editModalFirstName">
+                            </div>
+    
+                            <!-- Last Name -->
+                            <div class="mb-3 col-md-6">
+                                <label for="editModalLastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="editModalLastName">
+                            </div>
+    
+                            <!-- Email -->
+                            <div class="mb-3 col-md-12">
+                                <label for="editModalEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editModalEmail">
+                            </div>
+    
+                            <!-- Service Area -->
+                            <div class="mb-3 col-md-6">
+                                <label for="editModalServiceArea" class="form-label">Service Area</label>
+                                <input type="text" class="form-control" id="editModalServiceArea">
+                            </div>
+    
+                            <!-- Vehicle Type -->
+                            <div class="mb-3 col-md-6">
+                                <label for="editModalVehicleType" class="form-label">Vehicle Type</label>
+                                <input type="text" class="form-control" id="editModalVehicleType">
+                            </div>
+    
+                            <!-- Vehicle Registration -->
+                            <div class="mb-3 col-md-6">
+                                <label for="editModalVehicleRegistration" class="form-label">Vehicle Registration</label>
+                                <input type="text" class="form-control" id="editModalVehicleRegistration">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    
+
+
+
+
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const viewButtons = document.querySelectorAll('.view-courier-btn');
+    const editButtons = document.querySelectorAll('.edit-courier-btn');
+
+    // View Courier Modal
+    viewButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const firstName = button.getAttribute('data-firstname');
+            const lastName = button.getAttribute('data-lastname');
+            const email = button.getAttribute('data-email');
+            const serviceArea = button.getAttribute('data-service-area');
+            const vehicleType = button.getAttribute('data-vehicle-type');
+            const vehicleRegistration = button.getAttribute('data-vehicle-registration');
+            const idPicture = button.getAttribute('data-id-picture');
+
+            // Populate modal fields
+            document.getElementById('modalFirstName').value = firstName;
+            document.getElementById('modalLastName').value = lastName;
+            document.getElementById('modalEmail').value = email;
+            document.getElementById('modalServiceArea').value = serviceArea;
+            document.getElementById('modalVehicleType').value = vehicleType;
+            document.getElementById('modalVehicleRegistration').value = vehicleRegistration;
+
+            // Set the ID picture
+            const idPictureElement = document.getElementById('modalIdPicture');
+            idPictureElement.src = idPicture;
+            idPictureElement.alt = `${firstName} ${lastName}'s ID Picture`;
+        });
+    });
+
+    // Edit Courier Modal
+    editButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const id = button.getAttribute('data-id');
+            const firstName = button.getAttribute('data-firstname');
+            const lastName = button.getAttribute('data-lastname');
+            const email = button.getAttribute('data-email');
+            const serviceArea = button.getAttribute('data-service-area');
+            const vehicleType = button.getAttribute('data-vehicle-type');
+            const vehicleRegistration = button.getAttribute('data-vehicle-registration');
+            const idPicture = button.getAttribute('data-id-picture');
+
+            // Populate the modal's fields with the retrieved data
+            document.getElementById('editModalFirstName').value = firstName;
+            document.getElementById('editModalLastName').value = lastName;
+            document.getElementById('editModalEmail').value = email;
+            document.getElementById('editModalServiceArea').value = serviceArea;
+            document.getElementById('editModalVehicleType').value = vehicleType;
+            document.getElementById('editModalVehicleRegistration').value = vehicleRegistration;
+
+            // Set the image source for the ID picture
+            const idPictureElement = document.getElementById('editModalIdPicture');
+            idPictureElement.src = idPicture;
+            idPictureElement.alt = `${firstName} ${lastName}'s ID Picture`;
+
+            // Save Changes Event
+            document.getElementById('editCourierForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const updatedData = {
+                    id: id,
+                    firstName: document.getElementById('editModalFirstName').value,
+                    lastName: document.getElementById('editModalLastName').value,
+                    email: document.getElementById('editModalEmail').value,
+                    serviceArea: document.getElementById('editModalServiceArea').value,
+                    vehicleType: document.getElementById('editModalVehicleType').value,
+                    vehicleRegistration: document.getElementById('editModalVehicleRegistration').value
+                };
+
+                // Send AJAX request to update courier
+                fetch(`/admin/courier/update/${updatedData.id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const alertContainer = document.getElementById('alertContainer');
+                    alertContainer.innerHTML = ''; // Clear any existing alerts
+
+                    if (data.success) {
+                        const successAlert = document.createElement('div');
+                        successAlert.className = 'alert alert-success';
+                        successAlert.role = 'alert';
+                        successAlert.innerHTML = 'Courier updated successfully!';
+                        alertContainer.appendChild(successAlert);
+
+                        // Optionally close the modal and refresh the table or page
+                        $('#EditCourierModal').modal('hide');
+                        location.reload(); // Reload page to reflect changes
+                    } else {
+                        const errorAlert = document.createElement('div');
+                        errorAlert.className = 'alert alert-danger';
+                        errorAlert.role = 'alert';
+                        errorAlert.innerHTML = 'Failed to update courier.';
+                        alertContainer.appendChild(errorAlert);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating courier:', error);
+
+                    const errorAlert = document.createElement('div');
+                    errorAlert.className = 'alert alert-danger';
+                    errorAlert.role = 'alert';
+                    errorAlert.innerHTML = 'There was an error updating the courier.';
+                    document.getElementById('alertContainer').appendChild(errorAlert);
+                });
+            });
+        });
+    });
+});
+
+        </script>
+        
+        
+
+
+{% endblock %}

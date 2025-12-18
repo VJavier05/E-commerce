@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Your Order Summary</h2>
+
+<div class="container my-4">
+    <div class="row">
+        {% for order, items in order_items %}
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">Order ID: {{ order.id }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Status:</strong> {{ order.status }}</p>
+                        <p><strong>Total Amount:</strong> ${{ order.total_amount }}</p>
+                        <p><strong>Shipping Address:</strong><br>
+                            {{ addresses[order.id].street }}, {{ addresses[order.id].barangay }}, 
+                            {{ addresses[order.id].city }}, {{ addresses[order.id].province }},
+                            {{ addresses[order.id].postal_code }}
+                        </p>
+
+                        <h6 class="mt-4">Items:</h6>
+                        <ul class="list-group list-group-flush">
+                            {% for item in items %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Product ID: {{ item.product_id }} | Quantity: {{ item.quantity }} | Price: ${{ item.price }}</span>
+                                    <span class="badge bg-secondary">Total: ${{ item.quantity * item.price }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<a href="{{ url_for('shop') }}" class="btn btn-primary mt-3">Continue Shopping</a>
+{% endblock %}

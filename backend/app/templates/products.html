@@ -1,0 +1,425 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0 mt-4 border-secondary-subtle border-top">
+    <div class="container d-flex align-items-center">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('shop') }}">Products</a></li>
+        </ol>
+
+        <nav class="product-pager ms-auto" aria-label="Product">
+            {% if prev_product %}
+                <a class="product-pager-link product-pager-prev" href="{{ url_for('product', product_id=prev_product.id) }}" aria-label="Previous">
+                    <i class="bi bi-chevron-left"></i>
+                    <span>Prev:</span>
+                </a>
+            {% else %}
+                <a class="product-pager-link product-pager-prev disabled" aria-label="Previous" tabindex="-1">
+                    <i class="bi bi-chevron-left"></i>
+                    <span>Prev</span>
+                </a>
+            {% endif %}
+        
+            {% if next_product %}
+                <a class="product-pager-link product-pager-next" href="{{ url_for('product', product_id=next_product.id) }}" aria-label="Next">
+                    <span>Next:</span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            {% else %}
+                <a class="product-pager-link product-pager-next disabled" aria-label="Next" tabindex="-1">
+                    <span>Next</span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            {% endif %}
+        </nav><!-- End .pager-nav -->
+        
+    </div><!-- End .container -->
+</nav><!-- End .breadcrumb-nav -->
+
+
+<div class="page-content">
+    <div class="container">
+        <div class="product-details-top">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="product-gallery product-gallery-vertical">
+                        <div class="row">
+                            <figure class="product-main-image">
+                                <img id="product-zoom" src="{{ url_for('static', filename='profile_pics/' + product.images[0].image_path) }}" alt="{{ product.name }} image" class="product-image">
+
+                        
+                            </figure><!-- End .product-main-image -->
+
+                            <div id="product-zoom-gallery" class="product-image-gallery">
+                                {% for image in product.images %}
+                                <a class="product-gallery-item" href="#" data-image="{{ url_for('static', filename='profile_pics/' + image.image_path) }}" data-zoom-image="{{ url_for('static', filename='profile_pics/' + image.image_path) }}">
+                                    <img src="{{ url_for('static', filename='profile_pics/' + image.image_path) }}" alt="product side">
+                                </a>
+                                {% endfor %}
+                            </div><!-- End .product-image-gallery -->
+                        </div><!-- End .row -->
+                    </div><!-- End .product-gallery -->
+                </div><!-- End .col-md-6 -->
+
+                <div class="col-md-6">
+                    <div class="product-details">
+                        <h1 class="product-title">{{ product.name }}</h1><!-- End .product-title -->
+
+                        <div class="ratings-container">
+                            <div class="">
+                                {% if reviews|length > 0 %}
+                                <!-- Compute the average rating -->
+                                {% set total_rating = reviews|map(attribute='rating')|sum %}
+                                {% set average_rating = total_rating / reviews|length %}
+                            
+                                <!-- Display the average rating stars -->
+                                <div class="">
+                                    {% for i in range(1, 6) %}
+                                        {% if average_rating >= i %}
+                                            <!-- Fully filled star -->
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                        {% elif average_rating >= i - 0.5 %}
+                                            <!-- Half-filled star -->
+                                            <i class="bi bi-star-half text-warning"></i>
+                                        {% else %}
+                                            <!-- Empty star -->
+                                            <i class="bi bi-star text-muted"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            
+                                <p class="text-muted pt-1">Rating: {{ average_rating|round(1) }}/5</p>
+                            {% else %}
+                                <!-- No reviews found: display empty stars -->
+                                <div class="">
+                                    {% for i in range(1, 6) %}
+                                        <i class="bi bi-star text-muted"></i>
+                                    {% endfor %}
+                                </div>
+                                <p class="text-muted">No reviews yet</p>
+                            {% endif %}
+                            </div><!-- End .ratings -->
+                            <a class="ratings-text" href="#product-review-link" id="review-link">({{ reviews|length }} Reviews)</a>
+                        </div><!-- End .rating-container -->
+
+                   
+
+                        <div class="product-price">
+                            ₱ <span id="product-price">{{ product.variations[0].price }}</span>
+                        </div><!-- End .product-price -->
+                        
+                        <div class="details-filter-row details-row-size">
+                            <label>Color:</label>
+                            <div class="product-nav product-nav-thumbs">
+                                {% for color in unique_colors %}
+                                    <input type="radio" class="btn-check color-option" name="colorOptions" id="color{{ color }}" value="{{ color }}" autocomplete="off" {% if loop.first %}checked{% endif %}>
+                                    <label class="btn btn-outline-secondary me-3" for="color{{ color }}">{{ color }}</label>
+                                {% endfor %}
+                            </div><!-- End .product-nav -->
+                        </div><!-- End .details-filter-row -->
+                        
+                        <!-- Display Sizes Based on Selected Color -->
+                       
+                        <div class="details-filter-row details-row-size" id="size-selection">
+                            <label>Sizes:</label>
+                            <div class="product-nav product-nav-thumbs" id="sizes">
+                                {% for color, sizes in color_to_sizes.items() %}
+                                <div class="size-group {% if loop.first %}visible{% else %}hidden{% endif %}" data-color="{{ color }}">
+                                    <div class="d-flex flex-wrap gap-3"> <!-- Flex container for horizontal layout -->
+                                        {% for size in sizes %}
+                                            {% set variation = product.variations | selectattr('color', 'equalto', color) | selectattr('size', 'equalto', size) | first %}
+                            
+                                            <div class="d-flex flex-column align-items-center size-option-container">
+                                                <input type="radio" class="btn-check size-option" name="sizeOptions{{ color }}" id="size{{ color }}{{ size }}" 
+                                                    value="{{ size }}" autocomplete="off" 
+                                                    {% if variation and variation.stock > 0 %} 
+                                                        data-price="{{ variation.price }}" data-stock="{{ variation.stock }}"
+                                                    {% else %}
+                                                        disabled 
+                                                    {% endif %}
+                                                    {% if loop.first and variation and variation.stock > 0 %}checked{% endif %}>
+                                                <label class="btn btn-outline-secondary {% if not variation or variation.stock == 0 %}disabled{% endif %}" for="size{{ color }}{{ size }}">
+                                                    {{ size }}
+                                                </label>
+                                                <div class="stock-info text-muted fs-5">
+                                                    {% if variation and variation.stock > 0 %}
+                                                        {{ variation.stock }} in stock
+                                                    {% else %}
+                                                        Sold Out
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            
+                            </div><!-- End .product-nav -->
+                        </div><!-- End .details-filter-row -->
+                        
+                        
+               
+                        
+
+                        <div class="details-filter-row details-row-size mb-5">
+                            <label for="qty">Qty:</label>
+                            <div class="product-details-quantity">
+                                <div class="input-group">
+                                    <button class="btn btn-outline-primary" type="button" id="button-minus">−</button>
+                                    <input type="number" id="qty" class="form-control form-control-lg text-center" value="1" min="1" max="10" step="1" data-decimals="0"  required>
+                                    <button class="btn btn-outline-primary" type="button" id="button-plus">+</button>
+                                </div>                            
+                            </div><!-- End .product-details-quantity -->
+                        </div><!-- End .details-filter-row -->
+
+                        <div class="product-details-action">
+                            <!-- <a href="#" class="btn btn-product btn-cart"><span>Checkout</span></a> -->
+
+                            <form action="{{ url_for('buy_now', product_id=product.id) }}" method="POST" style="display: inline;">
+                                <input type="hidden" name="quantity" value="1" id="checkout-quantity">
+                                <input type="hidden" name="selected_color" id="checkout-selected-color" value="">
+                                <input type="hidden" name="selected_size" id="checkout-selected-size" value="">
+                                <input type="hidden" name="price" id="checkout-price-hidden" value="">
+                                <button type="submit" class="btn btn-product btn-cart btn-lg px-5" title="Checkout"><span>Checkout</span></button>
+                            </form>
+
+
+                            <div class="details-action-wrapper">
+                                <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST" style="display: inline;">
+                                    <input type="hidden" name="quantity" value="1" id="cart-quantity">
+                                    <input type="hidden" name="selected_color" id="selected-color" value="">
+                                    <input type="hidden" name="selected_size" id="selected-size" value="">
+                                    <input type="hidden" name="price" id="product-price-hidden" value="">
+                                    <button type="submit" class="btn btn-product btn-wishlist" title="Add to Cart"><span>Add to Cart</span></button>
+                                </form>                            
+                            </div><!-- End .details-action-wrapper -->
+                        </div><!-- End .product-details-action -->
+
+                        <div class="product-details-footer">
+                            <div class="product-cat">
+                                <span>Category:</span>
+                                <a href="#">{{product.category}}</a>
+                            </div><!-- End .product-cat -->
+                        </div><!-- End .product-details-footer -->
+
+                        <div class="seller-info mb-3">
+                            <div class="d-flex align-items-center">
+                                <img src="{{ url_for('static', filename='profile_pics/' + (product.seller.image_file if product.seller and product.seller.image_file else 'default.jpg')) }}" 
+                                    alt="{{ product.seller.shop_name if product.seller else 'Seller' }}'s profile image" 
+                                    class="seller-profile-img me-2" style="width: 30px; height: 30px; border-radius: 50%;">
+                                <div class="seller-details d-flex align-items-center">
+                                    <h5 class="m-0 me-3">{{ product.seller.shop_name if product.seller else 'Unknown Seller' }}</h5>
+                                    <a href="{{ url_for('chat_with_seller', seller_id=product.seller.user.id) }}" class="btn btn-primary me-2">Chat Now</a>
+                                    <a href="{{ url_for('seller_page', seller_id=product.seller.id) }}" class="btn btn-outline-primary">Visit Shop</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        
+                    </div><!-- End .product-details -->
+                </div><!-- End .col-md-6 -->
+            </div><!-- End .row -->
+        </div><!-- End .product-details-top -->
+
+        <div class="product-details-tab">
+            <ul class="nav nav-pills justify-content-center" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="product-desc-link" data-bs-toggle="tab" href="#product-desc-tab" role="tab" aria-controls="product-desc-tab" aria-selected="true">Description</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="product-info-link" data-bs-toggle="tab" href="#product-info-tab" role="tab" aria-controls="product-info-tab" aria-selected="false">Additional information</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="product-shipping-link" data-bs-toggle="tab" href="#product-shipping-tab" role="tab" aria-controls="product-shipping-tab" aria-selected="false">Shipping & Returns</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="product-review-link" data-bs-toggle="tab" href="#product-review-tab" role="tab" aria-controls="product-review-tab" aria-selected="false">Reviews ({{ reviews|length }})</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="product-desc-tab" role="tabpanel" aria-labelledby="product-desc-link">
+                    <div class="product-desc-content">
+                        <h3>Product Information</h3>
+                        <p>{{ product.description }}</p>
+                    </div><!-- End .product-desc-content -->
+                </div><!-- .End .tab-pane -->
+
+
+                <div class="tab-pane fade" id="product-info-tab" role="tabpanel" aria-labelledby="product-info-link">
+                    <div class="product-desc-content">
+                        <h3>Additional Information</h3>
+                        <p>
+                            This section provides key details about the product, including information on its material and  brand. Learn more about the quality and craftsmanship behind this item, ensuring that it meets your expectations for both performance and style.
+                        </p>
+
+                        <h3>Material</h3>
+                            <p>{{ product.material if product.material else "Not specified" }}</p>
+
+
+                        <h3>Brand</h3>
+                            <p>{{ product.brand }}</p>
+
+                        
+
+                     
+                    </div><!-- End .product-desc-content -->
+                </div><!-- .End .tab-pane -->
+                
+                <div class="tab-pane fade" id="product-shipping-tab" role="tabpanel" aria-labelledby="product-shipping-link">
+                    <div class="product-desc-content">
+                        <h3>Delivery & returns</h3>
+                        <p>We deliver to over 100 cities around the Country. For full details of the delivery options we offer, please view our <a href="#">Delivery information</a><br>
+                            We hope you’ll love every purchase! However, if you need to return an item, you can do so within 7 days of receiving it. For complete details on how to initiate a return, please check our Returns Information page.</a></p>
+                    </div><!-- End .product-desc-content -->
+                </div><!-- .End .tab-pane -->
+                <div class="tab-pane fade" id="product-review-tab" role="tabpanel" aria-labelledby="product-review-link">
+                    <div class="reviews">
+                        <h3>Reviews ({{ reviews|length }})</h3>
+                        
+                        {% for review in reviews %}
+                        <div class="review">
+                            <div class="row no-gutters">
+                                <div class="col-auto">
+                                    <h4><a href="#">{{ review.user.last_name }}</a></h4>
+                                    <div class="ratings-container">
+                                        <div class="">
+                                            {% for i in range(1, 6) %}
+                                                {% if review.rating >= i %}
+                                                    <!-- Fully filled star -->
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                {% elif review.rating >= i - 0.5 %}
+                                                    <!-- Half-filled star -->
+                                                    <i class="bi bi-star-half text-warning"></i>
+                                                {% else %}
+                                                    <!-- Empty star -->
+                                                    <i class="bi bi-star text-muted"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <span class="review-date">{{ review.created_at.strftime('%d %b %Y') }}</span>
+                                </div>
+                                <div class="col">
+                                    <h4>{{ review.title }}</h4>
+                    
+                                    <div class="review-content">
+                                        <p>{{ review.content }}</p>
+                                    </div>
+                    
+                                    {% if review.images %}
+                                    <div class="review-images d-flex flex-wrap gap-2">
+                                        {% for image in review.images %}
+                                            <div class="review-image me-3 mb-3">
+                                                <img src="{{ url_for('static', filename='profile_pics/' + image.image_path) }}" 
+                                                     alt="Review Image" class="img-fluid" style="max-width: 150px; height: 100px;">
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                </div><!-- .End .tab-pane -->
+            </div><!-- End .tab-content -->
+        </div><!-- End .product-details-tab -->
+
+    
+    </div><!-- End .container -->
+</div><!-- End .page-content -->
+
+
+<script src="{{ url_for('static', filename='js/product_view.js') }}"></script>
+
+<!-- populate hidden input -->
+<script src="{{ url_for('static', filename='js/product_size.js') }}"></script>
+
+
+
+<script>
+// buyNow.js
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to update the hidden input fields for Buy Now based on user selections
+    function updateBuyNowDetails() {
+        const selectedColor = document.querySelector('input[name="colorOptions"]:checked');
+        const selectedSize = document.querySelector('input[name^="sizeOptions"]:checked');
+        const quantityInput = document.getElementById('qty');
+
+        if (selectedColor) {
+            document.getElementById('checkout-selected-color').value = selectedColor.value;
+        }
+
+        if (selectedSize) {
+            document.getElementById('checkout-selected-size').value = selectedSize.value;
+            // Update the price based on the selected size
+            document.getElementById('checkout-price-hidden').value = selectedSize.getAttribute('data-price');
+        }else {
+            document.getElementById('checkout-selected-size').value = ''; // Clear hidden field
+            document.getElementById('checkout-price-hidden').value = '0.00'; // Reset price
+        }
+
+        // Update the quantity
+        document.getElementById('checkout-quantity').value = quantityInput.value;
+    }
+
+    // Add event listeners to color and size options
+    const colorOptions = document.querySelectorAll('input[name="colorOptions"]');
+    const sizeOptions = document.querySelectorAll('input[name^="sizeOptions"]');
+
+    colorOptions.forEach(option => {
+        option.addEventListener('change', updateBuyNowDetails);
+    });
+
+    sizeOptions.forEach(option => {
+        option.addEventListener('change', updateBuyNowDetails);
+    });
+
+    // Initial update on page load
+    updateBuyNowDetails();
+});
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the main image element
+    const mainImage = document.getElementById('product-zoom');
+    // Get all thumbnail links
+    const thumbnails = document.querySelectorAll('.product-gallery-item');
+
+    thumbnails.forEach(thumbnail => {
+        thumbnail.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent default anchor behavior
+            // Get the new image URL from the clicked thumbnail
+            const newImageUrl = this.getAttribute('data-image');
+            // Update the main image's src attribute
+            mainImage.src = newImageUrl;
+        });
+    });
+});
+
+document.getElementById('qty').addEventListener('input', function (e) {
+            // Allow only digits and prevent "e" or other invalid characters
+            this.value = this.value.replace(/[^\d]/g, ''); // Remove any non-digit characters
+            
+            // Convert the current value to a number for comparison
+            const value = parseInt(this.value, 10);
+            
+            // Ensure the value is within the specified range
+            if (value < 1 ) {
+                this.value = 1; // Reset to the minimum value if less than 1
+            } else if (value > 10) {
+                this.value = 10; // Reset to the maximum value if greater than 10
+            } else {
+                this.value = value; // Allow valid input
+            }
+        });
+
+
+</script>
+{% endblock %}

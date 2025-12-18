@@ -1,0 +1,448 @@
+{% extends "account.html" %}
+{% block dashboard_content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<style>
+    /* General Styling */
+    body{font-family: "Poppins", sans-serif; }
+    .status, .status i { display: flex; align-items: center; }
+    .fa-circle { font-size: 12px; margin-right: 5px; }
+    .online { color: green; } .offline { color: gray; }
+     /* Chat App Styles */
+    .chat-app { display: flex; background-color: #f4f7f6; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); overflow: hidden; width: 100%; max-width: 1200px; height: 580px; margin: 10 50px 10px; justify-self: center; align-self: center; top: auto;}
+    .people-list { position: relative; background-color: #ffffff; padding: 15px; width: 250px; overflow-y: auto; box-shadow: 0px 10px 20px -18px; height: 100%; }
+    .people-list a {text-decoration: none;}
+    .chat { width: 100%; display: flex; flex-direction: column; border-left: 1px solid #ddd; height: 100%; }
+    .chat-header { padding: 10px; background-color: #c4c4ff; border-bottom: 1px solid #eaeaea; border-radius: 5px;}
+    .chat-history { padding: 10px; scroll-behavior: smooth; overflow-y: auto; max-height: 400px; flex-grow: 1; height: 100%; }
+    .chat-history ul { padding: 0; list-style-type: none; }
+    .messageBox { display: flex; align-items: center; background-color: whitesmoke; padding: 0 20px; margin: 0 20px; border-radius: 10px; border: 1px solid #3f3f3f; flex-shrink: 0; }
+    .input-group { position: absolute; margin: 10px; padding: 0.15rem 0.5rem; border-radius: 4px; z-index: 1000; }
+    #messageInput { padding: 10px; flex-grow: 1; border: none; outline: none; font-size: 1rem; padding-left: 15px; }
+    #sendButton { border: none; background: none; cursor: pointer; outline: none; color: black; }
+    /* .go-back-btn {background-color: #007bff;color: #fff;border: none;padding: 10px 20px;font-size: 16px;cursor: pointer;border-radius: 5px;transition: background-color 0.3s ease; float: right; text-decoration: none;}
+    .go-back-btn:hover {background-color: #0069d9;}
+    .go-back-btn:focus {outline: none;box-shadow: 0 0 0 2px #007bff;} */
+
+    .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+    }
+
+    .input {
+        width: auto;
+        padding: 10px;
+        border: none;
+        outline: none;
+        border-radius: 5px;
+        background: rgb(231, 229, 229);
+    }
+
+    .input:focus {
+        border: none; /* Removes any border */
+        outline: none; /* Removes default outline */
+    }
+
+    .input:hover {
+        border-bottom: 2px solid #A3A6FF; /* Removes any border */
+    }
+
+    .input:focus + .outline {
+        transform: scaleX(1);
+    }
+
+    .input-group .outline {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 2px;
+        background-color: #5b5fc7; /* Color of the outline */
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .input-group .input:hover {
+        outline: none; /* Ensure no default outline on hover */
+    }
+
+    .input-group .input:hover + .outline {
+        background-color: #5b5fc7; /* Change color on hover */
+    }
+
+    .people-list ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .people-list .chat-list li {
+        padding: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: background 0.3s;
+    }
+
+    .people-list .chat-list li:hover {
+        background-color: #A3A6FF;
+        border-radius: 5px;
+    }
+
+    .user-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .chat-history .message {
+        background-color: #ffffff;
+        padding: 8px 10px;
+        border-radius: 10px;
+        margin: 10px 0;
+        display: inline-block;
+        position: relative;
+    }
+
+    .chat-history .my-message {
+        background-color: #696cff;
+        text-align: right;
+    }
+
+    .message {
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        max-width: 45%;
+
+    }
+
+    .my-message {
+        background-color: #696cff;
+        color: rgb(255, 255, 255);
+        text-align: right;
+        float: right;
+        clear: both;
+    }
+
+    .other-message {
+        background-color: #5180df;
+        text-align: left;
+        float: left;
+        clear: both;
+    }
+
+    .message-data-time {
+        font-size: 0.75em;
+        color: #ffffff;
+        margin-top: 5px;
+    }
+
+    .message-data.float-right {
+        justify-content: flex-end;
+    }
+
+    .archive-button {
+        display: block;
+        margin-top: 5px;
+        padding: 0;
+        border: none;
+        background: none;
+        font-size: 0.85rem;
+        color: #ffffff;
+        cursor: pointer;
+    }
+
+    .archive-button:hover {
+        text-decoration: underline;
+    }
+
+    #sendButton {
+        border: none;
+        background: none;
+        cursor: pointer;
+        outline: none;
+        /* color: white; */
+        color: black;
+    }
+
+    .fileUploadWrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    .fileUploadWrapper input[type="file"] {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    } 
+
+    /* SCROLL BAR DESIGN */
+    .people-list::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    .people-list::-webkit-scrollbar-track {
+        background: #f1f1f1; 
+    }
+
+    /* Handle */
+    .people-list .chat::-webkit-scrollbar-thumb {
+        background: #fffdfd; 
+    }
+
+    /* Handle on hover */
+    .people-list::-webkit-scrollbar-thumb:hover {
+        background: #ffffff; 
+    }
+
+    .about {
+        flex-grow: 1; /* Allow this to take remaining space */
+    }
+
+    .name {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #ffffff; /* Dark text color */
+    }
+
+    .status {
+        font-size: 0.9rem;
+        color: #ffffff; /* Lighter status color */
+        display: flex;
+        align-items: center; /* Aligns icon with text */
+    }
+
+    .status i {
+        margin-right: 5px; /* Space between icon and text */
+        color: #28a745; /* Green for online */
+    }
+
+    .chat-message clearfix{
+        margin: 0;
+        padding: 0;
+    }
+
+    .status i.offline {
+        color: #dc3545; /* Red for offline */
+    }
+
+    .chat-history ul {
+        list-style-type: none; /* Remove the black dots */
+        padding: 0;            /* Remove default padding */
+        margin: 0;             /* Remove default margin */
+    }
+
+    .new-message {
+        font-weight: bold;
+        border: solid #5b5fc7; /* Light blue background for new messages */
+    }
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .chat-app {
+            flex-direction: column; /* Stack vertically on smaller screens */
+            max-width: 100%; /* Take full width */
+        }
+
+        .people-list {
+            max-width: 100%; /* Full width for people list */
+            padding: 10px;
+        }
+
+        .chat-history {
+            max-height: 300px; /* Reduce chat history height */
+        }
+
+        .chat-message {
+            flex-direction: column; /* Stack input elements */
+        }
+
+        #messageInput {
+            margin-bottom: 10px; /* Space between input and send button */
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .chat-app {
+            flex-direction: column; /* Stack chat and people list vertically */
+            max-width: 100%; /* Full width for chat app */
+            height: auto; /* Allow height to adjust naturally */
+        }
+
+        .people-list {
+            width: 100%; /* Full width for people list */
+            padding: 10px;
+            max-height: 150px; /* Adjust height for mobile */
+        }
+
+        .chat {
+            width: 100%; /* Full width for chat */
+            flex: 1; /* Take up remaining space */
+        }
+
+        .chat-header {
+            text-align: center; /* Center align header on small screens */
+        }
+
+        .chat-history {
+            max-height: 300px; /* Reduce chat history height for mobile */
+        }
+
+        .messageBox {
+            margin: 10px; /* Add spacing around input on mobile */
+        }
+
+        #messageInput {
+            flex: 1;
+            margin-bottom: 10px; /* Add space between input and send button */
+        }
+
+        #sendButton {
+            font-size: 1.2rem; /* Adjust send button size */
+        }
+    }
+
+    @media (max-width: 480px) {
+        .chat-header {
+            padding: 10px; /* Reduce padding on smallest screens */
+            font-size: 0.9rem; /* Smaller font */
+        }
+
+        .user-image, .chat-header img {
+            width: 30px; /* Smaller user images */
+            height: 30px;
+        }
+
+        .chat-history ul {
+            padding: 0 5px; /* More compact padding */
+        }
+
+        .message {
+            max-width: 100%; /* Allow messages to take full width */
+        }
+    }
+
+</style>
+<!-- <h1>Chat with {{ seller_user.first_name }} {{ seller_user.last_name }}</h1> -->
+
+<div class="container">
+    <div class="row vh-auto ">
+        <div class="card chat-app">
+            <div class="chat d-flex flex-column flex-grow-1">
+                <div class="chat-header bg-light p-3 border-bottom d-flex align-items-center">
+                        <div class="col-lg-6">
+                            <div style="float: left; margin-right: 10px;">
+                                <img src="{{ url_for('static', filename='profile_pics/' + (seller_user.image_file if seller_user.image_file else 'default.jpg')) }}" 
+                                    alt="{{ seller_user.shop_name }}'s profile image" 
+                                    class="rounded-circle me-3 border border-secondary" 
+                                    style="width: 80px; height: 80px; object-fit: cover;">     
+                            </div>  
+                            <div class="chat-about" style="margin-top: 10px;">
+                                <h3 class="mb-0 text-primary fw-bold"><strong>{{ seller_user.first_name }} {{ seller_user.last_name }}</strong></h3>
+                                <small  class="text-muted">Last seen: {{ messages[-1].timestamp.strftime('%m-%d-%Y %I:%M %p') if messages else 'N/A' }}</small>
+
+                            </div>
+                        </div>
+                </div>
+
+                <div class="chat-history p-3 flex-grow-1 overflow-auto">
+                    <ul class="list-unstyled">
+                        {% for message in messages %}
+                            {% if not message.is_archived %}
+                            <li class="clearfix mb-3">
+                                <div class="{{ 'text-end' if message.sender_id == current_user.id else 'text-start' }}">
+                                    <div class="d-inline-block p-2 rounded 
+                                        {{ 'bg-primary text-white' if message.sender_id == current_user.id else 'bg-light text-dark' }}">
+                                        {% if message.content %}
+                                        <p class="mb-0">{{ message.content }}</p>
+                                        {% endif %}                             
+                                        {% if message.file_path %}
+                                            {% if message.file_path.endswith(('.png', '.jpg', '.jpeg', '.gif')) %}
+                                                <img src="{{ url_for('static', filename='uploads/' + message.file_path.split('/')[-1]) }}" alt="Image" style="max-width: 200px; max-height: 200px; border-radius: 10px;">
+                                            {% elif message.file_path.endswith(('.mp4', '.webm', '.ogg')) %}
+                                                <video controls style="max-width: 200px; max-height: 200px;">
+                                                    <source src="{{ url_for('static', filename='uploads/' + message.file_path.split('/')[-1]) }}" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                            {% endif %}
+                                        {% endif %}
+                                       
+                                    </div>
+                                    <small class="d-block text-muted mt-1">
+                                        {{ message.timestamp.strftime('%Y-%m-%d %I:%M %p') }}
+                                    </small>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <div class="chat-message clearfix" style="margin-top: 10px;">
+                    <form action="{{ url_for('chat_seller_send_message', receiver_id=seller_user.id) }}" method="POST" enctype="multipart/form-data" onsubmit="return validateReceiver()">
+                        <div class="messageBox border-primary">
+                            <div class="fileUploadWrapper">
+                                <input type="file" id="file" name="file">
+                                <label for="file">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4 4V20H20V4H4ZM6 18V6H18V18H6ZM12 8H14V12H16L12 16L8 12H10V8H12Z" fill="black"/>
+                                    </svg>
+                                </label>
+                            </div>
+                            <input type="text" id="messageInput" name="message" placeholder="Enter your message here...">
+                            <button id="sendButton" type="submit">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Function to scroll to the bottom of the chat history
+        function scrollToBottom() {
+            const chatHistory = document.querySelector('.chat-history');
+            if (chatHistory) {
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+        }
+
+        // Fetch updated chat messages and people list from the server
+        function refreshContent() {
+            fetch(window.location.href, { method: 'GET' })
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newMessages = doc.querySelector('.chat-history ul').innerHTML;
+                    
+                    // Update chat history and people list
+                    document.querySelector('.chat-history ul').innerHTML = newMessages;
+
+                    scrollToBottom();
+                })
+                .catch(error => console.error('Error refreshing content:', error));
+        }
+
+        // Initial scroll to bottom when the page loads
+        scrollToBottom();
+        setInterval(refreshContent, 5000); // Auto-refresh every 5 seconds
+    });
+</script>
+{% endblock %}

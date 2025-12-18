@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% if title %}
+        <title>SW - {{title}}</title>
+    {% else %}
+        <title>SW</title>
+    {% endif %}
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+   
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" 
+    integrity="sha256-oP6J6Z9zNKwC/ZnnA38VyzMZoHvnX1mn89G++Aqvn5Y=" 
+    crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- HEADER -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/main.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/colors.css')}}">
+
+
+
+    
+
+</head>
+<body>
+    <div class="page-wrapper">
+        <header class="header header-2 header-intro-clearance">
+            <div class="header-top p-3">
+                <div class="container">
+                    <div class="header-left">
+
+                        {% if current_user.is_authenticated %}
+                            <a href="{{url_for('account_profile')}}">Welcome, {{ current_user.first_name }} {{ current_user.last_name }}</a>
+                        {% else %}
+                            <a href="{{url_for('account_profile')}}">Welcome to SheWear</a>
+                        {% endif %}
+                    </div><!-- End .header-left -->
+
+                    <div class="header-right">
+
+                        <ul class="top-menu">
+                            <li>
+                                <ul>
+
+
+                                    {% if current_user.is_authenticated %}
+                                        <li><a href="{{url_for('logout')}}">Logout</a></li>
+
+                                    {% else %}
+                                        <li><a href="{{url_for('login')}}">Sign up | Login</a></li>
+                                    {% endif %}
+                                </ul>
+                                
+                            </li>
+
+                        </ul><!-- End .top-menu -->
+                    </div><!-- End .header-right -->
+
+                </div><!-- End .container -->
+            </div><!-- End .header-top -->
+
+
+            <div class="header-middle">
+                <div class="container">
+                    
+                    <!-- HERE THE MOBILE RESPONSIVE (TBC) -->
+
+
+                    <div class="header-left">
+                        <button class="mobile-menu-toggler">
+                            <span class="visually-hidden">Toggle mobile menu</span>
+
+                            <i class="bi bi-list"></i>
+                            
+                        </button>
+                        
+                        <a href="{{ url_for('home') }}" class="logo">
+                            <img src="{{ url_for('static', filename='img/18.png') }}" alt="SheWear" class="logo-img">
+                        </a>
+                    </div>
+
+                   
+                    
+                    <div class="header-center">
+                        <div class="header-search header-search-extended header-search-visible header-search-no-radius d-none d-lg-block">
+                            <!-- DISPLAY NONE TO??? -->
+                            <a href="#" class="search-toggle" role="button"><i class="bi bi-search"></i></a>
+                            <form action="{{ url_for('shop') }}" method="get">
+                                <div class="header-search-wrapper search-wrapper-wide">
+                                    <label for="q" class="visually-hidden">Search</label>
+                                    <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..." value="{{ search_query }}">
+                                    <button class="btn btn-transparent" type="submit"><i class="bi bi-search"></i></button>
+                                </div>
+                            </form>
+                        </div><!-- End .header-search -->
+                    </div>
+
+                    <div class="header-right">
+                        <div class="account">
+                            <a href="{% if current_user.role == 'admin' %}
+                                        {{ url_for('admin') }}
+                                    
+                                    {% elif current_user.role == 'seller' %}
+                                        {{ url_for('seller') }}
+
+                                    {% elif current_user.role == 'courier' %}
+                                        {{ url_for('courier') }}
+
+                                        
+                                    {% else %}
+                                        {{ url_for('account_profile') }}
+                                    {% endif %}"
+
+                             title="My account">
+                                <div class="icon">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                                <p>Account</p>
+                            </a>
+                        </div><!-- End .compare-dropdown -->
+
+                        <!-- NOTIFICATION -->
+                        <div class="wishlist">
+                            {% if current_user.role in ['admin'] %}
+                                <a href="{{ url_for('add_notification') }}" title="Dashboard">
+                                    <div class="icon">
+                                        <i class="bi bi-bell"></i>
+                                        <span class="wishlist-count badge notification-count" id="notification-count"
+                                                style="display: inline-block; background-color: #c44d56; color: white; border-radius: 100%; padding: 3px 5px; min-width: 10px; text-align: center;">
+                                        </span>
+                                    </div>
+                                    <p>Notification</p>
+                                </a>
+                            {% elif current_user.role == 'user' %}
+                                <a href="#" id="notificationBell" title="Promotion">
+                                    <div class="icon">
+                                        <i class="bi bi-bell"></i>
+                                        {% if g.unseen_count > 0 %}
+
+                                            <span class="cart-count notification-count position-absolute top-0 end-0">{{ g.unseen_count if g.unseen_count > 0 else '0' }}</span>
+                                        {% endif %}
+
+                                    </div>
+                                    <p>Notification</p>
+                                </a>
+                                <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="notificationModalLabel">Notifications</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body" id="notificationBody">
+                                                <p>Loading notifications...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% elif current_user.role == 'seller' %}
+                                <a href="#" id="notification-icon" title="Nnotification">
+                                    <div class="icon">
+                                        <i class="bi bi-bell"></i>
+                                        {% if g.unseen_count > 0 %}
+
+                                        <span class="cart-count notification-count position-absolute top-0 end-0">{{ g.unseen_count if g.unseen_count > 0 else '0' }}</span>
+                                    {% endif %}
+                                    </div>
+                                    <p>Notifications</p>
+                                </a>
+                                
+                                <!-- Notification Sidebar -->
+                                <div id="notification-sidebar" class="notification-sidebar position-fixed end-0 top-0 bg-light shadow-lg"
+                                    style="width: 400px; height: 100%; display: none; overflow-y: auto; z-index: 1050; transition: transform 0.3s ease-in-out;">
+                                    <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+                                        <h5 class="mb-0">Notifications</h5>
+                                        <button type="button" id="close-notification-sidebar" class="btn-close"></button>
+                                    </div>
+                                    <div id="notification-list" class="p-3">
+                                        <p class="text-muted text-center">Loading notifications...</p>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <a href="{{url_for('login')}}" title="Unauthorized">
+                                    <div class="icon">
+                                        <i class="bi bi-bell"></i>
+                                        {% if g.unseen_count > 0 %}
+
+                                            <span class="cart-count notification-count position-absolute top-0 end-0">{{ g.unseen_count if g.unseen_count > 0 else '0' }}</span>
+                                        {% endif %}
+
+                                    </div>
+                                    <p>Notifications</p>
+                                </a>
+                            {% endif %}
+                        </div>
+
+                        
+
+                        <div class="dropdown cart-dropdown">
+                            <a href="#" class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+                                <div class="icon">
+                                    <i class="bi bi-cart"></i>
+                                    {% if cart_items | length > 0 %}
+                                        <span class="cart-count notification-count">{{ cart_items | length }}</span>
+                                    {% endif %}                               
+                             </div>
+                                <p>Cart</p>
+                            </a>
+                        
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="dropdown-cart-products">
+                                    {% for item in cart_items %}
+                                    <div class="product">
+                                        <div class="product-cart-details">
+                                            <h4 class="product-title">
+                                                <a href="{{ url_for('product', product_id=item.product_id) }}">{{ item.product.name }}</a>
+                                            </h4>
+                        
+                                            <span class="cart-product-info">
+                                                <span class="cart-product-qty">{{ item.quantity }}</span>
+                                                x ₱{{ item.price }}
+                                            </span>
+                                        </div><!-- End .product-cart-details -->
+                        
+                                        <figure class="product-image-container">
+                                            <a href="{{ url_for('product', product_id=item.product_id) }}" class="product-image">
+                                                {% if item.product.images %}
+                                                <img src="{{ url_for('static', filename='profile_pics/' + item.product.images[0].image_path) }}" alt="{{ item.product.name }}" style="width: 50px; height: auto;">
+                                            {% else %}
+                                                <img src="{{ url_for('static', filename='profile_pics/default.jpg') }}" alt="Default Image" style="width: 50px; height: auto;">
+                                            {% endif %}                                            </a>
+                                        </figure>
+                                    </div><!-- End .product -->
+                                    {% endfor %}
+                                </div><!-- End .cart-product -->
+                        
+                                <div class="dropdown-cart-total">
+                                    <span>Total</span>
+                                    <span class="cart-total-price">₱{{ cart_total }}</span>
+                                </div><!-- End .dropdown-cart-total -->
+                        
+                                <div class="dropdown-cart-action d-flex">
+                                    <a href="{{ url_for('view_cart') }}" class="btn btn-primary ms-auto">View Cart</a>
+                                </div><!-- End .dropdown-cart-action -->
+                            </div><!-- End .dropdown-menu -->
+                        </div><!-- End .cart-dropdown -->
+                        
+                    </div><!-- End .header-right -->
+                </div><!-- End .container -->                
+            </div><!-- End .header-middle -->
+
+            <div class="header-bottom sticky-header">
+                <div class="container">
+                    <div class="header-left">
+                        <div class="dropdown category-dropdown">
+
+                            <!-- class="dropdown-toggle" -->
+                            <a href="#" class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Browse Categories">
+                                <!-- <i class="bi bi-list"></i> -->
+                                Browse Categories
+                            </a>
+
+                            <div class="dropdown-menu">
+                                <nav class="side-nav">
+                                    <ul class="menu-vertical sf-arrows">
+                                        <li>
+                                            <a href="{{ url_for('shop', category=None, q=search_query) }}">All Products</a>
+                                        </li>
+                                        <!-- Category links -->
+                                        <li><a href="{{ url_for('shop', category='Dress & Skirt', q=search_query) }}">Dresses & Skirts</a></li>
+                                        <li><a href="{{ url_for('shop', category='Top & Blouse', q=search_query) }}">Tops & Blouses</a></li>
+                                        <li><a href="{{ url_for('shop', category='Activewear', q=search_query) }}">Activewear</a></li>
+                                        <li><a href="{{ url_for('shop', category='Lingerie & Sleepwear', q=search_query) }}">Lingerie & Sleepwear</a></li>
+                                        <li><a href="{{ url_for('shop', category='Jackets & Coats', q=search_query) }}">Jackets & Coats</a></li>
+                                        <li><a href="{{ url_for('shop', category='Shoes & Accessories', q=search_query) }}">Shoes & Accessories</a></li>
+                          
+                                    </ul><!-- End .menu-vertical -->
+                                </nav><!-- End .side-nav -->
+                            </div><!-- End .dropdown-menu -->
+                        </div><!-- End .category-dropdown -->
+                    </div><!-- End .header-left -->
+
+                    <div class="header-center header-bt">
+                        <nav class="main-nav">
+                            <ul class="menu sf-arrows">
+                                <li class="megamenu-container  {% if request.endpoint == 'home' %}active{% endif %}">
+                                    <a href="{{url_for('home')}}" class="">Home</a>                         
+                                </li>
+                                <li class="{% if request.endpoint == 'shop' or request.endpoint == 'product' %}active{% endif %}">
+                                    <a href="{{url_for('shop')}}" class="">Shop</a>
+
+                                </li>
+        
+                                <li>
+                                    <a href="#" class="{% if request.endpoint in ['about', 'contact', 'faq'] %}active{% endif %}">Pages<i class="bi bi-chevron-down"></i></a>
+
+                                    <ul>
+                                        <li>
+                                            <a href="{{ url_for('about') }}" class="">About</a>   
+                                        </li>
+                                        <li>
+                                            <a href="{{ url_for('contact') }}" class="">Contact</a>
+                                        </li>
+                                        <li><a href="{{ url_for('faq') }}">FAQs</a></li>
+
+                                    </ul>
+                                </li>
+          
+              
+                            </ul><!-- End .menu -->
+                        </nav><!-- End .main-nav -->
+                    </div><!-- End .header-center -->
+
+                    <div class="header-right">
+                        <i class="bi bi-tags"></i><p>Clearance<span class="highlight">&nbsp;Up to 30% Off</span></p>
+                    </div>
+                </div><!-- End .container -->
+            </div><!-- End .header-bottom -->
+        </header>
+
+            <main class="main">
+
+                <!-- MESSAGE SUCCESS OR INVALID -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages%}
+                        <div class="alert alert-{{ category }} d-flex align-items-center mx-auto"> {{message}}         
+                        
+                        <button type="button" class="btn-close ms-3" data-bs-dismiss="alert" aria-label="Close" style="float: right;"></button>
+                        </div>
+                    {% endfor%}
+
+                {% endif %}
+          {% endwith %}
+
+                {% block content%}
+                {% endblock %}
+            </main>
+            
+
+
+          
+
+
+     
+
+
+
+
+    </div>
+
+    <div class="mobile-menu-container mobile-menu-light">
+        <div class="mobile-menu-wrapper">
+            <span class="mobile-menu-close"><i class="bi bi-x-lg"></i></span>
+            
+            <form action="#" method="get" class="mobile-search">
+                <label for="mobile-search" class="visually-hidden">Search</label>
+                <input type="search" class="form-control" name="mobile-search" id="mobile-search" placeholder="Search product ..." required>
+                <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+            </form>
+
+            <ul class="nav nav-pills-mobile nav-border-anim" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="mobile-menu-link" data-bs-toggle="tab" href="#mobile-menu-tab" role="tab" aria-controls="mobile-menu-tab" aria-selected="true">Menu</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="mobile-cats-link" data-bs-toggle="tab" href="#mobile-cats-tab" role="tab" aria-controls="mobile-cats-tab" aria-selected="false">Categories</a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="mobile-menu-tab" role="tabpanel" aria-labelledby="mobile-menu-link">
+                    <nav class="mobile-nav">
+                        <ul class="mobile-menu">
+                            <li class="active">
+                                <a href="index.html">Home</a>
+
+                 
+                            </li>
+                            <li>
+                                <a href="category.html">Shop</a>
+                          
+                            </li>
+                            <li>
+                                <a href="product.html" class="sf-with-ul">Vendors</a>
+                                <ul>
+                                    <li><a href="product.html">Vendor 1</a></li>
+                                    <li><a href="product-centered.html">Vendor 1</a></li>
+                                    <li><a href="product-extended.html">Vendor 1</li>
+                                    <li><a href="product-gallery.html">Vendor 1</a></li>
+                                    <li><a href="product-sticky.html">Vendor 1</a></li>
+                                    <li><a href="product-sidebar.html">Vendor 1</a></li>
+                                    <li><a href="product-fullwidth.html">Vendor 1</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="#">Pages</a>
+                                <ul>
+                                    <li><a href="product-gallery.html">Vendor 1</a></li>
+                                    <li><a href="product-sticky.html">Vendor 1</a></li>
+                                    <li><a href="product-sidebar.html">Vendor 1</a></li>
+                                    <li><a href="product-fullwidth.html">Vendor 1</a></li>
+                                </ul>
+                            </li>
+                       
+                    
+                        </ul>
+                    </nav><!-- End .mobile-nav -->
+                </div><!-- .End .tab-pane -->
+                <div class="tab-pane fade" id="mobile-cats-tab" role="tabpanel" aria-labelledby="mobile-cats-link">
+                    <nav class="mobile-cats-nav">
+                        <ul class="mobile-cats-menu">
+                            <li><a href="#">Dresses & Skirts</a></li>
+                            <li><a href="#">Tops & Blouses</a></li>
+                            <li><a href="#">Activewear & Yoga Pants</a></li>
+                            <li><a href="#">Lingerie & Sleepwear</a></li>
+                            <li><a href="#">Jackets & Coats</a></li>
+                            <li><a href="#">Shoes & Accessories</a></li>
+              
+                        </ul><!-- End .mobile-cats-menu -->
+                    </nav><!-- End .mobile-cats-nav -->
+                </div><!-- .End .tab-pane -->
+            </div><!-- End .tab-content -->
+
+
+        </div><!-- End .mobile-menu-wrapper -->
+    </div><!-- End .mobile-menu-container -->
+    
+
+
+  <!-- jQuery (required for Owl Carousel) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+
+    
+
+
+  <!-- Owl Carousel JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+
+  <script src="{{ url_for('static', filename='js/price_range.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/product_qty.js') }}"></script>
+
+
+  <script src="{{ url_for('static', filename='js/load_address.js') }}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+  <script src="{{ url_for('static', filename='js/lopez.js') }}"></script>
+  <link rel="stylesheet" href="{{url_for ('static', filename='js/lopez.css')}}">
+    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+
+
+    {% if current_user.is_authenticated %}
+    <script>
+        let idleTime = 0;
+        const idleLimit = 10; // 10 seconds for testing
+    
+        function resetIdleTimer() {
+            idleTime = 0;
+        }
+    
+        // Reset idle timer on user activity
+        window.onload = resetIdleTimer;
+        document.onmousemove = resetIdleTimer;
+        document.onkeydown = resetIdleTimer;
+        document.onclick = resetIdleTimer;
+        document.onscroll = resetIdleTimer;
+    
+        // Start checking for idle
+        setInterval(() => {
+            idleTime++;
+            if (idleTime >= idleLimit) {
+                window.location.href = "/logout";
+            }
+        }, 1000); // Check every second
+    </script>
+    {% endif %}
+    
+    
+
+
+</body>
+</html>

@@ -1,0 +1,247 @@
+
+{% extends "account.html" %}
+{% block dashboard_content %}
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h3>My Address</h3>
+        <button type="button" class="btn btn-primary update-btn" data-bs-toggle="modal" data-bs-target="#add_address">
+            <i class="bi bi-plus-lg pe-2"></i>Add Address
+        </button>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="add_address" tabindex="-1" aria-labelledby="add_address_modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add Address</h1>
+                <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addressForm" method="POST" action="" novalidate>
+
+                {{ address_form.hidden_tag()  }}
+
+                <div class="row g-3">
+        
+                    <!-- Address Title Field -->
+                    <div class="col-md-6">
+                        <label for="address_title" class="form-label">Address Title</label>
+                        {% if address_form.address_name.errors %}
+                            {{ address_form.address_name(class="form-control form-control-lg is-invalid", id="address_title", placeholder="Address Title") }}
+                            <div class="invalid-feedback">
+                                {% for error in address_form.address_name.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ address_form.address_name(class="form-control form-control-lg", id="address_title", placeholder="Address Title") }}
+                        {% endif %}
+                    </div>
+                
+                    <!-- Phone Number Field -->
+                    <div class="col-md-6">
+                        <label for="telephone_no" class="form-label">Phone Number</label>
+                        {{ address_form.telephone_no(class="form-control form-control-lg", id="telephone_no", placeholder="Enter your phone number", oninput="formatPhoneNumber(this)", maxlength="18") }}
+                        {% if address_form.telephone_no.errors %}
+                            <div class="text-danger">{{ address_form.telephone_no.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                
+                    <!-- Region Field -->
+                    <div class="mb-3 col-md-6">
+                        <label for="courierRegion" class="form-label">Region</label>
+                        {% if address_form.region.errors %}
+                            {{ address_form.region(class="form-select form-select-lg is-invalid", id="courierRegion", onchange="loadProvinces(this.value)") }}
+                            <div class="invalid-feedback">
+                                {% for error in address_form.region.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ address_form.region(class="form-select form-select-lg", id="courierRegion", onchange="loadProvinces(this.value)") }}
+                        {% endif %}
+                    </div>
+                
+                    <!-- Province Field -->
+                    <div class="mb-3 col-md-6">
+                        <label for="courierProvince" class="form-label">Province</label>
+                        {% if address_form.province.errors %}
+                            {{ address_form.province(class="form-select form-select-lg is-invalid", id="courierProvince") }}
+                            <div class="invalid-feedback">
+                                {% for error in address_form.province.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ address_form.province(class="form-select form-select-lg", id="courierProvince") }}
+                        {% endif %}
+                    </div>
+                
+                        <!-- City -->
+                        <div class="mb-3 col-md-6">
+                            {% if address_form.city.errors %}
+                                <label for="courierCity" class="form-label">City</label>
+                                {{ address_form.city(class="form-select form-select-lg is-invalid", id="courierCity") }}
+                                <div class="invalid-feedback">
+                                    {% for error in address_form.city.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <label for="courierCity" class="form-label">City</label>
+                                {{ address_form.city(class="form-select form-select-lg", id="courierCity") }}
+                            {% endif %}
+                        </div>
+                
+                    <!-- Barangay -->
+                <div class="mb-3 col-md-6">
+                    {% if address_form.barangay.errors %}
+                        <label for="courierBarangay" class="form-label">Barangay</label>
+                        {{ address_form.barangay(class="form-select form-select-lg is-invalid", id="courierBarangay") }}
+                        <div class="invalid-feedback">
+                            {% for error in address_form.barangay.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <label for="courierBarangay" class="form-label">Barangay</label>
+                        {{ address_form.barangay(class="form-select form-select-lg", id="courierBarangay") }}
+                    {% endif %}
+                </div>
+
+                    <div class="col-md-12">
+                        <label for="postal_Code" class="form-label">Postal Code</label>
+                        {{ address_form.postal_code(class="form-control form-control-lg", id="postal_code", placeholder="Enter Postal Code") }}
+                    </div>    
+
+                    <div class="col-md-12">
+                        <label for="street_inpt" class="form-label">Street Name, Building / House No.</label>
+                        {{ address_form.street(class="form-control", id="street_inpt", rows="3") }}
+                    </div>                
+                
+                </div>
+            <div class="modal-footer mt-5">
+                <button type="button" class="btn btn-lg btn-secondary" data-bs-dismiss="modal">Close</button>
+                {{ address_form.submit(class="btn btn-lg btn-primary") }}
+
+            </form>
+            </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <div class="tab-pane border-top pt-4">
+        {% for address in posts %}
+        <div class="card mt-1 p-3 mb-4 shadow-sm">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title fw-semibold d-inline-block me-2 fs-3">{{ address.address_name }}</h5>
+                    <h6 class="card-subtitle text-body-secondary d-inline-block border-start ps-3 fs-4 opacity-75">{{ address.telephone_no }}</h6>
+    
+                    <!-- Badge for default address -->
+                    {% if address.is_default %}
+                        <span class="badge bg-success ms-3 fs-5">Default Address</span>
+                    {% endif %}
+                </div>
+    
+                <div class="btn-address-change">
+                    <button type="button" class="btn btn-warning me-1" data-bs-toggle="modal" data-bs-target="#edit_address_{{ address.id }}">Edit</button>
+                    <button type="button" class="btn btn-danger me-1" data-bs-toggle="modal" data-bs-target="#delete_address_{{ address.id }}">Delete</button>
+                    <form action="{{ url_for('set_default_address', address_id=address.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-outline-info">Set as Default</button>
+                    </form>
+                </div>
+            </div>
+    
+            <p class="card-text ms-3 mb-0">{{ address.street }}, {{ address.barangay }},</p>
+            <p class="card-text ms-3 pb-4">{{ address.city }}, {{ address.province }}, {{ address.region }}, {{ address.postal_code }}</p>
+        </div>
+    
+        <!-- Modal -->
+        <div class="modal fade" id="delete_address_{{ address.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Confirmation</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Do you want to delete <b>"{{ address.address_name }}"</b> address?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-lg btn-secondary" data-bs-dismiss="modal">Close</button>
+                        
+                        <form action="{{ url_for('delete_address', id=address.id) }}" method="POST">
+                            <button class="btn btn-lg btn-danger" value="Delete" type="submit">Yes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+        
+
+
+    {% for address in current_user.addresses %}
+
+    <!-- Edit Address Modal -->
+    <div class="modal fade" id="edit_address_{{ address.id }}" tabindex="-1" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ url_for('edit_address', address_id=address.id) }}" method="POST">
+                        <div class="mb-3">
+                            <label for="address_name" class="form-label">Address Name</label>
+                            <input type="text" class="form-control form-control-lg" id="address_name" name="address_name" value="{{ address.address_name }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="street" class="form-label">Street</label>
+                            <input type="text" class="form-control form-control-lg" id="street" name="street" value="{{ address.street }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="barangay" class="form-label">Barangay</label>
+                            <input type="text" class="form-control form-control-lg" id="barangay" name="barangay" value="{{ address.barangay }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control form-control-lg" id="city" name="city" value="{{ address.city }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="province" class="form-label">Province</label>
+                            <input type="text" class="form-control form-control-lg" id="province" name="province" value="{{ address.province }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="region" class="form-label">Region</label>
+                            <input type="text" class="form-control form-control-lg" id="region" name="region" value="{{ address.region }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="postal_code" class="form-label">Postal Code</label>
+                            <input type="text" class="form-control form-control-lg" id="postal_code" name="postal_code" value="{{ address.postal_code }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="telephone_no" class="form-label">Telephone Number (optional)</label>
+                            <input type="text" class="form-control form-control-lg" id="telephone_no" name="telephone_no" value="{{ address.telephone_no }}">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg float-end">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+
+        
+
+{% endblock %}

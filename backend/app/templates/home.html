@@ -1,0 +1,610 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div  class="intro-slider-container">
+    <div id="Main-carousel" class="carousel slide" data-bs-ride="carousel">
+
+
+        <div class="carousel-indicators pb-3">
+            <button type="button" data-bs-target="#Main-carousel " data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#Main-carousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#Main-carousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+
+
+        <div class="carousel-inner">
+            <div class="carousel-item active c-items">
+                <a href="#">
+                    <div class="carousel-image-container">
+                        <img src="{{ url_for('static', filename='img/banner1.png') }}" class="d-block w-100 fit-image" alt="Image 1 Slider">
+                    </div>
+                </a>
+            </div>
+
+            
+            <div class="carousel-item c-items">
+                <a href="#">
+                    <div class="carousel-image-container">
+                        <img src="{{ url_for('static', filename='img/banner2.png') }}" class="d-block w-100 fit-image" alt="Image 2 Slider">
+                    </div>
+                </a>
+            </div>
+
+            <div class="carousel-item c-items">
+                <a href="#">
+                    <div class="carousel-image-container">
+                        <img src="{{ url_for('static', filename='img/banner3.png') }}" class="d-block w-100 fit-image" alt="Image 3 Slider">
+                    </div>
+                </a>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#Main-carousel" data-bs-slide="prev">
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#Main-carousel" data-bs-slide="next">
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="container my-5">
+        <h3 class="text-center mb-4">Explore Popular Categories</h3>
+        <div class="logo-carousel">
+            <div class="logo-item text-center">
+                <a href="{{ url_for('shop', category='Dress & Skirt', q=search_query) }}" class="d-flex flex-column align-items-center text-decoration-none">
+                    <div class="logo-circle mb-2">
+                        <img src="static/img/dress (2).png" alt="Logo 1" class="img-fluid">
+                    </div>
+                    <p class="fw-medium fs-4">Dress and Skirt</p>
+                </a>
+            </div>
+            
+            <div class="logo-item text-center">
+                <a href="{{ url_for('shop', category='Top & Blouse', q=search_query) }}"  class="d-flex flex-column align-items-center text-decoration-none">
+                    <div class="logo-circle">
+                        <img src="static/img/top.png" alt="Logo 2">
+                    </div>
+                    <p class="fw-medium fs-4">Top and Blouse</p>
+                </a>
+            </div>
+            <div class="logo-item text-center">
+                <a href="{{ url_for('shop', category='Activewear', q=search_query) }}"  class="d-flex flex-column align-items-center text-decoration-none">
+                    <div class="logo-circle">
+                        <img src="static/img/active.png" alt="Logo 3">
+                    </div>
+                    <p class="fw-medium fs-4">Activewear</p>
+                </a>
+            </div>
+            <div class="logo-item text-center">
+                <a href="{{ url_for('shop', category='Lingerie', q=search_query) }}" class="d-flex flex-column align-items-center text-decoration-none">
+                    <div class="logo-circle">
+                        <img src="static/img/ling.png" alt="Logo 4">
+                    </div>
+                    <p class="fw-medium fs-4">Lingerie</p>
+                </a>
+            </div>
+            <div class="logo-item text-center">
+                <a href="{{ url_for('shop', category='Jackets', q=search_query) }}" class="d-flex flex-column align-items-center text-decoration-none">
+                    <div class="logo-circle">
+                        <img src="static/img/jacket_x.png" alt="Logo 5">
+                    </div>
+                    <p class="fw-medium fs-4">Jackets</p>
+                </a>
+            </div>
+            <div class="logo-item text-center">
+                <a href="{{ url_for('shop', category='Coats', q=search_query) }}" class="d-flex flex-column align-items-center text-decoration-none">
+                    <div class="logo-circle">
+                        <img src="static/img/coat.png" alt="Logo 6">
+                    </div>
+                    <p class="fw-medium fs-4">Coats</p>
+                </a>
+            </div>
+            <div class="logo-item text-center">
+                <a href="{{ url_for('shop', category='Shoes', q=search_query) }}" class="d-flex flex-column align-items-center text-decoration-none">
+                    <div class="logo-circle">
+                        <img src="static/img/shoes.png" alt="Logo 7">
+                    </div>
+                    <p class="fw-medium fs-4">Shoes</p>
+                 </a>
+            </div>
+            <div class="logo-item text-center">
+                <a href="{{ url_for('shop', category='Accessories', q=search_query) }}" class="d-flex flex-column align-items-center text-decoration-none">
+                    <div class="logo-circle">
+                        <img src="static/img/necklace_icon.png" alt="Logo 8">
+                    </div>
+                    <p class="fw-medium fs-4">Accessories</p>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="banner-group mt-5">
+      <div class="container">
+          <div class="row">
+              <div class="col-md-12 col-lg-5">
+                  <div class="banner banner-large banner-overlay banner-overlay-light banner-img-1">
+                      <a href="#">
+                          <img src="https://images.pexels.com/photos/18714714/pexels-photo-18714714/free-photo-of-logo-on-a-black-wet-jacket.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Banner">
+                      </a>
+
+                      <div class="banner-content banner-content-top">
+                          <h4 class="banner-subtitle text-white">Clearence</h4><!-- End .banner-subtitle -->
+                          <h3 class="banner-title text-white">Patagonia Leather Jacker</h3><!-- End .banner-title -->
+                          <div class="banner-text text-white">from ₱ 1200</div><!-- End .banner-text -->
+                          <a href="#" class="btn btn-outline-white banner-link">Shop Now<i class="icon-long-arrow-right"></i></a>
+                      </div><!-- End .banner-content -->
+                  </div><!-- End .banner -->
+              </div><!-- End .col-lg-5 -->
+
+              <div class="col-md-6 col-lg-3">
+                  <div class="banner banner-overlay banner-img-1">
+                      <a href="#">
+                          <img src="https://images.pexels.com/photos/5734462/pexels-photo-5734462.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Banner">
+                      </a>
+
+                      <div class="banner-content banner-content-bottom">
+                          <h4 class="banner-subtitle text-white">On Sale</h4><!-- End .banner-subtitle -->
+                          <h3 class="banner-title text-white">Supreme <br>Jackets</h3><!-- End .banner-title -->
+                          <div class="banner-text text-white">from ₱ 800</div><!-- End .banner-text -->
+                          <a href="#" class="btn btn-outline-white banner-link">Discover Now<i class="icon-long-arrow-right"></i></a>
+                      </div><!-- End .banner-content -->
+                  </div><!-- End .banner -->
+              </div><!-- End .col-lg-3 -->
+
+              <div class="col-md-6 col-lg-4">
+                  <div class="banner banner-overlay banner-img-2">
+                      <a href="#">
+                          <img src="https://images.pexels.com/photos/267301/pexels-photo-267301.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Banner">
+                      </a>
+
+                      <div class="banner-content banner-content-top">
+                          <h4 class="banner-subtitle text-white">New Arrivals</h4><!-- End .banner-subtitle -->
+                          <h3 class="banner-title text-white">Fashion <br>Shoes</h3><!-- End .banner-title -->
+                          <a href="#" class="btn btn-outline-white banner-link">Discover Now<i class="icon-long-arrow-right"></i></a>
+                      </div><!-- End .banner-content -->
+                  </div><!-- End .banner -->
+
+                  <div class="banner banner-overlay banner-overlay-light banner-img-2">
+                      <a href="#">
+                          <img src="https://images.pexels.com/photos/634538/pexels-photo-634538.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Banner">
+                      </a>
+
+                      <div class="banner-content banner-content-top">
+                          <h4 class="banner-subtitle text-white">On Sale</h4><!-- End .banner-subtitle -->
+                          <h3 class="banner-title text-white">Handy Bagy</h3><!-- End .banner-title -->
+                          <div class="banner-text text-white">up to 30% off</div><!-- End .banner-text -->
+                          <a href="#" class="btn btn-outline-white banner-link">Shop Now<i class="icon-long-arrow-right"></i></a>
+                      </div><!-- End .banner-content -->
+                  </div><!-- End .banner -->
+              </div><!-- End .col-lg-4 -->
+          </div><!-- End .row -->
+      </div><!-- End .container -->
+  </div><!-- End .banner-group -->
+
+
+  <div class="container mt-3">
+    <ul class="nav nav-pills nav-border-anim nav-big justify-content-center mb-4" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="products-featured-link" data-bs-toggle="tab" href="#products-featured-tab" role="tab" aria-controls="products-featured-tab" aria-selected="true">Featured</a>
+        </li>
+ 
+        <li class="nav-item">
+            <a class="nav-link" id="products-top-link" data-bs-toggle="tab" href="#products-top-tab" role="tab" aria-controls="products-top-tab" aria-selected="false">Top Rated</a>
+        </li>
+    </ul>
+
+</div><!-- End .container -->
+
+<div class="container-fluid New-arriv">
+    <div class="tab-content tab-content-carousel" id="products-tab-content">
+        <div class="tab-pane p-0 fade show active" id="products-featured-tab" role="tabpanel" aria-labelledby="products-featured-link">
+            <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-bs-toggle="owl" >
+
+                {% for product in random_products %}
+                <div class="product product-11 text-center">
+                    <figure class="product-media">
+                        <a href="{{ url_for('product', product_id=product.id) }}">
+                            <!-- CODE NI JAVIER -->
+     
+                            <img src="{{ url_for('static', filename='profile_pics/' + 
+                            (product.images[1].image_path if product.images|length > 1 
+                            else (product.images[0].image_path if product.images|length > 0 
+                            else 'default.jpg'))) }}"
+                            alt="{{ product.name }}" 
+                            class="product-image" 
+                            style="width: 395px; height: 290px; object-fit: cover;">
+                            
+                            <img src="{{ url_for('static', filename='profile_pics/' + 
+                            (product.images[0].image_path if product.images|length > 0 
+                            else 'default.jpg')) }}" 
+                            alt="Product image hover" 
+                            class="product-image-hover" 
+                            style="width: 395px; height: 290px; object-fit: cover;">                           </a>
+                            </figure><!-- End .product-media -->
+        
+                    <div class="product-body">
+                        <h3 class="product-title"><a href="{{ url_for('product', product_id=product.id) }}">{{ product.name }}</a></h3><!-- End .product-title -->
+                        <div class="product-price">
+                            ₱{{ product.variations[0].price }}
+                        </div><!-- End .product-price -->
+                    </div><!-- End .product-body -->
+                    <div class="product-action">
+                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                    </div><!-- End .product-action -->
+                </div><!-- End .product -->
+            {% endfor %}
+            </div><!-- End .owl-carousel -->
+
+        
+        </div><!-- .End .tab-pane -->
+   
+        <div class="tab-pane p-0 fade" id="products-top-tab" role="tabpanel" aria-labelledby="products-top-link">
+            <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-bs-toggle="owl">
+                {% for product in top_rated_products %}
+                    <div class="product product-11 text-center">
+                        <figure class="product-media">
+                            <a href="{{ url_for('product', product_id=product.id) }}">
+                                <!-- CODE NI JAVIER -->
+                       
+                                <img src="{{ url_for('static', filename='profile_pics/' + 
+                                (product.images[2].image_path if product.images|length > 2 
+                                else (product.images[0].image_path if product.images|length > 0 
+                                else 'default.jpg'))) }}"
+                                alt="{{ product.name }}" 
+                                class="product-image" 
+                                style="width: 395px; height: 290px; object-fit: cover;">
+
+                                
+                                <img src="{{ url_for('static', filename='profile_pics/' + 
+                                (product.images[0].image_path if product.images|length > 0 
+                                else 'default.jpg')) }}" 
+                                alt="Product image hover" 
+                                class="product-image-hover" 
+                                style="width: 395px; height: 290px; object-fit: cover;">                        </a>
+                        </figure><!-- End .product-media -->
+            
+                        <div class="product-body">
+                            <h3 class="product-title"><a href="{{ url_for('product', product_id=product.id) }}">{{ product.name }}</a></h3><!-- End .product-title -->
+                            <div class="product-price">
+                                ₱{{ product.variations[0].price }}
+                            </div><!-- End .product-price -->
+                        </div><!-- End .product-body -->
+                        <div class="product-action">
+                            <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                        </div><!-- End .product-action -->
+                    </div><!-- End .product -->
+                {% endfor %}
+            </div>
+            
+        </div><!-- .End .tab-pane -->
+    </div><!-- End .tab-content -->
+</div><!-- End .container-fluid -->
+
+
+
+
+
+
+<div class="container pt-6 new-arrivals">
+    <div class="heading heading-center mb-3">
+        <h2 class="title">New Arrivals</h2>
+
+        <ul class="nav nav-pills nav-border-anim justify-content-center" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="new-arrivals-all-link" data-bs-toggle="pill" href="#new-arrivals-all-tab" role="tab" aria-controls="new-arrivals-all-tab" aria-selected="true">All</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="new-arrivals-cloth-link" data-bs-toggle="pill" href="#new-arrivals-cloth-tab" role="tab" aria-controls="new-arrivals-cloth-tab" aria-selected="false">Clothing</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="new-arrivals-shoes-link" data-bs-toggle="pill" href="#new-arrivals-shoes-tab" role="tab" aria-controls="new-arrivals-shoes-tab" aria-selected="false">Shoes & Boots</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="new-arrivals-bags-link" data-bs-toggle="pill" href="#new-arrivals-bags-tab" role="tab" aria-controls="new-arrivals-bags-tab" aria-selected="false">Accessories</a>
+            </li>
+        </ul>
+       
+        <div class="tab-content content-container">
+            <div class="tab-pane fade show active" id="new-arrivals-all-tab" role="tabpanel" aria-labelledby="new-arrivals-all-link">
+                <div class="products">
+                    <div class="row justify-content-center">
+                        {% for product in new_arrivals %}
+                            <div class="col-6 col-md-4 col-lg-3 col-xl-5col">
+                                <div class="product product-11 text-center">
+                                    <figure class="product-media">
+                                        <a href="product/{{ product.id }}">
+                                            <img src="{{ url_for('static', filename='profile_pics/' + product.images[0].image_path) }}" alt="{{ product.name }}" class="product-image">
+                                            {% if product.images|length > 1 %}
+
+                                                <img src="{{ url_for('static', filename='profile_pics/' + product.images[1].image_path) }}" alt="{{ product.name }}" class="product-image-hover">
+                                            {% endif %}
+                                        </a>
+                                    </figure><!-- End .product-media -->
+            
+                                    <div class="product-body">
+                                        <div class="product-cat">
+                                            <a href="#">{{ product.category }}</a>
+                                        </div><!-- End .product-cat -->
+                                        <h3 class="product-title"><a href="product/{{ product.id }}">{{ product.name }}</a></h3><!-- End .product-title -->
+                                        <div class="product-price">
+                                            {% if product.sale_price %}
+                                                <span class="new-price">₱{{ product.sale_price }}</span>
+                                                <span class="old-price">Was ₱{{ product.regular_price }}</span>
+                                            {% else %}
+                                                ₱{{ product.variations[0].price }}
+                                            {% endif %}
+                                        </div><!-- End .product-price -->
+                                    </div><!-- End .product-body -->
+            
+                                    <div class="product-action">
+                                        <a href="product/{{ product.id }}" class="btn-product btn-cart"><span>add to cart</span></a>
+                                    </div><!-- End .product-action -->
+                                </div><!-- End .product -->
+                            </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
+                        {% endfor %}
+                    </div><!-- End .row -->
+                </div><!-- End .products -->
+            </div>
+            
+
+
+            <div class="tab-pane fade" id="new-arrivals-cloth-tab" role="tabpanel" aria-labelledby="new-arrivals-cloth-link">
+                <div class="products">
+                    <div class="row justify-content-center">
+                        {% for product in clothes %}
+                            <div class="col-6 col-md-4 col-lg-3 col-xl-5col">
+                                <div class="product product-11 text-center">
+                                    <figure class="product-media">
+                                        {% if product.sale_price %}
+                                            <span class="product-label label-circle label-sale">Sale</span>
+                                        {% elif product.is_new %}
+                                            <span class="product-label label-circle label-new">New</span>
+                                        {% endif %}
+                                        <a href="product/{{ product.id }}">
+                                            <img src="{{ url_for('static', filename='profile_pics/' + product.images[0].image_path) }}" alt="{{ product.name }}" class="product-image">
+                                            {% if product.images|length > 1 %}
+                                                <img src="{{ url_for('static', filename='profile_pics/' + product.images[1].image_path) }}" alt="{{ product.name }}" class="product-image-hover">
+                                            {% endif %}
+                                        </a>
+                                    </figure><!-- End .product-media -->
+            
+                                    <div class="product-body">
+                                        <div class="product-cat">
+                                            <a href="#">{{ product.category }}</a>
+                                        </div><!-- End .product-cat -->
+                                        <h3 class="product-title"><a href="product/{{ product.id }}">{{ product.name }}</a></h3><!-- End .product-title -->
+                                        <div class="product-price">
+                                            {% if product.sale_price %}
+                                                <span class="new-price">₱{{ product.sale_price }}</span>
+                                                <span class="old-price">Was ₱{{ product.regular_price }}</span>
+                                            {% else %}
+                                                ₱{{ product.variations[0].price }}
+                                            {% endif %}
+                                        </div><!-- End .product-price -->
+                                    </div><!-- End .product-body -->
+                                    <div class="product-action">
+                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                    </div><!-- End .product-action -->
+                                </div><!-- End .product -->
+                            </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
+                        {% endfor %}
+                    </div><!-- End .row -->
+                </div><!-- End .products -->
+            </div>
+
+            <div class="tab-pane fade" id="new-arrivals-shoes-tab" role="tabpanel" aria-labelledby="new-arrivals-shoes-link">
+                <div class="products">
+                    <div class="row justify-content-center">
+                        {% for product in shoes %}
+                            <div class="col-6 col-md-4 col-lg-3 col-xl-5col">
+                                <div class="product product-11 text-center">
+                                    <figure class="product-media">
+                                        {% if product.sale_price %}
+                                            <span class="product-label label-circle label-sale">Sale</span>
+                                        {% elif product.is_new %}
+                                            <span class="product-label label-circle label-new">New</span>
+                                        {% endif %}
+                                        <a href="product/{{ product.id }}">
+                                            <img src="{{ url_for('static', filename='profile_pics/' + product.images[0].image_path) }}" alt="{{ product.name }}" class="product-image">
+                                            {% if product.images|length > 1 %}
+                                                <img src="{{ url_for('static', filename='profile_pics/' + product.images[1].image_path) }}" alt="{{ product.name }}" class="product-image-hover">
+                                            {% endif %}
+                                        </a>
+                                    </figure><!-- End .product-media -->
+            
+                                    <div class="product-body">
+                                        <div class="product-cat">
+                                            <a href="#">{{ product.category }}</a>
+                                        </div><!-- End .product-cat -->
+                                        <h3 class="product-title"><a href="product/{{ product.id }}">{{ product.name }}</a></h3><!-- End .product-title -->
+                                        <div class="product-price">
+                                            {% if product.sale_price %}
+                                                <span class="new-price">₱{{ product.sale_price }}</span>
+                                                <span class="old-price">Was ₱{{ product.regular_price }}</span>
+                                            {% else %}
+                                                ₱{{ product.variations[0].price }}
+                                            {% endif %}
+                                        </div><!-- End .product-price -->
+                                    </div><!-- End .product-body -->
+                                    <div class="product-action">
+                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                    </div><!-- End .product-action -->
+                                </div><!-- End .product -->
+                            </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
+                        {% endfor %}
+                    </div><!-- End .row -->
+                </div><!-- End .products -->
+            </div>
+            
+            <div class="tab-pane fade" id="new-arrivals-bags-tab" role="tabpanel" aria-labelledby="new-arrivals-bags-link">
+                <div class="products">
+                    <div class="row justify-content-center">
+                        {% for product in accessories %}
+                            <div class="col-6 col-md-4 col-lg-3 col-xl-5col">
+                                <div class="product product-11 text-center">
+                                    <figure class="product-media">
+                                        {% if product.sale_price %}
+                                            <span class="product-label label-circle label-sale">Sale</span>
+                                        {% elif product.is_new %}
+                                            <span class="product-label label-circle label-new">New</span>
+                                        {% endif %}
+                                        <a href="product/{{ product.id }}">
+                                            <img src="{{ url_for('static', filename='profile_pics/' + product.images[0].image_path) }}" alt="{{ product.name }}" class="product-image">
+                                            {% if product.images|length > 1 %}
+                                                <img src="{{ url_for('static', filename='profile_pics/' + product.images[1].image_path) }}" alt="{{ product.name }}" class="product-image-hover">
+                                            {% endif %}
+                                        </a>
+                                    </figure><!-- End .product-media -->
+            
+                                    <div class="product-body">
+                                        <div class="product-cat">
+                                            <a href="#">{{ product.category }}</a>
+                                        </div><!-- End .product-cat -->
+                                        <h3 class="product-title"><a href="product/{{ product.id }}">{{ product.name }}</a></h3><!-- End .product-title -->
+                                        <div class="product-price">
+                                            {% if product.sale_price %}
+                                                <span class="new-price">₱{{ product.sale_price }}</span>
+                                                <span class="old-price">Was ₱{{ product.regular_price }}</span>
+                                            {% else %}
+                                                ₱{{ product.variations[0].price }}
+                                            {% endif %}
+                                        </div><!-- End .product-price -->
+                                    </div><!-- End .product-body -->
+                                    <div class="product-action">
+                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                    </div><!-- End .product-action -->
+                                </div><!-- End .product -->
+                            </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
+                        {% endfor %}
+                    </div><!-- End .row -->
+                </div><!-- End .products -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<footer class="footer footer-2">
+    <div class="icon-boxes-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="icon-box icon-box-side">
+                        <span class="icon-box-icon text-dark">
+                            <i class="bi bi-truck"></i>
+                        </span>
+                        <div class="icon-box-content">
+                            <h3 class="icon-box-title">Free Shipping</h3><!-- End .icon-box-title -->
+                            <p>orders ₱3000 or more</p>
+                        </div><!-- End .icon-box-content -->
+                    </div><!-- End .icon-box -->
+                </div><!-- End .col-sm-6 col-lg-3 -->
+
+                <div class="col-sm-6 col-lg-3">
+                    <div class="icon-box icon-box-side">
+                        <span class="icon-box-icon text-dark">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </span>
+
+                        <div class="icon-box-content">
+                            <h3 class="icon-box-title">Return & Refund</h3><!-- End .icon-box-title -->
+                            <p>within 7 days</p>
+                        </div><!-- End .icon-box-content -->
+                    </div><!-- End .icon-box -->
+                </div><!-- End .col-sm-6 col-lg-3 -->
+
+    
+
+                <div class="col-sm-6 col-lg-3">
+                    <div class="icon-box icon-box-side">
+                        <span class="icon-box-icon text-dark">
+                            <i class="bi bi-headset"></i>
+                        </span>
+
+                        <div class="icon-box-content">
+                            <h3 class="icon-box-title">We Support</h3><!-- End .icon-box-title -->
+                            <p>24/7 amazing services</p>
+                        </div><!-- End .icon-box-content -->
+                    </div><!-- End .icon-box -->
+                </div><!-- End .col-sm-6 col-lg-3 -->
+            </div><!-- End .row -->
+        </div><!-- End .container -->
+    </div><!-- End .icon-boxes-container -->
+   
+
+
+    <div class="footer-middle">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
+                    <div class="widget widget-about pe-3">
+                        <img src="{{ url_for('static', filename='img/18.png') }}" class="footer-logo" alt="Footer Logo" width="105" height="25">
+                        <p>Explore a curated collection of women's apparel crafted to inspire confidence and elevate your style, whether you're dressing for work, a night out, or a casual day, designed for every woman’s individual style journey.</p>
+                        
+                        <div class="widget-about-info">
+                            <div class="row">
+                                <div class="col-sm-6 col-md-4">
+                                    <span class="widget-about-title">Got Question? Call us 24/7</span>
+                                    <a href="tel:123456789">+63-02-4567-810</a>
+                                </div><!-- End .col-sm-6 -->
+                      
+                            </div><!-- End .row -->
+                        </div><!-- End .widget-about-info -->
+                    </div><!-- End .widget about-widget -->
+                </div><!-- End .col-sm-12 col-lg-3 -->
+
+                <div class="col-sm-4 col-lg-2">
+                    <div class="widget">
+                        <h4 class="widget-title">Information</h4><!-- End .widget-title -->
+
+                        <ul class="widget-list">
+                            <li><a href="{{ url_for('about') }}">About SheWear</a></li>
+                            <li><a href="{{ url_for('faq') }}">FAQ</a></li>
+                            <li><a href="{{ url_for('contact') }}">Contact us</a></li>
+                        </ul><!-- End .widget-list -->
+                    </div><!-- End .widget -->
+                </div><!-- End .col-sm-4 col-lg-3 -->
+
+                <div class="col-sm-4 col-lg-2">
+                    <div class="widget">
+                        <h4 class="widget-title">Customer Service</h4><!-- End .widget-title -->
+
+                        <ul class="widget-list">
+                            <li><a href="{{ url_for('faq') }}">Returns</a></li>
+                            <li><a href="{{ url_for('faq') }}">Shipping</a></li>
+                            <li><a href="#">Terms and conditions</a></li>
+                        </ul><!-- End .widget-list -->
+                    </div><!-- End .widget -->
+                </div><!-- End .col-sm-4 col-lg-3 -->
+
+                <div class="col-sm-4 col-lg-2">
+                    <div class="widget">
+                        <h4 class="widget-title">My Account</h4><!-- End .widget-title -->
+
+                        <ul class="widget-list">
+                            <li><a href="{{ url_for('view_cart') }}">View Cart</a></li>
+                            <li><a href="{{ url_for('user_ToPay') }}">Track My Order</a></li>
+                            <li><a href="{{ url_for('faq') }}">Help</a></li>
+                        </ul><!-- End .widget-list -->
+                    </div><!-- End .widget -->
+                </div><!-- End .col-sm-64 col-lg-3 -->
+            </div><!-- End .row -->
+        </div><!-- End .container -->
+    </div><!-- End .footer-middle -->
+
+    <div class="footer-bottom">
+        <div class="container">
+            <p class="footer-copyright">Copyright © 2024 SheWear. All Rights Reserved.</p><!-- End .footer-copyright -->
+ 
+
+     
+        </div><!-- End .container -->
+    </div><!-- End .footer-bottom -->
+</footer><!-- End .footer -->
+<link rel="stylesheet" href="static/css/lopez.css">
+<script>
+    const checkVouchersURL = "{{ url_for('check_new_vouchers') }}";
+    const shopVoucherURL = "{{ url_for('shop_voucher') }}";
+</script>
+<script src="static/js/lopez.js"></script>
+{% endblock %}

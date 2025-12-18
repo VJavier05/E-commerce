@@ -1,0 +1,705 @@
+{% extends "dashboard_1.html" %}
+{% block content %}
+
+<h4 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">Accounts/</span> Pending Accounts</h4>
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="nav-align-top mb-4">
+      <ul class="nav nav-pills mb-3" role="tablist">
+        <li class="nav-item">
+            <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" 
+                    data-bs-target="#navs-pills-pending-user" id="pending-user-tab" 
+                    aria-controls="navs-pills-pending-user" aria-selected="true">
+                Pending User
+            </button>
+        </li>
+        <li class="nav-item">
+            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" 
+                    data-bs-target="#navs-pills-pending-seller" id="pending-seller-tab" 
+                    aria-controls="navs-pills-pending-seller" aria-selected="false">
+                Pending Seller
+            </button>
+        </li>
+        <li class="nav-item">
+            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" 
+                    data-bs-target="#navs-pills-archive-user" id="archive-user-tab" 
+                    aria-controls="navs-pills-archive-user" aria-selected="false">
+                Archived Users
+            </button>
+        </li>
+        <li class="nav-item">
+            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" 
+                    data-bs-target="#navs-pills-archive-seller" id="archive-seller-tab" 
+                    aria-controls="navs-pills-archive-seller" aria-selected="false">
+                Archived Sellers
+            </button>
+        </li>
+    </ul>
+
+      <div class="tab-content" id="orderTabsContent">
+        <div class="tab-pane fade show active" id="navs-pills-pending-user" role="tabpanel" 
+         aria-labelledby="pending-user-tab">         
+          <div class="input-group input-group-merge mb-3 search-input">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search Pending..."
+              aria-label="Search..."
+              id="searchPending"
+              onkeyup="searchTable('pendingTable', 'searchPending')"  
+            />
+          </div>
+          
+          
+          
+          <table class="table table-hover" id="pendingTable">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Birthday</th>
+                    <th scope="col">Gender</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>  
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.last_name }}</td>
+                    <td>{{ user.email }}</td>
+
+                    <td>
+                    {% if user.date_of_birth %}
+                      <p class="fw-normal mb-1">{{ user.date_of_birth.strftime('%B %d, %Y') }}</p>
+                    {% else %}
+                    <p class="fw-normal mb-1">None</p>
+                    {% endif %}
+                  </td>
+                    <td>{{ user.gender }}</td>
+
+
+                    <td>
+                        {% if user.is_validated %}
+                            <span class="badge bg-success">Approved</span>
+                        {% else %}
+                            <span class="badge bg-warning">Pending</span>
+                        {% endif %}
+                    </td>
+        
+                    <td>
+                      <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" 
+                          data-bs-target="#ViewAccount" 
+                          data-user-id="{{ user.id }}" 
+                          data-firstname="{{ user.first_name }}" 
+                          data-lastname="{{ user.last_name }}"
+                          data-date_of_birth="{% if user.date_of_birth %}{{ user.date_of_birth.strftime('%B %d, %Y') }}{% else %}None{% endif %}"
+                          data-gender="{{ user.gender }}"
+                          data-role="{{ user.role }}"
+                          data-image="data:image/jpeg;base64,{{ user.image_data }}">
+                          View
+                      </button>
+                        
+                        {% if not user.is_validated %}
+                          <button type="button" class="btn btn-sm btn-success" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#confirmApproveModal"
+                            data-user-id="{{ user.id }}" 
+                            data-firstname="{{ user.first_name }}">
+                              Approve
+                          </button>
+                        {% endif %}
+
+
+                        {% if not user.is_validated %}
+                        <button type="button" class="btn btn-sm btn-danger" 
+                          data-bs-toggle="modal" 
+                          data-bs-target="#confirmDisapproveModal"
+                          data-user-id="{{ user.id }}" 
+                          data-firstname="{{ user.first_name }}">
+                            Disapprove
+                        </button>
+                      {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+        
+   
+
+      
+       
+        </div>
+
+
+        <!-- PENDING SELLER -->
+        <div class="tab-pane fade" id="navs-pills-pending-seller" role="tabpanel" 
+         aria-labelledby="pending-seller-tab">         
+          <h5 class="card-header">Pending Seller</h5>
+
+          <div class="input-group input-group-merge mb-3 search-input">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search Pending..."
+              aria-label="Search..."
+              id="searchPendingSeller"
+              onkeyup="searchTable('pendingTableSeller', 'searchPendingSeller')"  
+            />
+          </div>
+          
+          
+          
+          <table class="table table-hover" id="pendingTableSeller">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Birthday</th>
+                    <th scope="col">Gender</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in pending_seller %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>  
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.last_name }}</td>
+                    <td>{{ user.email }}</td>
+
+                    <td>
+                    {% if user.date_of_birth %}
+                      <p class="fw-normal mb-1">{{ user.date_of_birth.strftime('%B %d, %Y') }}</p>
+                    {% else %}
+                    <p class="fw-normal mb-1">None</p>
+                    {% endif %}
+                  </td>
+                    <td>{{ user.gender }}</td>
+
+
+                    <td>
+                        {% if user.is_validated %}
+                            <span class="badge bg-success">Approved</span>
+                        {% else %}
+                            <span class="badge bg-warning">Pending</span>
+                        {% endif %}
+                    </td>
+        
+                    <td>
+                      <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" 
+                          data-bs-target="#ViewAccount" 
+                          data-user-id="{{ user.id }}" 
+                          data-firstname="{{ user.first_name }}" 
+                          data-lastname="{{ user.last_name }}"
+                          data-date_of_birth="{% if user.date_of_birth %}{{ user.date_of_birth.strftime('%B %d, %Y') }}{% else %}None{% endif %}"
+                          data-gender="{{ user.gender }}"
+                          data-role="{{ user.role }}"
+                          data-image="data:image/jpeg;base64,{{ user.image_data }}"
+                          data-shop-name="{{ user.shop_info.shop_name if user.shop_info else '' }}"
+                          data-shop-category="{% if user.shop_info and user.shop_info.category %}{{ user.shop_info.category.split(',')|map('replace', '_', ' & ')|map('capitalize')|join(', ') }}{% else %}None{% endif %}"
+                          data-shop-address="{% if user.shop_info %}{{ user.shop_info.street }}, {{ user.shop_info.barangay }}, {{ user.shop_info.city }}, {{ user.shop_info.province }}, {{ user.shop_info.region }}{% else %}N/A{% endif %}"
+                          data-shop-postal="{{ user.shop_info.postal_code if user.shop_info else '' }}"
+                          data-shop-created="{% if user.shop_info and user.shop_info.date_created %}{{ user.shop_info.date_created.strftime('%B %d, %Y') }}{% else %}N/A{% endif %}"
+                          data-business-id-image="data:image/jpeg;base64,{{ user.shop_info.business_id_encoded if user.shop_info and user.shop_info.business_id_encoded else '' }}">
+        
+                          View
+                      </button>
+                        
+                        {% if not user.is_validated %}
+                          <button type="button" class="btn btn-sm btn-success" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#confirmApproveModal"
+                            data-user-id="{{ user.id }}" 
+                            data-firstname="{{ user.first_name }}">
+                              Approve
+                          </button>
+                        {% endif %}
+
+
+                        {% if not user.is_validated %}
+                        <button type="button" class="btn btn-sm btn-danger" 
+                          data-bs-toggle="modal" 
+                          data-bs-target="#confirmDisapproveModal"
+                          data-user-id="{{ user.id }}" 
+                          data-firstname="{{ user.first_name }}">
+                            Disapprove
+                        </button>
+                      {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+        
+
+
+
+        </div>
+
+
+
+        <!-- ARCHIEVE USER -->
+        <div class="tab-pane fade" id="navs-pills-archive-user" role="tabpanel" 
+         aria-labelledby="archive-user-tab">          <h5 class="card-header">Archieve Users</h5>
+
+          <div class="input-group input-group-merge mb-3 search-input">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search Archive..."
+              aria-label="Search..."
+              id="searchArchive"
+              onkeyup="searchTable('archiveTable', 'searchArchive')"  
+            />
+          </div>
+          
+          
+          <table class="table table-hover" id="archiveTable">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Birthday</th>
+                    <th scope="col">Gender</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Reason</th>
+                    <th scope="col">Action</th>
+                 
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in archived_users  %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>  
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.last_name }}</td>
+                    <td>{{ user.email }}</td>
+
+                    <td>
+                    {% if user.date_of_birth %}
+                      <p class="fw-normal mb-1">{{ user.date_of_birth.strftime('%B %d, %Y') }}</p>
+                    {% else %}
+                    <p class="fw-normal mb-1">None</p>
+                    {% endif %}
+                  </td>
+                    <td>{{ user.gender }}</td>
+
+
+                    <td>
+                            <span class="badge bg-danger">Disapproved</span>
+                    
+                    </td>
+
+                    <td>
+                      <p>{{ user.disapproval_reason }}</p>
+                    </td>
+        
+                    <td>
+                      <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" 
+                            data-bs-target="#ViewAccount" 
+                            data-user-id="{{ user.id }}" 
+                            data-firstname="{{ user.first_name }}" 
+                            data-lastname="{{ user.last_name }}"
+                            data-date_of_birth="{% if user.date_of_birth %}{{ user.date_of_birth.strftime('%B %d, %Y') }}{% else %}None{% endif %}"
+                            data-gender="{{ user.gender }}"
+                            data-role="{{ user.role }}"
+                            data-image="data:image/jpeg;base64,{{ user.image_data }}">
+                        View
+                    </button>
+                        
+                      
+                    <button type="button" class="btn btn-sm btn-warning" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#confirmReturnModal"
+                      data-user-id="{{ user.id }}" 
+                      data-firstname="{{ user.first_name }}">
+                      Return
+                    </button>
+            
+    
+
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+        
+    
+
+        </div>
+
+
+        <!-- ARCHIEVE SELLER -->
+        <div class="tab-pane fade" id="navs-pills-archive-seller" role="tabpanel" 
+         aria-labelledby="archive-seller-tab">
+          <h5 class="card-header">Archieve Sellers</h5>
+
+          <div class="input-group input-group-merge mb-3 search-input">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search Archive..."
+              aria-label="Search..."
+              id="searchArchiveSeller"
+              onkeyup="searchTable('archiveTableSeller', 'searchArchiveSeller')"  
+            />
+          </div>
+
+          <table class="table table-hover" id="archiveTableSeller">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Birthday</th>
+                    <th scope="col">Gender</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Reason</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in archived_seller  %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>  
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.last_name }}</td>
+                    <td>{{ user.email }}</td>
+
+                    <td>
+                    {% if user.date_of_birth %}
+                      <p class="fw-normal mb-1">{{ user.date_of_birth.strftime('%B %d, %Y') }}</p>
+                    {% else %}
+                    <p class="fw-normal mb-1">None</p>
+                    {% endif %}
+                  </td>
+                    <td>{{ user.gender }}</td>
+
+
+                    <td>
+                            <span class="badge bg-danger">Disapproved</span>
+                    
+                    </td>
+
+                    <td>
+                      <p>{{ user.disapproval_reason }}</p>
+                    </td>
+        
+                    <td>
+                      <!-- ARCH SELLER -->
+                      <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" 
+                          data-bs-target="#ViewAccount" 
+                          data-user-id="{{ user.id }}" 
+                          data-firstname="{{ user.first_name }}" 
+                          data-lastname="{{ user.last_name }}"
+                          data-date_of_birth="{% if user.date_of_birth %}{{ user.date_of_birth.strftime('%B %d, %Y') }}{% else %}None{% endif %}"
+                          data-gender="{{ user.gender }}"
+                          data-role="{{ user.role }}"
+                          data-image="data:image/jpeg;base64,{{ user.image_data }}"
+                          data-shop-name="{{ user.shop_info.shop_name if user.shop_info else '' }}"
+                          data-shop-category="{% if user.shop_info and user.shop_info.category %}{{ user.shop_info.category.split(',')|map('replace', '_', ' & ')|map('capitalize')|join(', ') }}{% else %}None{% endif %}"
+                          data-shop-address="{% if user.shop_info %}{{ user.shop_info.street }}, {{ user.shop_info.barangay }}, {{ user.shop_info.city }}, {{ user.shop_info.province }}, {{ user.shop_info.region }}{% else %}N/A{% endif %}"
+                          data-shop-postal="{{ user.shop_info.postal_code if user.shop_info else '' }}"
+                          data-shop-created="{% if user.shop_info and user.shop_info.date_created %}{{ user.shop_info.date_created.strftime('%B %d, %Y') }}{% else %}N/A{% endif %}"
+                          data-business-id-image="data:image/jpeg;base64,{{ user.shop_info.business_id_encoded if user.shop_info and user.shop_info.business_id_encoded else '' }}">
+        
+                          View
+                      </button>
+                        
+                      
+                    <button type="button" class="btn btn-sm btn-warning" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#confirmReturnModal"
+                      data-user-id="{{ user.id }}" 
+                      data-firstname="{{ user.first_name }}">
+                      Return
+                    </button>
+            
+    
+
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+
+  
+
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal fade" id="ViewAccount" tabindex="-1" aria-labelledby="ViewAccount" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Registered Information</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        
+          <img src="" id="modal-image" class="modal-image" alt="User Image" />
+          <div class="row mt-2">
+          <div class="mb-3 col-md-6">
+            <label for="fname" class="form-label">First Name</label>
+            <input type="text" class="form-control" placeholder="First name" id="fname" aria-label="First name" readonly>
+          </div>
+          <div class="mb-3 col-md-6">
+            <label for="lname" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="lname" placeholder="Last name" aria-label="Last name" readonly>
+          </div>
+
+          <div class="mb-3 col-md-6">
+            <label for="dob" class="form-label">Birthday</label>
+            <input type="text" class="form-control" id="dob" placeholder="Last name" aria-label="Last name" readonly>
+          </div>
+          <div class="mb-3 col-md-6">
+            <label for="gender" class="form-label">Gender</label>
+            <input type="text" class="form-control" id="gender" placeholder="Last name" aria-label="Last name" readonly>
+          </div>
+          
+
+          <div id="shopInfoContainer" style="display: none;"> <!-- Initially hidden -->
+            <div class="row mt-2">
+
+          <h5 class="card-header">Shop Information</h5>
+          <img src="" id="modal-business-id-image" class="img-fluid mb-2" alt="Shop Permit" />
+          <div class="mb-3 col-md-6">
+            <label for="Shop" class="form-label">Shop Name</label>
+            <input type="text" class="form-control" id="Shop" placeholder="Shop name" aria-label="Shop name" readonly>
+          </div>
+
+          <div class="mb-3 col-md-6">
+            <label for="Category" class="form-label">Shop Category</label>
+            <input type="text" class="form-control" id="Category" placeholder="Shop Category" aria-label="Shop Category" readonly>
+          </div>
+
+          <div class="mb-3 col-md-12">
+            <label for="Address" class="form-label">Shop Address</label>
+            <input type="text" class="form-control" id="Address" placeholder="Shop Address" aria-label="Shop Address" readonly>
+          </div>
+
+          <div class="mb-3 col-md-6">
+            <label for="Postal" class="form-label">Postal ID</label>
+            <input type="text" class="form-control" id="Postal" placeholder="Postal ID" aria-label="Shop Postal" readonly>
+          </div>
+
+          <div class="mb-3 col-md-6">
+            <label for="Postal" class="form-label">Date Created</label>
+            <input type="text" class="form-control" id="ShopCreated" placeholder="Date Created" aria-label="Date" readonly>
+          </div>
+
+        </div>
+          </div>
+          
+        </div>
+
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+        <form id="approve-form" method="post">
+          <button type="submit" class="btn btn-success">Approve</button>
+        </form>   
+
+       </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal for Enlarged Image -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imageModalLabel">Enlarged Image</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img src="" id="enlarged-image" class="img-fluid" alt="Enlarged Image" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Modal for Disapproval -->
+<div class="modal fade" id="confirmDisapproveModal" tabindex="-1" aria-labelledby="confirmDisapproveModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="confirmDisapproveModalLabel">Confirm Disapproval</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              Are you sure you want to disapprove the account of <span id="disapprove-modal-user-name"></span>?
+
+              <!-- Form for Disapproval -->
+              <form id="confirm-disapprove-form" method="POST" action="/disapprove_user">
+                  <input type="hidden" name="user_id" id="disapprove-user-id" value="">
+                  
+                  <!-- Reason Selection Dropdown -->
+                  <div class="form-group mt-3">
+                      <label for="disapprove-reason">Reason for Disapproval:</label>
+                      <select class="form-select" id="disapprove-reason" name="disapprove_reason" required onchange="toggleCustomReason()">
+                          <option value="Incomplete Profile Information">Incomplete Profile Information</option>
+                          <option value="Unverified Email or Contact Information">Unverified Email or Contact Information</option>
+                          <option value="Violation of Terms and Conditions">Violation of Terms and Conditions</option>
+                          <option value="Other">Other</option>
+                      </select>
+                  </div>
+                  
+                  <!-- Custom Reason Text Area (hidden by default) -->
+                  <div class="form-group mt-3" id="custom-reason-container" style="display:none;">
+                      <label for="custom-reason">Specify Other Reason:</label>
+                      <textarea class="form-control" id="custom-reason" name="custom_reason"></textarea>
+                  </div>
+
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                      <button type="submit" class="btn btn-danger">Disapprove</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
+
+         <!-- Confirmation Modal -->
+         <div class="modal fade" id="confirmApproveModal" tabindex="-1" aria-labelledby="confirmApproveModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="confirmApproveModalLabel">Confirm Approval</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to approve <span id="modal-user-name"></span>'s account?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                
+                <!-- The Approve button in the modal that submits the form -->
+                <form id="confirm-approve-form" method="POST" action="">
+                  <button type="submit" class="btn btn-success">Approve</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmReturnModal" tabindex="-1" aria-labelledby="confirmReturnModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="confirmReturnModalLabel">Confirm Return</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  Are you sure you want to return the account of <span id="modal-user-return-name"></span> to the Pending section?
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  
+                  <!-- The form that will submit the user ID to update the status -->
+                  <form id="confirm-return-form" method="POST" action="/return_user">
+                      <input type="hidden" name="user_id" id="user-id" value="">
+                      <button type="submit" class="btn btn-success">Return</button>
+                  </form>
+              </div>
+          </div>
+      </div>
+    </div>
+
+
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          // Save the active tab in localStorage when it's shown
+          document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+              tab.addEventListener('shown.bs.tab', function (e) {
+                  const activeTab = e.target.getAttribute('data-bs-target');
+                  console.log("Saving active tab:", activeTab); // Debugging
+                  localStorage.setItem('activeTab', activeTab);
+              });
+          });
+  
+          // Get the active tab from localStorage
+          const activeTab = localStorage.getItem('activeTab');
+          console.log("Stored active tab:", activeTab); // Debugging
+          if (activeTab) {
+              const tabToActivate = document.querySelector(`[data-bs-target="${activeTab}"]`);
+              if (tabToActivate) {
+                  const bootstrapTab = new bootstrap.Tab(tabToActivate); // Bootstrap's Tab instance
+                  bootstrapTab.show();
+              }
+          } else {
+              // Default to the first tab if no activeTab is stored
+              const firstTab = document.querySelector('[data-bs-toggle="tab"]');
+              if (firstTab) {
+                  const bootstrapTab = new bootstrap.Tab(firstTab);
+                  bootstrapTab.show();
+              }
+          }
+      });
+  </script>
+
+
+    <script>
+      // Listen for the modal to open and update the form inputs
+$('#confirmDisapproveModal').on('show.bs.modal', function (event) {
+    // Get the button that triggered the modal
+    var button = $(event.relatedTarget);
+    
+    // Extract user ID and name from data attributes
+    var userId = button.data('user-id');
+    var userName = button.data('firstname');
+    
+    // Set the user name in the modal
+    $('#disapprove-modal-user-name').text(userName);
+    
+    // Set the user ID in the hidden input field
+    $('#disapprove-user-id').val(userId);
+    
+    // Set the reason (default to selected option in dropdown)
+    var selectedReason = $('#disapprove-reason').val();
+    $('#disapprove-reason-hidden').val(selectedReason);
+    
+    // Update the hidden field when the dropdown value changes
+    $('#disapprove-reason').change(function() {
+        $('#disapprove-reason-hidden').val($(this).val());
+    });
+});
+
+    </script>
+{% endblock %}

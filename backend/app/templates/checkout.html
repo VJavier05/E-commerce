@@ -1,0 +1,253 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-header text-center" style="background-image: url('https://images.pexels.com/photos/4466492/pexels-photo-4466492.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')">
+    <div class="container">
+        <h1 class="page-title">Checkout<span>Shop</span></h1>
+    </div>
+</div>
+<nav aria-label="breadcrumb" class="breadcrumb-nav">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('shop') }}">Shop</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+        </ol>
+    </div>
+</nav>
+
+<div class="page-content">
+    <div class="container my-4">
+        <div class="card shadow border-0">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-white">Delivery Address</h5>
+                {% if default_address %}
+                    <span class="badge bg-light text-primary">Default</span>
+                {% else %}
+                    <span class="badge bg-light text-danger">No Default Address</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if default_address %}
+                    <p class="mb-2">
+                        <strong>{{ default_address.address_name }}</strong><br>
+                        <small class="text-muted">{{ default_address.telephone_no }}</small><br>
+                        {{ default_address.street }}, {{ default_address.barangay }}, {{ default_address.city }}, {{ default_address.province }}, {{ default_address.region }}, {{ default_address.postal_code }}
+                        <button class="btn btn-outline-danger btn ms-3" data-bs-toggle="modal" data-bs-target="#changeAddressModal">Change</button>
+                    </p>
+                {% else %}
+                    <p class="mb-2">No default address set. Please add an address in your account settings.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+    </div>
+    
+
+
+    <div class="container mt-5">
+        
+        <!-- Card for displaying the order summary -->
+        <div class="card shadow border-0">
+            <div class="card-header text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-primary">Products Ordered</h5>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-cart table-mobile">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Color</th>
+                            <th>Size</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart %}
+                        <tr>
+                            <td class="product-col">
+                                <div class="product">
+                                    <figure class="product-media">
+                                        <a href="#">
+                                            {% set product = products[item.product_id] %}
+                                            {% if product and product.images %}
+                                                <img src="{{ url_for('static', filename='profile_pics/' + product.images[0].image_path) }}" alt="{{ product.name }}" style="width: 50px; height: auto;">
+                                            {% else %}
+                                                <img src="{{ url_for('static', filename='default_image.jpg') }}" alt="Default Image" style="width: 50px; height: auto;"> <!-- Fallback image -->
+                                            {% endif %}
+                                        </a>
+                                    </figure>
+                                    <h3 class="product-title">
+                                        <a href="#">{{ product.name }}</a>
+                                    </h3>
+                                </div>
+                            </td>
+                            <td class="color-col">{{ item.color }}</td>
+                            <td class="size-col">{{ item.size }}</td>
+                            <td class="price-col">₱{{ item.price | round(2) }}</td>
+
+                            <!-- <td class="price-col">₱<span id="price-{{ item.product_id }}">{{ item.price if item.price is not none else 0 }}</span></td> -->
+                            <td class="quantity-col">{{ item.quantity }}</td>
+                            <td class="total-col">₱<span id="total-{{ item.product_id }}-{{ item.color }}-{{ item.size }}">{{ (item.price * item.quantity) | round (2) if item.price is not none else 0 | round(2) }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+       
+            
+            {% if cart|length == 0 %}
+            <div class="alert alert-warning" role="alert">
+                Your cart is empty.
+            </div>
+            {% endif %}
+        </div>
+    
+        <div class="card card shadow border-0 mt-5">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-white">Apply Voucher:</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('apply_voucher') }}" method="POST" class="mb-3">
+                    <select name="voucher_code" id="voucher-select" class="form-select" 
+                            style="height: 30px; font-size: small;"
+                            {% if session['applied_voucher_code'] %} disabled {% endif %}>
+                        <option value="" disabled selected>Select a voucher</option>
+                        {% for voucher in available_vouchers %}
+                            <option value="{{ voucher.code }}" 
+                                    {% if session['applied_voucher_code'] == voucher.code %}selected{% endif %}>
+                                {{ voucher.voucher_name }} - {{ voucher.discount_amount }} {{ voucher.discount_type }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <div class="position-relative bottom-0" style="float: right;">
+                        <button type="button" id="clear-voucher" class="btn btn-outline-danger mt-3 btn-lg">
+                            Clear Voucher
+                        </button>
+                        <button type="submit" class="btn btn-primary mt-3 btn-lg" 
+                                {% if session['applied_voucher_code'] %} disabled {% endif %}>
+                            Apply Voucher
+                        </button>
+
+                    </div>
+                </form>
+                <a class="btn btn-outline-primary" href="{{url_for('shop_voucher')}}">Claim a Voucher</a>
+
+            </div>
+        </div>
+        
+
+    
+
+    <!-- Card for displaying the pricing summary -->
+    <div class="card card shadow border-0 mt-5"> <!-- New card for pricing summary -->
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-white">Payment Method</h5>
+            <h5 class="mb-0  text-white">Cash on Delivery</h5>
+
+        
+        </div>
+        <div class="card shadow-sm">
+   
+            <div class="card-body">
+                <div class="d-flex justify-content-between border-bottom py-2">
+                    <h5>Subtotal:</h5>
+                    <h5>₱{{ subtotal | round(2)}}</h5>
+                </div>
+                <div class="d-flex justify-content-between border-bottom py-2">
+                    <h5>Discount (Voucher):</h5>
+                    <h5>-₱{{ applied_discount or 0 }}</h5>
+                </div>
+                <div class="d-flex justify-content-between border-bottom py-2">
+                    <h5>Shipping Fee:</h5>
+                    <h5>₱{{ shipping_fee }}</h5>
+                </div>
+                <div class="d-flex justify-content-between py-3">
+                    <h4>Total:</h4>
+                    <h3 class="text-primary">₱{{ subtotal | round(2) + shipping_fee}}</h3>
+                </div>
+            </div>
+         
+        </div>
+        
+    </div>
+    
+    <!-- Confirm Order Button -->
+    <form method="POST" action="{{ url_for('confirm_order') }}" class="mt-3 d-flex justify-content-end">
+        <button type="submit" class="btn btn-lg btn-primary px-5 py-3 fs-3">Confirm Order</button>
+    </form>
+    
+    </div>
+    
+    
+</div>
+
+
+<!-- Modal for Changing Address -->
+<div class="modal fade" id="changeAddressModal" tabindex="-1" aria-labelledby="changeAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeAddressModalLabel">Select a New Delivery Address</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('change_address') }}">
+                    <div class="list-group">
+                        {% for address in address %}
+                            <div class="list-group-item">
+                                <input type="radio" id="address_{{ address.id }}" name="address_id" value="{{ address.id }}" required>
+                                <label for="address_{{ address.id }}">
+                                    <strong>{{ address.address_name }}</strong><br>
+                                    <small class="text-muted">{{ address.telephone_no }}</small><br>
+                                    {{ address.street }}, {{ address.barangay }}, {{ address.city }}, {{ address.province }}, {{ address.region }}, {{ address.postal_code }}
+                                </label>
+                            </div>
+                        {% else %}
+                            <p>No addresses available. Please add an address.</p>
+                        {% endfor %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Confirm Address Change</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('clear-voucher').addEventListener('click', function() {
+        // Reset the voucher dropdown selection
+        document.getElementById('voucher-select').value = '';
+
+        // Send a request to clear the session data for the applied voucher
+        fetch('/clear_voucher', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'clear_voucher'
+            })
+        }).then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // If voucher was cleared successfully, refresh the page
+                window.location.reload();  // Reload the page to reflect the changes
+            } else {
+                alert('Failed to clear the voucher.');
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+
+{% endblock %}

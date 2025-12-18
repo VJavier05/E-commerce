@@ -1,0 +1,196 @@
+/* USER MESSAGE BOX */
+.floating-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: transparent;
+    color: #696cff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 24px;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add shadow for better visibility */
+
+}
+
+.floating-button:hover {
+    color: #696fff;
+    background-color: rgb(59, 54, 54);
+}
+
+.badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 5px 10px;
+}
+
+.fixed-modal .modal-content {
+    height: 80vh; /* Fix modal height to 80% of the viewport */
+}
+
+.fixed-modal .modal-body {
+    max-height: 60vh; /* Set maximum height of modal body to 60% of viewport */
+    overflow-y: auto; /* Enable vertical scrolling if content exceeds the modal's height */
+}
+
+.bottom-slide-in .modal-dialog {
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.bottom-slide-in.show .modal-dialog {
+    transform: translateY(0);
+}
+
+    /* For better experience on mobile screens */
+@media (max-width: 768px) {
+    .fixed-modal .modal-content {
+        height: 100vh; /* Full height for small screens */
+    }
+
+    .fixed-modal .modal-body {
+        max-height: 80vh;
+    }
+}
+
+/* VOUCHER POP UP NOTIFICATION */
+hr.notification_hr {
+    border-top: 2px dashed #696fff;
+}
+.voucher-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);  /* Dark semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.voucher-notification {
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: aliceblue;
+    /* background: #fff; */
+    /* color: #333; */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+}
+
+.voucher-notification h2 {
+    margin-top: 20px;
+    color: #696fff;
+}
+
+.voucher-notification p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.voucher-notification small {
+    font-size: 14px;
+    /* color: #777; */
+    color: aliceblue;
+
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.claim-btn {
+    background: linear-gradient(10deg, #696fff, #393fff);
+    color: white;
+    padding: 5px 24px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.claim-btn:hover {
+    background: linear-gradient(-10deg, #393fff, #696fff );
+    color: black;
+}
+
+/* Close button (X circle) in the top-right corner */
+.close-btn-x {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 50px;
+    background: transparent;
+    /* background: #ecebeb; */
+    color: #000000; /* Dark text color */
+    font-size: 24px;
+    border: none;
+    border-radius: 100%;
+    cursor: pointer;
+    padding: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    z-index: 1;
+}
+
+.close-btn-x:hover {
+    background-color: #b3acac;
+    border-radius: 360%;
+}
+
+/* LAYOUIT NOTIFICATION CSS  */
+.notification-item {
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.border-info {
+    border-color: #17a2b8; /* Blue */
+}
+.border-primary {
+    border-color: #007bff; /* Dark Blue */
+}
+.border-warning {
+    border-color: #ffc107; /* Yellow */
+}
+.border-danger {
+    border-color: #dc3545; /* Red */
+}
+.border-urgent {
+    border-color: #ff0000; /* Bright Red */
+}
+.border-out-of-stock {
+    border-color: #6c757d; /* Gray */
+}
+.notification-actions{
+    position: relative;
+    display: inline-flex;
+    justify-content: space-between;
+    bottom: 0;
+}
+
+
+/* USER MODAL CHAT */

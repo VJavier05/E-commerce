@@ -1,0 +1,73 @@
+{% extends "dashboard_1.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center py-3 mb-2">
+    <h4 class="fw-bold mb-0">
+        <span class="text-muted fw-light">Promotion /</span> Add Notification
+    </h4>
+    <a href="{{ url_for('view_notifications') }}" class="btn btn-primary">
+        <i class="bi bi-bell pe-md-2 pe-1"></i> View All Notifications
+    </a>
+</div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Create Notification</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('add_notification') }}">
+
+                <!-- Notification Title -->
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input class="form-control" type="text" id="title" name="title" placeholder="Enter Notification Title" required>
+                </div>
+
+                <!-- Notification Message -->
+                <div class="mb-3">
+                    <label for="message" class="form-label">Message</label>
+                    <input class="form-control" type="text" id="message" name="message" placeholder="Enter Notification Message" maxlength="30"  pattern="[A-Za-z0-9\s.,!?]{1,30}" oninput="this.value.replace(/[^A-Za-z0-9\s.,!?]/g, '')" required>
+                </div>
+
+                <!-- Notification Type -->
+                <div class="mb-3">
+                    <label for="notification_type" class="form-label">Type</label>
+                    <select id="notification_type" name="notification_type" class="form-select" required onchange="toggleProductSelection()">
+                        <option value="message">General Notification</option>
+                        <option value="promotion">Promotion</option>
+                    </select>
+                </div>
+
+                <!-- Product Selection (for Promotion Type) -->
+                <div class="mb-3" id="product_selection" style="display: none;">
+                    <label for="product_id" class="form-label">Select Product</label>
+                    <select id="product_id" name="product_id" class="form-select">
+                        {% for product in products %}
+                            <option value="{{ product.id }}">{{ product.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Submission Button -->
+                <div class="d-flex justify-content-end mt-4">
+                    <a href="{{ url_for('view_notifications') }}" class="btn btn-secondary me-2">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Create Notification</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+   
+
+
+<script>
+    function toggleProductSelection() {
+        const notificationType = document.getElementById("notification_type").value;
+        const productSelection = document.getElementById("product_selection");
+
+        // Show product selection only if "Promotion" is selected
+        productSelection.style.display = notificationType === "promotion" ? "block" : "none";
+    }
+</script>
+
+{% endblock %}

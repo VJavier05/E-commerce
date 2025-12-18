@@ -1,0 +1,239 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="wrapper">
+  <div class="inner mt-5">
+    <div class="image-holder">
+      <img src="https://images.pexels.com/photos/12058606/pexels-photo-12058606.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Shop Image">
+    </div>
+    <form method="POST" action="" novalidate enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
+
+      <h3>Shop Information</h3>
+
+      <div class="form-group pb-5">
+        <div class="form-field">
+          {% if form.shop_name.errors %}
+            {{ form.shop_name(class="form-control form-control-lg is-invalid", placeholder="Shop Name") }}
+            <div class="invalid-feedback">
+              {% for error in form.shop_name.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ form.shop_name(class="form-control form-control-lg", placeholder="Shop Name") }}
+          {% endif %}
+        </div>
+
+        <div class="form-field">
+          <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Select Category
+            </button>
+            <ul class="dropdown-menu w-100 p-2 fs-5" aria-labelledby="categoryDropdown">
+                {% for value, label in form.category.choices %}
+                <li>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="{{ value }}" name="category" value="{{ value }}"
+                        {% if form.category.data and value in form.category.data %}checked{% endif %}>
+                        <label class="form-check-label" for="{{ value }}">{{ label }}</label>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        {% if form.category.errors %}
+            <div class="invalid-feedback d-block">
+                {% for error in form.category.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+        </div>
+
+      </div>
+
+
+      <div class="form-wrapper pb-5">
+        <label for="courierRegion" class="form-label">Region</label>
+        {% if form.region.errors %}
+            {{ form.region(class="form-select form-select-lg is-invalid", id="courierRegion", onchange="loadProvinces(this.value)") }}
+            <div class="invalid-feedback">
+                {% for error in form.region.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            {{ form.region(class="form-select form-select-lg", id="courierRegion", onchange="loadProvinces(this.value)") }}
+        {% endif %}
+      </div>
+
+      <div class="form-wrapper pb-5">
+        <label for="courierProvince" class="form-label">Province</label>
+        {% if form.province.errors %}
+            {{ form.province(class="form-select form-select-lg is-invalid", id="courierProvince") }}
+            <div class="invalid-feedback">
+                {% for error in form.province.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            {{ form.province(class="form-select form-select-lg", id="courierProvince") }}
+        {% endif %}
+      </div>
+
+      <div class="form-wrapper pb-5">
+        {% if form.city.errors %}
+        <label for="courierCity" class="form-label">City</label>
+        {{ form.city(class="form-select form-select-lg is-invalid", id="courierCity") }}
+        <div class="invalid-feedback">
+            {% for error in form.city.errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+            <label for="courierCity" class="form-label">City</label>
+            {{ form.city(class="form-select form-select-lg", id="courierCity") }}
+        {% endif %}
+      </div>
+
+      <div class="form-wrapper pb-5">
+        {% if form.barangay.errors %}
+        <label for="courierBarangay" class="form-label">Barangay</label>
+        {{ form.barangay(class="form-select form-select-lg is-invalid", id="courierBarangay") }}
+        <div class="invalid-feedback">
+            {% for error in form.barangay.errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+            <label for="courierBarangay" class="form-label">Barangay</label>
+            {{ form.barangay(class="form-select form-select-lg", id="courierBarangay") }}
+        {% endif %}
+      </div>
+
+
+
+      <div class="form-wrapper pb-5">
+        {% if form.street.errors %}
+          {{ form.street(class="form-control form-control-lg is-invalid", placeholder="Street Address") }}
+          <div class="invalid-feedback">
+            {% for error in form.street.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.street(class="form-control form-control-lg", placeholder="Street Address") }}
+        {% endif %}
+      </div>
+
+      <div class="form-wrapper pb-4">
+        {% if form.postal_code.errors %}
+          {{ form.postal_code(class="form-control form-control-lg is-invalid", placeholder="Postal Code") }}
+          <div class="invalid-feedback">
+            {% for error in form.postal_code.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.postal_code(class="form-control form-control-lg", placeholder="Postal Code") }}
+        {% endif %}
+      </div>
+
+      <div class="form-wrapper pb-4">
+        {{ form.business_id.label(class="form-label fw-bolder") }}<br>
+        {{ form.business_id(class="form-control file-input") }}
+        {% if form.business_id.errors %}
+          {% for error in form.business_id.errors %}
+            <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      <div class="form-wrapper form-check shop-info pb-4">
+        {{ form.policy(class="form-check-input") }}
+        {{ form.policy.label(class="form-check-label") }}
+
+        <a href="#" class="terms-link" data-bs-toggle="modal" data-bs-target="#termsModal">Terms and Conditions</a>
+      </div>
+
+      <div class="text-center mt-3 register-btn">
+        {{ form.submit(class="btn btn-primary btn-lg") }}
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<!-- Modal for Terms and Conditions -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="termsModalLabel">Seller Terms and Conditions</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <h5>1. Introduction</h5>
+              <p>Welcome to SheWear. These Terms and Conditions outline the rules and guidelines for sellers using our platform. By signing up as a seller, you agree to these terms and conditions. If you do not agree with any of these terms, you should not use our services.</p>
+              
+              <h5>2. Seller Registration and Account</h5>
+              <p>To become a seller on our platform, you must create an account and provide accurate information, including business details, identification, and contact information. You are responsible for maintaining the confidentiality of your login details and for all activities that occur under your account.</p>
+
+              <h5>3. Seller Responsibilities</h5>
+              <p>As a seller, you are responsible for providing accurate descriptions and prices for the products you list. You must ensure that your products comply with all applicable laws and regulations, and you are responsible for fulfilling customer orders promptly.</p>
+
+              <h5>4. Product Listings</h5>
+              <p>You are responsible for the accuracy, legality, and authenticity of the products listed on the platform. We reserve the right to remove any listings that violate our platform policies or terms.</p>
+
+              <h5>5. Fees and Payments</h5>
+              <p>Our platform may charge a 5% commission on sales made through our marketplace. The commission will be clearly stated, and payments will be processed according to the platform’s rules.</p>
+
+              <h5>6. Shipping and Delivery</h5>
+              <p>Sellers are responsible for shipping products to customers promptly and ensuring that products are properly packaged. Shipping charges will be covered by the seller unless otherwise agreed upon with the buyer.</p>
+
+              <h5>7. Returns and Refunds</h5>
+              <p>Sellers must handle returns and refunds according to our return policy. If a customer receives a defective or damaged product, the seller must issue a replacement or full refund.</p>
+
+              <h5>8. Customer Service</h5>
+              <p>It is the seller’s responsibility to provide excellent customer service, respond promptly to customer inquiries, and resolve disputes amicably.</p>
+
+              <h5>9. Intellectual Property</h5>
+              <p>You warrant that you own or have the necessary rights to the products you sell, including trademarks, copyrights, and other intellectual property rights. You grant us the right to use images and descriptions of your products for marketing purposes.</p>
+
+              <h5>10. Termination and Suspension</h5>
+              <p>We reserve the right to suspend or terminate your seller account if you violate any of these terms. You may also terminate your account at any time by notifying us in writing.</p>
+
+              <h5>11. Liability</h5>
+              <p>We are not responsible for any disputes, defects, or damages arising from transactions between sellers and customers. You agree to indemnify us from any legal claims related to your sales activities.</p>
+
+              <h5>12. Amendments</h5>
+              <p>We may update these Terms and Conditions at any time. You will be notified of any significant changes, and you will be required to accept the updated terms to continue selling on the platform.</p>
+
+              <h5>Seller Acknowledgment</h5>
+              <p>By continuing to use our platform, you acknowledge that you have read, understood, and agree to abide by these Terms and Conditions.</p>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-lg btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<script>
+  // Handle the dropdown toggle behavior and update the button text with selected categories
+  document.addEventListener('DOMContentLoaded', function() {
+      const categoryCheckboxes = document.querySelectorAll('#categoryDropdown input[type="checkbox"]');
+      const categoryButton = document.getElementById('categoryDropdown');
+      
+      categoryCheckboxes.forEach(function(checkbox) {
+          checkbox.addEventListener('change', function() {
+              const selectedCategories = Array.from(categoryCheckboxes)
+                  .filter(cb => cb.checked)
+                  .map(cb => cb.nextElementSibling.innerText);
+              categoryButton.innerText = selectedCategories.length > 0 ? selectedCategories.join(', ') : 'Select Category';
+          });
+      });
+  });
+</script>
+{% endblock %}

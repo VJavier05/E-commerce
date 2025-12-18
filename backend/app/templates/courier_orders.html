@@ -1,0 +1,552 @@
+{% extends "dashboard_3.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center py-3 mb-2">
+    <h4 class="fw-bold mb-0">
+        <span class="text-muted fw-light">Orders /</span> Product Delivery
+    </h4>
+
+    
+</div>
+
+<div id="alertMessage" class="alert alert-dismissible fade show d-none" role="alert">
+    <span id="alertText"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="nav-align-top mb-4">
+            <ul class="nav nav-pills mb-3" role="tablist">
+                <li class="nav-item">
+                  <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-orders" aria-controls="navs-pills-top-home" aria-selected="true">
+                    Pickup
+                  </button>
+                </li>
+
+                <li class="nav-item">
+                    <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-complete" aria-controls="navs-pills-pending-Shipment" aria-selected="false">
+                    Delivery
+                    </button>
+                  </li>
+
+                <li class="nav-item">
+                  <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-completed" aria-controls="navs-pills-pending-Shipment" aria-selected="false">
+                  Completed
+                  </button>
+                </li>
+
+     
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="navs-pills-orders" role="tabpanel">
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="input-group input-group-merge mb-3 search-input">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input
+                              type="text"
+                              class="form-control"
+                              placeholder="Search Pending..."
+                              aria-label="Search..."
+                              id="searchProduct"
+                              onkeyup="searchTable('productTable', 'searchProduct')"  
+                            />
+                          </div>
+                          
+                          <a href="javascript:void(0);" class="btn btn-primary" id="pickupButton" onclick="openPickupConfirmationModal()">
+                            <i class="bi bi-truck-flatbed pe-md-2 pe-1 mb-3"></i>Pickup Success
+                        </a>
+                        
+                        
+                    </div>
+
+           
+
+                    <table class="table table-hover table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Select</th>  
+                                <th>Order ID</th>
+                                <th>Pickup Scheduled Date</th>
+                                <th>Status</th>
+                                <th>Product</th>
+                                <th>Seller</th> <!-- New column for Seller -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pickup in orders_grouped_by_id %}
+                                {% for item in pickup.order_items %}
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input order-checkbox" value="{{ item.order.id }}">
+
+                                        </td>
+                    
+                                        {% if loop.first %}
+                                            <!-- The following cells span the rows of this pickup -->
+                                            <td rowspan="{{ pickup.order_items|length }}">{{ item.order.id }}</td>
+                                            <td rowspan="{{ pickup.order_items|length }}">{{ pickup.scheduled_date.strftime('%B %d, %Y') }}</td>
+                                            <td rowspan="{{ pickup.order_items|length }}">
+                                                <span class="badge bg-{{ 'success' if pickup.status == 'Completed' else 'warning' if pickup.status == 'Scheduled' else 'warning' }}">
+                                                    {{ pickup.status }}
+                                                </span>
+                                            </td>
+                                        {% endif %}
+                                        
+                                        <!-- Product Name and Image -->
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if item.product.images %}
+                                                    <img src="{{ url_for('static', filename='profile_pics/' + item.product.images[0].image_path) }}" alt="Product Image" style="width: 75px; height: 75px" class="img-fluid img-thumbnail" />
+                                                {% else %}
+                                                    <img src="https://via.placeholder.com/75" alt="Placeholder Image" style="width: 75px; height: 75px" class="img-fluid img-thumbnail" />
+                                                {% endif %}
+                                                <div class="ms-3">
+                                                    <p class="fw-bold mb-1">{{ item.product.name }}</p>
+                                                    <p class="text-muted mb-0">{{ item.product.category }}</p>
+                                                    <p class="text-muted mb-0">{{ item.quantity }} pcs</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                    
+                                        <!-- Seller Info -->
+                                        <td>
+                                            <!-- Display seller's name (or any other seller details you want) -->
+                                            <p class="fw-bold mb-1">{{ item.product.seller.shop_name }}</p> 
+                                            <p class="text-muted mb-0">
+                                                {{ item.product.seller.region }},
+                                                {{ item.product.seller.province }},
+                                                {{ item.product.seller.city }},
+                                                {{ item.product.seller.barangay }},
+                                                {{ item.product.seller.street }},
+                                                ({{ item.product.seller.postal_code }})
+
+
+                                            </p>
+
+
+
+
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+                    
+                    
+                    
+                    
+            
+                </div>
+
+                <!-- SHIPMENT -->
+                <div class="tab-pane fade show" id="navs-pills-complete" role="tabpanel">
+              
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="input-group input-group-merge mb-3 search-input">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input
+                              type="text"
+                              class="form-control"
+                              placeholder="Search Pending..."
+                              aria-label="Search..."
+                              id="searchProduct"
+                              onkeyup="searchTable('productTable', 'searchProduct')"  
+                            />
+                          </div>
+                          
+          
+                        
+                        
+                    </div>
+
+           
+
+                    <table class="table">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Pickup Scheduled Date</th>
+                                <th>Status</th>
+                                <th>Product</th>
+                                <th>Buyer</th> <!-- New column for Buyer -->
+                                <th>Amount to Pay</th> <!-- New column for Amount -->
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order_id, items in to_deliver.items() %}
+                                <tr>
+                                    <!-- The following cells span the rows of this pickup -->
+                                    <td rowspan="{{ items|length }}">{{ order_id }}</td>
+                                    <td rowspan="{{ items|length }}">{{ items[0].pickup.scheduled_date.strftime('%B %d, %Y') }}</td>
+                                    <td rowspan="{{ items|length }}">
+                                        <span class="badge bg-{{ 'success' if items[0].pickup.status == 'Completed' else 'warning' if items[0].pickup.status == 'Scheduled' else 'warning' }}">
+                                            {{ items[0].pickup.status }}
+                                        </span>
+                                    </td>
+                    
+                                    <!-- Render the first product of this order -->
+                                    {% for item in items %}
+                                        {% if not loop.first %}<tr>{% endif %}
+                                        
+                                        <!-- Product Name and Image -->
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if item.order_item.product.images %}
+                                                    <img src="{{ url_for('static', filename='profile_pics/' + item.order_item.product.images[0].image_path) }}" alt="Product Image" style="width: 75px; height: 75px" class="img-fluid img-thumbnail" />
+                                                {% else %}
+                                                    <img src="https://via.placeholder.com/75" alt="Placeholder Image" style="width: 75px; height: 75px" class="img-fluid img-thumbnail" />
+                                                {% endif %}
+                                                <div class="ms-3">
+                                                    <p class="fw-bold mb-1">{{ item.order_item.product.name }}</p>
+                                                    <p class="text-muted mb-0">{{ item.order_item.product.category }}</p>
+                                                    <p class="text-muted mb-0">{{ item.order_item.quantity }} pcs</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                    
+                                        <!-- Seller Info -->
+                                        <td>
+                                            <p class="fw-bold mb-1">{{ item.order_item.order.user.first_name }}{{ item.order_item.order.user.last_name }}</p> 
+                                            <p class="text-muted mb-0">
+                                                {{ item.order_item.order.address.street }},
+                                                {{ item.order_item.order.address.barangay }},
+                                                {{ item.order_item.order.address.city }},
+                                                {{ item.order_item.order.address.province }},
+                                                {{ item.order_item.order.address.region }},
+                                                ({{ item.order_item.order.address.postal_code }})
+                                            </p>
+                                        </td>
+
+                                   
+                    
+                                        <!-- Amount to Pay -->
+                                        <td>
+                                            <p class="fw-bold mb-1">{{ (item.order_item.price * item.order_item.quantity) | round(3) }}</p>
+                                        </td>
+                    
+                                        <!-- Display Action Button Only Once Per Order -->
+                                        {% if loop.first %}
+                                            <td rowspan="{{ items|length }}">
+                                                <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
+                                                        data-bs-target="#confirmDeliveryModal"
+                                                        data-order-id="{{ order_id }}" 
+                                                        data-pickup-id="{{ items[0].pickup.id }}">
+                                                    Delivered
+                                                </button>
+                                            </td>
+                                        {% endif %}
+                                        
+                                        {% if not loop.last %}</tr>{% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+                    
+                    
+
+                </div>
+
+                <div class="tab-pane fade show" id="navs-pills-completed" role="tabpanel">
+                    <table class="table">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Pickup Scheduled Date</th>
+                                <th>Status</th>
+                                <th>Product</th>
+                                <th>Seller</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order_id, items in delivered.items() %}
+                                <tr>
+                                    <!-- The following cells span the rows of this pickup -->
+                                    <td rowspan="{{ items|length }}">{{ order_id }}</td>
+                                    <td rowspan="{{ items|length }}">{{ items[0].pickup.scheduled_date.strftime('%B %d, %Y') }}</td>
+                                    <td rowspan="{{ items|length }}">
+                                        <span class="badge bg-{{ 'success' if items[0].pickup.status == 'Delivered' else 'warning' if items[0].pickup.status == 'Scheduled' else 'warning' }}">
+                                            {{ items[0].pickup.status }}
+                                        </span>
+                                    </td>
+                    
+                                    <!-- Render the first product of this order -->
+                                    {% for item in items %}
+                                        {% if not loop.first %}<tr>{% endif %}
+                                        
+                                        <!-- Product Name and Image -->
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if item.order_item.product.images %}
+                                                    <img src="{{ url_for('static', filename='profile_pics/' + item.order_item.product.images[0].image_path) }}" alt="Product Image" style="width: 75px; height: 75px" class="img-fluid img-thumbnail" />
+                                                {% else %}
+                                                    <img src="https://via.placeholder.com/75" alt="Placeholder Image" style="width: 75px; height: 75px" class="img-fluid img-thumbnail" />
+                                                {% endif %}
+                                                <div class="ms-3">
+                                                    <p class="fw-bold mb-1">{{ item.order_item.product.name }}</p>
+                                                    <p class="text-muted mb-0">{{ item.order_item.product.category }}</p>
+                                                    <p class="text-muted mb-0">{{ item.order_item.quantity }} pcs</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                    
+                                        <!-- Seller Info -->
+                                        <td>
+                                            <p class="fw-bold mb-1">{{ item.order_item.product.seller.shop_name }}</p> 
+                                            <p class="text-muted mb-0">
+                                                {{ item.order_item.product.seller.region }},
+                                                {{ item.order_item.product.seller.province }},
+                                                {{ item.order_item.product.seller.city }},
+                                                {{ item.order_item.product.seller.barangay }},
+                                                {{ item.order_item.product.seller.street }},
+                                                ({{ item.order_item.product.seller.postal_code }})
+                                            </p>
+                                        </td>
+                    
+                                
+                                        
+                                        {% if not loop.last %}</tr>{% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+      
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Pickup Confirmation Modal -->
+<div class="modal fade" id="pickupConfirmationModal" tabindex="-1" aria-labelledby="pickupConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="pickupConfirmationModalLabel">Confirm Pickup</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to confirm the pickup for the selected orders?</p>
+                <ul id="selectedOrdersList" class="list-group">
+                    <!-- The selected orders will be displayed here -->
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="confirmPickup()">Confirm Pickup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Delivery Confirmation Modal -->
+<div class="modal fade" id="confirmDeliveryModal" tabindex="-1" aria-labelledby="confirmDeliveryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeliveryModalLabel">Confirm Delivery</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="confirm-delivery-form" action="{{ url_for('confirm_delivery') }}" method="post" enctype="multipart/form-data">
+                    <p>Are you sure you want to mark Order ID <strong id="modal-order-id"></strong> as Delivered?</p>
+                    <input type="hidden" name="pickup_id" id="confirm-pickup-id"> 
+                    <input type="hidden" name="order_id" id="confirm-order-id">
+
+                    <!-- Delivery Image Upload Field -->
+                    <div class="mb-3">
+                        <label for="delivery-image" class="form-label">Upload Delivery Photo</label>
+                        <input class="form-control" type="file" id="delivery-image" name="delivery_image" accept="image/*" required>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-success" form="confirm-delivery-form">Confirm Delivery</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Bootstrap JS -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script> -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Save the active tab in localStorage when it's shown
+        document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function (e) {
+                const activeTab = e.target.getAttribute('data-bs-target'); // Get target tab ID
+                localStorage.setItem('activeTab', activeTab); // Store it in localStorage
+            });
+        });
+    
+        // Get the active tab from localStorage
+        const activeTab = localStorage.getItem('activeTab');
+        if (activeTab) {
+            const tabToActivate = document.querySelector(`[data-bs-target="${activeTab}"]`);
+            if (tabToActivate) {
+                const bootstrapTab = new bootstrap.Tab(tabToActivate); // Create Bootstrap Tab instance
+                bootstrapTab.show(); // Activate the stored tab
+            }
+        } else {
+            // Default to the first tab if no activeTab is stored
+            const firstTab = document.querySelector('[data-bs-toggle="tab"]');
+            if (firstTab) {
+                const bootstrapTab = new bootstrap.Tab(firstTab);
+                bootstrapTab.show();
+            }
+        }
+    });
+    
+</script>
+
+
+<script>
+    // Function to show alert messages
+    function showAlert(message, type = 'success') {
+        const alertMessageDiv = document.getElementById('alertMessage');
+        const alertText = document.getElementById('alertText');
+        
+        // Set the message
+        alertText.textContent = message;
+        
+        // Remove all existing alert classes
+        alertMessageDiv.classList.remove('alert-success', 'alert-danger', 'alert-warning', 'alert-info');
+        
+        // Add the appropriate alert class
+        alertMessageDiv.classList.add(`alert-${type}`);
+        
+        // Show the alert
+        alertMessageDiv.classList.remove('d-none');
+        alertMessageDiv.classList.add('show');
+
+        // Automatically hide the alert after 5 seconds
+        setTimeout(() => {
+            alertMessageDiv.classList.add('d-none');
+            alertMessageDiv.classList.remove('show');
+        }, 2000);
+    }
+
+    // Function to open the pickup confirmation modal
+    function openPickupConfirmationModal() {
+        const selectedItems = [];
+        const selectedOrders = [];
+        const ordersList = document.getElementById('selectedOrdersList');
+        ordersList.innerHTML = '';  // Clear previous selections
+
+        // Get all checked checkboxes
+        const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+        
+        // Collect the IDs and details of selected items
+        checkboxes.forEach(checkbox => {
+            selectedItems.push(checkbox.value);
+
+            // Get the Order ID and Product name from the row (you can adjust based on the actual data you want to show)
+            const row = checkbox.closest('tr');
+            const orderId = row.querySelector('td:nth-child(2)').textContent; // Assuming Order ID is in the 2nd column
+            const productName = row.querySelector('td:nth-child(5) .fw-bold').textContent; // Assuming Product Name is in the 5th column
+
+            // Add the order details to the selected orders list
+            selectedOrders.push({ orderId, productName });
+
+            // Add the order to the modal's list
+            const listItem = document.createElement('li');
+            listItem.classList.add('list-group-item');
+            listItem.textContent = `Order ID: ${orderId} - ${productName}`;
+            ordersList.appendChild(listItem);
+        });
+
+        if (selectedItems.length === 0) {
+            showAlert('Please select at least one order item.', "warning"); // Show warning if no orders are selected
+            return;
+        }
+
+        // Store selected items and details in a global variable for confirmation
+        window.selectedItems = selectedItems;
+        window.selectedOrders = selectedOrders;
+
+        // Open the confirmation modal
+        const modal = new bootstrap.Modal(document.getElementById('pickupConfirmationModal'));
+        modal.show();
+    }
+
+    // Function to confirm the pickup
+    function confirmPickup() {
+        if (!window.selectedItems || window.selectedItems.length === 0) {
+            showAlert('No items selected for pickup.', "warning");
+            return;
+        }
+
+        // Send the request to the server to confirm the pickup
+        fetch('/confirm_pickup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ selected_items: window.selectedItems })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.success, "success"); // Show success message
+                const modal = bootstrap.Modal.getInstance(document.getElementById('pickupConfirmationModal'));
+                modal.hide();
+                
+                // Add a slight delay before reloading to show the success message
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else if (data.error) {
+                showAlert(data.error, "danger"); // Show error message if there's an issue
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('An error occurred while confirming pickup', "danger"); // Show error message in case of network failure
+        });
+    }
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+    const confirmDeliveryModal = document.getElementById('confirmDeliveryModal');
+    confirmDeliveryModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const pickupId = button.getAttribute('data-pickup-id');
+        const orderId = button.getAttribute('data-order-id');
+        
+        // Set the order and pickup IDs in the hidden fields
+        document.getElementById('confirm-pickup-id').value = pickupId;
+        document.getElementById('confirm-order-id').value = orderId;
+
+        // Set the Order ID text in the modal
+        document.getElementById('modal-order-id').textContent = orderId;
+    });
+});
+
+</script>
+
+
+{% endblock %}

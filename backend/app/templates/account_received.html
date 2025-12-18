@@ -1,0 +1,168 @@
+{% extends "account.html" %}
+{% block dashboard_content %}
+
+<div class="container">
+
+    {% if order_items|length == 0 %}
+    <p class="text-center text-muted fs-3">No Received Orders.</p>
+
+    {% else %}
+
+    {% for item in order_items %}
+    <div class="card mb-5 position-relative">
+        <!-- Order Status Badge -->
+        <span class="badge {% if item.status == 'Received' %} text-bg-success {% elif item.status == 'In Transit' %} text-bg-primary {% else %} text-bg-warning {% endif %} position-absolute p-2" style="top: 8px; right: 10px;">
+            {{ item.status }}
+        </span>
+
+        <!-- Shop Info -->
+        <div class="card-header d-flex align-items-center gap-3">
+            <strong>
+                {% if item.seller.shop_name %}
+                    {{ item.seller.shop_name }}
+                {% else %}
+                    UNKNOWN SELLER
+                {% endif %}
+            </strong>
+            {% if item.product %}
+                <a href="{{ url_for('chat_with_seller', seller_id=item.product.seller.user.id) }}" class="btn btn-primary me-2">Chat</a>
+            {% else %}
+                <p>Product not available</p>
+            {% endif %}
+            <a class="btn btn-outline-secondary" href="{{  url_for('seller_page', seller_id=item.seller.id) }}">View Shop</a>
+        </div>
+
+        <!-- Item Details -->
+        <div class="card-body">
+            <div class="row align-items-center mb-3">
+                <div class="col-md-2">
+                    <img src="{{ url_for('static', filename='profile_pics/' + item.product.images[0].image_path) }}" alt="Product Image" width="100" height="100" class="img-thumbnail">
+                </div>
+                <div class="col-md-6">
+                    <a class="mb-1 product-name fs-3 fw-bold" href="{{ url_for('order_detail', order_id=item.order.id) }}">{{ item.product.name }}</a>
+                    <p class="mb-1 text-muted fs-4"><small>Variation: {{ item.color }} / {{ item.size }}</small></p>
+                </div>
+                <div class="col-md-2 text-center ml-auto">
+                    <p class="current-price fs-2 fw-bold"><strong>₱{{ item.price }} x {{ item.quantity }}</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Info -->
+        <div class="card-footer d-flex justify-content-between align-items-center bg-white">
+            <span class="amount-payable">Total Amount for Order: <strong>₱{{ item.price * item.quantity }}</strong></span>
+            <div class="ms-auto">
+                <a href="{{ url_for('product', product_id=item.product.id) }}" class="btn btn-lg btn-outline-secondary">Buy Again</a>
+                <button type="button" class="btn btn-lg btn-outline-primary" 
+    data-bs-toggle="modal" 
+    data-bs-target="#rateEditModal{{ item.id }}">
+    {% if reviews.get(item.product.id) %}
+        Edit Review
+    {% else %}
+        Rate Product
+    {% endif %}
+</button>       
+            </div>
+        </div>
+
+        <!-- Modal Structure -->
+        <div class="modal fade" id="rateEditModal{{ item.id }}" tabindex="-1" aria-labelledby="rateEditModalLabel{{ item.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="rateEditModalLabel{{ item.id }}">
+                            {% if reviews.get(item.product.id) %}
+                                Edit Review
+                            {% else %}
+                                Rate Product
+                            {% endif %}
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Product Info -->
+                        <div class="mb-4">
+                            <h6>Reviewing:</h6>
+                            <div class="d-flex align-items-center">
+                                <img src="{{ url_for('static', filename='profile_pics/' + item.product.images[0].image_path) }}" 
+                                     alt="Product Image" class="img-fluid" style="max-width: 50px; margin-right: 10px;">
+                                <span>{{ item.product.name }}</span>
+                            </div>
+                        </div>
+        
+                        <!-- Review Form -->
+                        <form method="POST" action="{{ url_for('submit_review', product_id=item.product.id) }}" enctype="multipart/form-data">
+                            <!-- Star Rating -->
+                            <div class="form-group mb-3 rating-group">
+                                <label for="rating" class="fs-3 fw-bolder">Rating:</label>
+                                <div class="rating">
+                                    <input type="radio" id="star5-{{ item.id }}" name="rating" value="5" 
+                                        {% if reviews.get(item.product.id) and reviews[item.product.id].rating == 5 %} checked {% endif %} />
+                                    <label for="star5-{{ item.id }}"><i class="bi bi-star-fill"></i></label>
+        
+                                    <input type="radio" id="star4-{{ item.id }}" name="rating" value="4" 
+                                        {% if reviews.get(item.product.id) and reviews[item.product.id].rating == 4 %} checked {% endif %} />
+                                    <label for="star4-{{ item.id }}"><i class="bi bi-star-fill"></i></label>
+        
+                                    <input type="radio" id="star3-{{ item.id }}" name="rating" value="3" 
+                                        {% if reviews.get(item.product.id) and reviews[item.product.id].rating == 3 %} checked {% endif %} />
+                                    <label for="star3-{{ item.id }}"><i class="bi bi-star-fill"></i></label>
+        
+                                    <input type="radio" id="star2-{{ item.id }}" name="rating" value="2" 
+                                        {% if reviews.get(item.product.id) and reviews[item.product.id].rating == 2 %} checked {% endif %} />
+                                    <label for="star2-{{ item.id }}"><i class="bi bi-star-fill"></i></label>
+        
+                                    <input type="radio" id="star1-{{ item.id }}" name="rating" value="1" 
+                                        {% if reviews.get(item.product.id) and reviews[item.product.id].rating == 1 %} checked {% endif %} />
+                                    <label for="star1-{{ item.id }}"><i class="bi bi-star-fill"></i></label>
+                                </div>
+                            </div>
+        
+                            <!-- Title -->
+                            <div class="form-group mb-3 label-above">
+                                <label for="title{{ item.id }}" class="d-block fs-3 fw-bolder">Title</label>
+                                <input type="text" name="title" id="title{{ item.id }}" class="form-control form-control-lg" 
+                                       value="{{ reviews.get(item.product.id).title if reviews.get(item.product.id) else '' }}" required>
+                            </div>
+        
+                            <!-- Content -->
+                            <div class="form-group mb-3 label-above">
+                                <label for="content{{ item.id }}" class="d-block fs-3 fw-bolder">Review</label>
+                                <textarea name="content" id="content{{ item.id }}" rows="5" class="form-control form-control-lg" required>{{ reviews.get(item.product.id).content if reviews.get(item.product.id) else '' }}</textarea>
+                            </div>
+
+                            <div class=" mb-3">
+                                <label for="images{{ item.id }}" class="fs-3 fw-bolder">Upload Images (Optional):</label>
+                                <input type="file" name="images" id="images{{ item.id }}" class="form-control form-control-lg" accept="image/*" multiple>
+                            </div>
+        
+        
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-lg btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-lg btn-primary">
+                                    {% if reviews.get(item.product.id) %}
+                                        Update Review
+                                    {% else %}
+                                        Submit Review
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+     
+        
+        
+        
+    </div>
+    {% endfor %}
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

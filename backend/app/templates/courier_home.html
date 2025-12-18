@@ -1,0 +1,276 @@
+{% extends "dashboard_3.html" %}
+{% block content %}
+
+<div class="row">
+    <div class="col-12 col-lg-12 order-1 order-md-3 order-lg-2 mb-4">
+        <div class="card">
+            <div class="row row-bordered g-0">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-between align-items-center p-3">
+                    <h5 class="m-0">Total Shipping Comissions</h5>
+                    <p class="display-6 fw-bold mb-0 text-primary">₱{{ courier_income  | round(2) }}</p>
+
+                </div>
+
+                <div id="totalRevenueCharts" class="px-2"></div>
+            </div>
+           
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+   
+
+    <div class="col-md-12 col-lg-8 order-1 mb-4">
+    <div class="card h-100">
+        <div class="card-header">
+        <ul class="nav nav-pills" role="tablist">
+            <li class="nav-item">
+            <button
+                type="button"
+                class="nav-link active"
+                role="tab"
+                data-bs-toggle="tab"
+                data-bs-target="#navs-tabs-line-card-income"
+                aria-controls="navs-tabs-line-card-income"
+                aria-selected="true"
+            >
+                Deliveries
+            </button>
+            </li>
+  
+        </ul>
+        </div>
+        <div class="card-body px-0">
+        <div class="tab-content p-0">
+            <div class="tab-pane fade show active" id="navs-tabs-line-card-income" role="tabpanel">
+            <div class="d-flex p-4 pt-3">
+                <div class="d-flex justify-content-center align-items-center me-3" style="width: 40px; height: 40px; background-color: #f2f7ff; border-radius: 8px;">
+                    <i class="bx bxs-truck fs-4 text-primary"></i>
+                </div>
+                <div>
+                <small class="text-muted d-block">Total Deliveries</small>
+                <h6 class="mb-0 me-1">{{ delivery_count | round(2) }}</h6>
+
+                <div class="d-flex align-items-center">
+                   
+                </div>
+                </div>
+            </div>
+            <div id="incomeCharts"></div>
+          
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="col-lg-4 col-md-4 order-3">
+        <div class="row">
+          <div class="col-lg-6 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between">
+                    <div class="avatar flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded bg-label-warning">
+                            <i class='bx bxs-hourglass fs-4'></i> 
+                        </span>
+                    </div>
+            
+                </div>
+                <span class="fw-semibold d-block mb-1">Scheduled Pickup</span>
+                <h3 class="card-title mb-2">{{ pickup_count }}</h3>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between">
+                    <div class="avatar flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded bg-label-primary">
+                            <i class='bx bx-package fs-4'></i> 
+                        </span>
+                    </div>
+            
+                </div>
+                <span class="fw-semibold d-block mb-1">Order Delivered</span>
+                <h3 class="card-title mb-2">{{ delivery_count }}</h3>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between">
+                    <div class="avatar flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded bg-label-success">
+                            <i class='bx bx-check-circle fs-4'></i> 
+                        </span>
+                    </div>
+            
+                </div>
+                <span class="fw-semibold d-block mb-1">Completed Delivery</span>
+                <h3 class="card-title mb-2">{{ received_count }}</h3>
+
+              </div>
+            </div>
+          </div>
+
+     
+        </div>
+    </div>
+
+   
+</div>
+
+
+<script>
+    const totalRevenueChartsEl = document.querySelector('#totalRevenueCharts');
+
+    fetch('/monthly-courier-income')
+        .then(response => response.json())
+        .then(data => {
+            const totalRevenueChartsOptions = {
+                series: data.series,
+                chart: {
+                    height: 300,
+                    stacked: true,
+                    type: 'bar',
+                    toolbar: { show: false }
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '33%',
+                        borderRadius: 10
+                    }
+                },
+                colors: ['#696cff', '#00E396'], // Customize colors
+                dataLabels: { enabled: false },
+                stroke: {
+                    curve: 'smooth',
+                    width: 6,
+                    lineCap: 'round',
+                    colors: ['#FFFFFF']
+                },
+                legend: {
+                    show: true,
+                    horizontalAlign: 'left',
+                    position: 'top',
+                    markers: {
+                        height: 8,
+                        width: 8,
+                        radius: 12
+                    },
+                    itemMargin: { horizontal: 10 }
+                },
+                grid: {
+                    borderColor: '#e7e7e7',
+                    padding: { top: 0, bottom: -8, left: 20, right: 20 }
+                },
+                xaxis: {
+                    categories: data.categories,
+                    labels: { style: { fontSize: '13px', colors: ['#9c9c9c'] } }
+                },
+                yaxis: {
+                    labels: { style: { fontSize: '13px', colors: ['#9c9c9c'] } }
+                },
+                responsive: [
+                    {
+                        breakpoint: 768,
+                        options: {
+                            plotOptions: { bar: { columnWidth: '48%' } }
+                        }
+                    }
+                ]
+            };
+
+            if (totalRevenueChartsEl !== null) {
+                const totalRevenueCharts = new ApexCharts(totalRevenueChartsEl, totalRevenueChartsOptions);
+                totalRevenueCharts.render();
+            }
+        })
+        .catch(error => console.error('Error loading sales data:', error));
+
+
+
+        
+</script>
+
+
+
+<script>
+    const incomeChartEl = document.querySelector('#incomeCharts');
+
+    fetch('/monthly-deliveries')
+        .then(response => response.json())
+        .then(data => {
+            const incomeChartConfig = {
+                series: data.series,
+                chart: {
+                    height: 215,
+                    parentHeightOffset: 0,
+                    parentWidthOffset: 0,
+                    toolbar: { show: false },
+                    type: 'area'
+                },
+                dataLabels: { enabled: false },
+                stroke: {
+                    width: 2,
+                    curve: 'smooth'
+                },
+                legend: { show: false },
+            
+                colors: ['#696cff'], // Primary color for the chart
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shade: 'light',
+                        shadeIntensity: 0.6,
+                        opacityFrom: 0.5,
+                        opacityTo: 0.25,
+                        stops: [0, 95, 100]
+                    }
+                },
+                grid: {
+                    borderColor: '#e7e7e7',
+                    strokeDashArray: 3,
+                    padding: {
+                        top: -20,
+                        bottom: -8,
+                        left: -10,
+                        right: 8
+                    }
+                },
+                xaxis: {
+                    categories: data.categories,
+                    axisBorder: { show: false },
+                    axisTicks: { show: false },
+                    labels: {
+                        show: true,
+                        style: { fontSize: '13px', colors: '#9c9c9c' }
+                    }
+                },
+                yaxis: {
+                    labels: { show: false },
+                    min: 0,
+                    max: Math.max(...data.series[0].data) + 10, // Dynamic max value
+                    tickAmount: 4
+                }
+            };
+
+            if (incomeChartEl !== null) {
+                const incomeChart = new ApexCharts(incomeChartEl, incomeChartConfig);
+                incomeChart.render();
+            }
+        })
+        .catch(error => console.error('Error loading shipping income data:', error));
+</script>
+{% endblock %}

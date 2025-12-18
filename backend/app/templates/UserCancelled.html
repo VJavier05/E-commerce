@@ -1,0 +1,55 @@
+{% extends "account.html" %}
+{% block dashboard_content %}
+
+<div class="container">
+    {% for item in order_items %}
+    <div class="card mb-5 position-relative">
+        <!-- Order Status Badge -->
+        <span class="badge text-bg-danger position-absolute p-2" style="top: 8px; right: 10px;">
+            {{ item.status }}
+        </span>
+
+        <!-- Shop Info -->
+        <div class="card-header d-flex align-items-center gap-3">
+            <strong>
+                {% if item.seller.shop_name %}
+                    {{ item.seller.shop_name }}
+                {% else %}
+                    UNKNOWN SELLER
+                {% endif %}
+            </strong>
+            <button class="btn btn-primary">Chat</button>
+            <a class="btn btn-outline-secondary" href="{{  url_for('seller_page', seller_id=item.seller.id) }}">View Shop</a>
+        </div>
+        
+        <!-- Item Info -->
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    <img src="{{ url_for('static', filename='profile_pics/' + item.product.images[0].image_path) }}" alt="Product Image" width="100" height="100">
+                </div>
+                <div class="col-md-6">
+                    <!-- <p class="mb-1 product-name fs-4"><strong>{{ item.product.name }}</strong></p> -->
+                    <a class="mb-1 product-name fs-3 fw-bold" href="#">{{ item.product.name }}</a>
+
+                    <p class="mb-1 text-muted fs-4"><small>Variation: {{ item.color }} / {{ item.size }} </small></p>
+                </div>
+                <div class="col-md-2 text-center ml-auto">
+                    <p class="current-price fs-2 fw-bold"><strong>₱{{ item.price }} x {{ item.quantity }}</strong></p>
+                    <span class="badge text-bg-danger">
+                        {{ item.cancel_reason }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payment Info -->
+        <div class="card-footer d-flex justify-content-between align-items-center bg-white">
+            <span class="amount-payable">Total Amount for Order: <strong>₱{{ item.price + 45 }}</strong></span>
+        
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

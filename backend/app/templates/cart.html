@@ -1,0 +1,144 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-header text-center" style="background-image: url('https://images.pexels.com/photos/4466492/pexels-photo-4466492.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')">
+    <div class="container">
+        <h1 class="page-title">Shopping Cart<span>Shop</span></h1>
+    </div>
+</div>
+<nav aria-label="breadcrumb" class="breadcrumb-nav">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('shop') }}">Shop</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
+        </ol>
+    </div>
+</nav>
+
+<div class="page-content">
+    <div class="cart">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-9">
+                    {% if cart %}
+                    <table class="table table-cart table-mobile">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Color</th>
+                                <th>Size</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart %}
+                                <tr>
+                                    <td class="product-col">
+                                        <div class="product">
+                                            <figure class="product-media">
+                                                <a href="#">
+                                                    {% set product = products[item.product_id] %}
+                                                    {% if product and product.images %}
+                                                        <img src="{{ url_for('static', filename='profile_pics/' + product.images[0].image_path) }}" alt="{{ product.name }}" style="width: 50px; height: auto;">
+                                                    {% else %}
+                                                        <img src="{{ url_for('static', filename='default_image.jpg') }}" alt="Default Image" style="width: 50px; height: auto;">  <!-- Fallback image -->
+                                                    {% endif %}
+                                                </a>
+                                            </figure>
+                                            <h3 class="product-title">
+                                                <a href="#">{{ product.name }}</a>
+                                            </h3>
+                                        </div>
+                                    </td>
+                                    <td class="color-col">{{ item.color }}</td>
+                                    <td class="size-col">{{ item.size }}</td>
+                                    <td class="price-col">₱<span id="price-{{ item.product_id }}">{{ item.price if item.price is not none else 0 }}</span></td>
+                                    <td class="quantity-col">
+                                        <div class="input-group">
+                                            <button class="btn btn-outline-primary" type="button" data-product-id="{{ item.product_id }}" data-color="{{ item.color }}" data-size="{{ item.size }}" onclick="decrementQuantity(this)">−</button>
+                                            <input type="number" id="qty-{{ item.product_id }}-{{ item.color }}-{{ item.size }}" class="form-control form-control-lg text-center" value="{{ item.quantity }}" min="1" max="10" step="1" data-decimals="0" readonly data-price="{{ item.price }}" onchange="updateTotalPrice(this)" required>
+                                            <button class="btn btn-outline-primary" type="button" data-product-id="{{ item.product_id }}" data-color="{{ item.color }}" data-size="{{ item.size }}" onclick="incrementQuantity(this)">+</button>
+                                        </div>
+                                    </td>
+                                    <td class="total-col">₱<span id="total-{{ item.product_id }}-{{ item.color }}-{{ item.size }}">{{ (item.price * item.quantity) if item.price is not none else 0 }}</span></td>
+                                    <td class="remove-col">
+                                        <form action="{{ url_for('remove_from_cart', product_id=item.product_id) }}" method="post">
+                                            <button type="submit" class="btn-remove"><i class="bi bi-x-lg"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="cart-bottom">
+                        <form action="{{ url_for('clear_cart') }}" method="post">
+                            <button type="submit" class="btn btn-lg btn-danger">Clear Cart</button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <p>Your cart is empty.</p>
+                    {% endif %}
+                </div>
+
+                <aside class="col-lg-3">
+                    <div class="summary summary-cart">
+                        <h3 class="summary-title">Cart Total</h3>
+
+                        <table class="table table-summary table-light">
+                            <tbody>
+                                <tr class="summary-subtotal">
+                                    <td>Subtotal:</td>
+                                    <td>₱{{ subtotal }}</td>
+                                </tr>
+                                <tr class="summary-shipping">
+                                    <td>Shipping:</td>
+                                    <td>&nbsp;</td>
+                                </tr>
+
+                                <tr class="summary-shipping-row">
+                                    <td>
+                                        <div class="custom-control custom-radio">
+                                            <input type="radio" id="standard-shipping" name="shipping" class="custom-control-input" checked>
+                                            <label class="custom-control-label" for="standard-shipping">Standard:</label>
+                                        </div>
+                                    </td>
+                                    <td>₱45.00</td>
+                                </tr>
+
+                    
+
+                                <tr class="summary-total">
+                                    <td>Total:</td>
+                                    <td>₱{{ subtotal + 45.00 }}</td> <!-- Adding shipping cost to subtotal -->
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="d-grid gap-2">
+                            <form action="{{ url_for('update_cart') }}" method="POST" id="checkout-form">
+                                {% for item in cart %}
+                                    <!-- Hidden inputs to store item data for submission -->
+                                    <input type="hidden" name="item_ids[]" value="{{ item.id }}">
+                                    <input type="hidden" name="quantities[]" id="hidden-qty-{{ item.product_id }}-{{ item.color }}-{{ item.size }}" value="{{ item.quantity }}">
+                                {% endfor %}
+                                <button type="submit" class="btn btn-lg btn-outline-primary-2 btn-order btn-block w-100">PROCEED TO CHECKOUT</button>
+                            </form>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/cart_add_min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/update_qty_chk.js') }}"></script>
+
+
+
+{% endblock %}

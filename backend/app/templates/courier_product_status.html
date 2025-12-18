@@ -1,0 +1,110 @@
+{% extends "dashboard_1.html" %}
+{% block content %}
+
+
+<div class="d-flex justify-content-between align-items-center py-3 mb-2">
+    <h4 class="fw-bold mb-0">
+        <span class="text-muted fw-light">Courier /</span> Delivery Status
+    </h4>
+
+    
+</div>
+
+<div class="card mb-4">
+    
+    <div class="card-body">
+        <div class="input-group input-group-merge mb-3 search-input">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search Couriers..."
+              aria-label="Search..."
+              id="searchProduct"
+              onkeyup="searchTable('pickupTable', 'searchProduct')"  
+            />
+          </div>
+
+          <table class="table table-hover" id="pickupTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Pickup ID</th>
+                    <th>Scheduled Date</th>
+                    <th>Courier</th>
+                    <th>Product</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pickup in pickups %}
+                    <tr>
+                        <!-- Pickup ID Column -->
+                        <td class="text-center">
+                            <p>{{ pickup.id }}</p>
+                            
+                        </td>
+        
+                        <!-- Scheduled Date Column -->
+                        <td class="text-center">
+                            <p>                            
+                                {{ pickup.scheduled_date.strftime('%B %d, %Y') }}
+                            </p>
+                        </td>
+        
+                        <!-- Courier Column -->
+                        <td class="text-center">
+                            {% if pickup.courier %}
+                            <p>       
+                                {{ pickup.courier.user.first_name }} {{ pickup.courier.user.last_name }}
+                            </p>
+                            {% else %}
+                                <em>Not Assigned</em>
+                            {% endif %}
+                        </td>
+        
+                        <!-- Product Column -->
+                        <td>
+                            <ul>
+                                {% for order_item in pickup.order_items %}
+                                    <li>
+                                        <p class="fw-bold mb-1">{{ order_item.product.name }}</p>
+                                        <p class="text-muted mb-0">{{ order_item.quantity }} pcs</p>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+        
+                        <td class="text-center">
+                            {% if pickup.status %}
+                            <span class="badge bg-{{
+                                'success' if pickup.status == 'Delivered' else
+                                'primary' if pickup.status in ['Pending', 'Pickup']  else
+                                'warning' if pickup.status == 'Scheduled'  else
+                                'secondary' }}">
+                                {{ pickup.status }}
+                            </span>
+                                                        
+                            {% else %}
+                                <em>Not Set</em>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+      
+    
+    </div>
+  
+
+  </div>
+
+
+
+
+
+
+
+
+{% endblock %}
