@@ -1,11 +1,19 @@
 <p align="center">
-  <img src="mobile_app/erp_mobile/assets/logos/splash_logo_black.png" alt="ERP Mobile Logo" width="250">
+  <img src="mobile_app/erp_mobile/assets/logos/splash_logo_white.png" alt="ERP Mobile Logo" width="250">
 </p>
 
+<<<<<<< HEAD
 # 👗 SheWear - E-commerce Platform
 
 The **SheWear E-commerce Platform** is a **comprehensive fashion marketplace** designed to provide **seamless shopping experiences for women's fashion**.  
 It combines a powerful Flask backend API with an intuitive Flutter mobile application for modern fashion retail.
+=======
+
+# 📱 SheWear E-commerce Website
+
+The **SheWear E-commerce Website** is a **comprehensive e-commerce platform** designed to streamline **business operations and customer interactions**.  
+It combines a powerful Flask backend API with an intuitive Flutter mobile application for seamless shopping experiences.
+>>>>>>> 4315257ee7701f087777bc2c5bd14a1a5883c430
 
 ---
 
@@ -135,12 +143,11 @@ SheWear-E-commerce/
 
 ---
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
 <p align="center">
+<<<<<<< HEAD
   Made with ❤️ for modern fashion retail
 </p>
+=======
+  Made with ❤️ for modern e-commerce solutions
+</p>
+>>>>>>> 4315257ee7701f087777bc2c5bd14a1a5883c430
