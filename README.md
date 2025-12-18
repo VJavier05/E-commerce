@@ -2,28 +2,22 @@
   <img src="mobile_app/erp_mobile/assets/logos/splash_logo_white.png" alt="ERP Mobile Logo" width="250">
 </p>
 
-<<<<<<< HEAD
-# 👗 SheWear - E-commerce Platform
+# 👗 SheWear – E-commerce Platform
 
-The **SheWear E-commerce Platform** is a **comprehensive fashion marketplace** designed to provide **seamless shopping experiences for women's fashion**.  
-It combines a powerful Flask backend API with an intuitive Flutter mobile application for modern fashion retail.
-=======
+**SheWear** is a **full-featured e-commerce platform for women’s fashion**, designed to deliver a **seamless shopping experience** while efficiently managing business operations.
 
-# 📱 SheWear E-commerce Website
+The platform combines a **robust Flask-based backend API** with an **intuitive Flutter mobile application**, enabling smooth interactions between customers, sellers, and administrators.
 
-The **SheWear E-commerce Website** is a **comprehensive e-commerce platform** designed to streamline **business operations and customer interactions**.  
-It combines a powerful Flask backend API with an intuitive Flutter mobile application for seamless shopping experiences.
->>>>>>> 4315257ee7701f087777bc2c5bd14a1a5883c430
 
 ---
 
 ## 🖼️ Preview
 
-![Main Interface](backend/app/static/img/banner1.png)
+![Main Interface](backend/app/static/img/main.png)
 
-| Mobile App | Backend Dashboard |
+| Mobile App | Web Homepage |
 |-----------|-------------------|
-| ![Mobile](mobile_app/erp_mobile/assets/images/on_boarding_images/sammy-line-shopping.gif) | ![Dashboard](backend/app/static/img/banner2.png) |
+| ![Mobile](backend/app/static/img/mobile.jpg) | ![Dashboard](backend/app/static/img/homepage.png) |
 
 ---
 
@@ -38,9 +32,6 @@ It combines a powerful Flask backend API with an intuitive Flutter mobile applic
 - 🔐 **Multi-Role Authentication**  
   Secure login system with role-based access (Admin, Seller, Courier, Customer).
 
-- 💳 **Secure Payment Processing**  
-  Integrated payment gateway with multiple payment options.
-
 - 📦 **Smart Order Management**  
   Complete order lifecycle from placement to delivery with status tracking.
 
@@ -51,7 +42,7 @@ It combines a powerful Flask backend API with an intuitive Flutter mobile applic
   Comprehensive dashboard for sales insights and performance metrics.
 
 - 🚚 **Delivery Management**  
-  Real-time order tracking and courier assignment system.
+  Order tracking and courier assignment system.
 
 ---
 
@@ -133,21 +124,7 @@ SheWear-E-commerce/
 
 ---
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
-
 <p align="center">
-<<<<<<< HEAD
   Made with ❤️ for modern fashion retail
 </p>
-=======
-  Made with ❤️ for modern e-commerce solutions
-</p>
->>>>>>> 4315257ee7701f087777bc2c5bd14a1a5883c430
+
