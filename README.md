@@ -2,10 +2,10 @@
   <img src="mobile_app/erp_mobile/assets/logos/splash_logo_black.png" alt="ERP Mobile Logo" width="250">
 </p>
 
-# 📱 ERP Mobile Application
+# 👗 SheWear - E-commerce Platform
 
-The **ERP Mobile Application** is a **comprehensive e-commerce platform** designed to streamline **business operations and customer interactions**.  
-It combines a powerful Flask backend API with an intuitive Flutter mobile application for seamless shopping experiences.
+The **SheWear E-commerce Platform** is a **comprehensive fashion marketplace** designed to provide **seamless shopping experiences for women's fashion**.  
+It combines a powerful Flask backend API with an intuitive Flutter mobile application for modern fashion retail.
 
 ---
 
@@ -21,29 +21,29 @@ It combines a powerful Flask backend API with an intuitive Flutter mobile applic
 
 ## 🚀 Features
 
-- 🛒 **E-Commerce Platform**  
-  Complete online shopping experience with product catalog and cart functionality.
+- 👗 **Fashion E-Commerce Platform**  
+  Complete women's fashion shopping experience with curated product collections.
 
 - 📱 **Cross-Platform Mobile App**  
   Flutter-based mobile application for iOS and Android platforms.
 
-- 🔐 **User Authentication & Authorization**  
+- 🔐 **Multi-Role Authentication**  
   Secure login system with role-based access (Admin, Seller, Courier, Customer).
 
-- 💳 **Payment Integration**  
-  Secure payment processing and order management system.
+- 💳 **Secure Payment Processing**  
+  Integrated payment gateway with multiple payment options.
 
-- 📦 **Order Management**  
-  Complete order lifecycle from placement to delivery tracking.
+- 📦 **Smart Order Management**  
+  Complete order lifecycle from placement to delivery with status tracking.
 
-- 💬 **Real-time Messaging**  
-  Chat system between customers, sellers, and couriers.
+- 💬 **Real-time Communication**  
+  Chat system between customers, sellers, and delivery partners.
 
-- 📊 **Analytics Dashboard**  
-  Comprehensive reporting and analytics for business insights.
+- 📊 **Business Analytics**  
+  Comprehensive dashboard for sales insights and performance metrics.
 
-- 🚚 **Delivery Tracking**  
-  Real-time order tracking and courier management.
+- 🚚 **Delivery Management**  
+  Real-time order tracking and courier assignment system.
 
 ---
 
@@ -63,7 +63,7 @@ It combines a powerful Flask backend API with an intuitive Flutter mobile applic
 ## 📁 Project Structure
 
 ```
-ERP_MOBILE/
+SheWear-E-commerce/
 ├── backend/          # Flask backend API
 │   ├── app/         # Application modules
 │   ├── migrations/  # Database migrations
@@ -73,7 +73,7 @@ ERP_MOBILE/
 │   ├── run.py       # Application entry point
 │   └── requirements.txt
 └── mobile_app/      # Flutter mobile application
-    └── erp_mobile/  # Mobile app source code
+    └── erp_mobile/  # SheWear mobile app
         ├── lib/     # Dart source files
         ├── assets/  # Images, fonts, icons
         └── pubspec.yaml
@@ -142,5 +142,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <p align="center">
-  Made with ❤️ for modern e-commerce solutions
+  Made with ❤️ for modern fashion retail
 </p>
